@@ -1,0 +1,46 @@
+[
+  {
+    "seed": 7,
+    "example_id": "5ae2138c5542997283cd23b7",
+    "question": "Are Villa Paletti and Betrayal at House on the Hill both board games?",
+    "gold_answers": [
+      "yes"
+    ],
+    "prediction": "yes",
+    "exact_match": 1.0,
+    "f1": 1.0
+  },
+  {
+    "seed": 7,
+    "example_id": "5a77152355429966f1a36c2e",
+    "question": "What was the Roud Folk Song Index of the nursery rhyme inspiring What Are Little Girls Made Of?",
+    "gold_answers": [
+      "821"
+    ],
+    "prediction": "The Roud Folk Song Index of the nursery rhyme inspired What Are Little Girls Made Of",
+    "exact_match": 0.0,
+    "f1": 0.0
+  },
+  {
+    "seed": 7,
+    "example_id": "5ade99ad554299728e26c75d",
+    "question": "How many acts is the ballet Rita Sangalli premiered in, in the year 1876?",
+    "gold_answers": [
+      "two or three acts"
+    ],
+    "prediction": "four",
+    "exact_match": 0.0,
+    "f1": 0.0
+  },
+  {
+    "seed": 7,
+    "example_id": "5ab81cff5542990e739ec827",
+    "question": "Which novelist was educated in London, C. S. Forester or Helen Zahavi?",
+    "gold_answers": [
+      "Helen Zahavi"
+    ],
+    "prediction": "C. S. Forester",
+    "exact_match": 0.0,
+    "f1": 0.0
+  }
+]

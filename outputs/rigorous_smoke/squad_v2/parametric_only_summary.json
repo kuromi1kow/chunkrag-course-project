@@ -1,0 +1,14 @@
+{
+  "dataset": "squad_v2",
+  "system": "parametric_only",
+  "seed": 7,
+  "retriever": "parametric_only",
+  "chunker": null,
+  "num_examples": 8,
+  "exact_match": 0.0,
+  "exact_match_ci_low": 0.0,
+  "exact_match_ci_high": 0.0,
+  "f1": 0.0,
+  "f1_ci_low": 0.0,
+  "f1_ci_high": 0.0
+}

@@ -4,6 +4,8 @@ __pycache__/
 .DS_Store
 *.pyc
 *.egg-info/
+.hf-cache/
+logs/
 data/raw/
 data/processed/
 .cache/

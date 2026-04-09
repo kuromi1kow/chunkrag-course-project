@@ -1,0 +1,78 @@
+{
+  "seed": 7,
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "generator_model": "google/flan-t5-base",
+  "device": "auto",
+  "retrieval_top_k": 4,
+  "max_new_tokens": 24,
+  "embedding_batch_size": 16,
+  "generation_max_input_tokens": 640,
+  "run_parametric_baseline": true,
+  "bootstrap_samples": 200,
+  "datasets": [
+    {
+      "name": "squad_v2",
+      "split": "validation",
+      "max_examples": 8,
+      "candidate_pool_size": 80,
+      "answerable_only": true
+    },
+    {
+      "name": "hotpot_qa",
+      "config": "distractor",
+      "split": "validation",
+      "max_examples": 4
+    }
+  ],
+  "retrievers": [
+    {
+      "name": "dense",
+      "type": "dense"
+    },
+    {
+      "name": "bm25",
+      "type": "bm25"
+    },
+    {
+      "name": "hybrid",
+      "type": "hybrid",
+      "candidate_pool_size": 12,
+      "dense_weight": 0.6,
+      "sparse_weight": 0.4
+    },
+    {
+      "name": "hybrid_rerank",
+      "type": "rerank",
+      "model_name": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+      "candidate_pool_size": 12,
+      "batch_size": 8,
+      "base_retriever": {
+        "type": "hybrid",
+        "candidate_pool_size": 12,
+        "dense_weight": 0.6,
+        "sparse_weight": 0.4
+      }
+    }
+  ],
+  "chunkers": [
+    {
+      "name": "fixed_128",
+      "type": "fixed",
+      "chunk_size": 128,
+      "chunk_overlap": 19
+    },
+    {
+      "name": "recursive_256",
+      "type": "recursive",
+      "chunk_size": 256,
+      "chunk_overlap": 38
+    },
+    {
+      "name": "semantic_256",
+      "type": "semantic",
+      "chunk_size": 256,
+      "similarity_threshold": 0.72,
+      "min_chunk_tokens": 96
+    }
+  ]
+}

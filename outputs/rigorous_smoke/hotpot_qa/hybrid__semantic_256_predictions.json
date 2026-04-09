@@ -1,0 +1,142 @@
+[
+  {
+    "seed": 7,
+    "retriever": "hybrid",
+    "chunker": "semantic_256",
+    "example_id": "5ae2138c5542997283cd23b7",
+    "question": "Are Villa Paletti and Betrayal at House on the Hill both board games?",
+    "gold_answers": [
+      "yes"
+    ],
+    "prediction": "yes",
+    "retrieved_chunk_ids": [
+      "semantic_256::hotpot::Betrayal at House on the Hill::0",
+      "semantic_256::hotpot::Villa Paletti::0",
+      "semantic_256::hotpot::David Parlett::0",
+      "semantic_256::hotpot::Brian Campbell (game designer)::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Betrayal at House on the Hill",
+      "hotpot::Villa Paletti",
+      "hotpot::David Parlett",
+      "hotpot::Brian Campbell (game designer)"
+    ],
+    "retrieved_titles": [
+      "Betrayal at House on the Hill",
+      "Villa Paletti",
+      "David Parlett",
+      "Brian Campbell (game designer)"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "precision_at_k": 0.5,
+    "recall_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 7,
+    "retriever": "hybrid",
+    "chunker": "semantic_256",
+    "example_id": "5a77152355429966f1a36c2e",
+    "question": "What was the Roud Folk Song Index of the nursery rhyme inspiring What Are Little Girls Made Of?",
+    "gold_answers": [
+      "821"
+    ],
+    "prediction": "unanswerable",
+    "retrieved_chunk_ids": [
+      "semantic_256::hotpot::What Are Little Boys Made Of?::0",
+      "semantic_256::hotpot::Pretty Little Dutch Girl::0",
+      "semantic_256::hotpot::Row, Row, Row Your Boat::0",
+      "semantic_256::hotpot::Did You Ever See a Lassie?::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::What Are Little Boys Made Of?",
+      "hotpot::Pretty Little Dutch Girl",
+      "hotpot::Row, Row, Row Your Boat",
+      "hotpot::Did You Ever See a Lassie?"
+    ],
+    "retrieved_titles": [
+      "What Are Little Boys Made Of?",
+      "Pretty Little Dutch Girl",
+      "Row, Row, Row Your Boat",
+      "Did You Ever See a Lassie?"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "precision_at_k": 0.25,
+    "recall_at_k": 1.0,
+    "supporting_doc_coverage": 0.5,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 7,
+    "retriever": "hybrid",
+    "chunker": "semantic_256",
+    "example_id": "5ade99ad554299728e26c75d",
+    "question": "How many acts is the ballet Rita Sangalli premiered in, in the year 1876?",
+    "gold_answers": [
+      "two or three acts"
+    ],
+    "prediction": "two or three acts",
+    "retrieved_chunk_ids": [
+      "semantic_256::hotpot::Rita Sangalli::1",
+      "semantic_256::hotpot::Sylvia (ballet)::0",
+      "semantic_256::hotpot::Rita Sangalli::0",
+      "semantic_256::hotpot::Marie Bonfanti::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Rita Sangalli",
+      "hotpot::Sylvia (ballet)",
+      "hotpot::Rita Sangalli",
+      "hotpot::Marie Bonfanti"
+    ],
+    "retrieved_titles": [
+      "Rita Sangalli",
+      "Sylvia (ballet)",
+      "Rita Sangalli",
+      "Marie Bonfanti"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "precision_at_k": 0.75,
+    "recall_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 7,
+    "retriever": "hybrid",
+    "chunker": "semantic_256",
+    "example_id": "5ab81cff5542990e739ec827",
+    "question": "Which novelist was educated in London, C. S. Forester or Helen Zahavi?",
+    "gold_answers": [
+      "Helen Zahavi"
+    ],
+    "prediction": "Helen Zahavi",
+    "retrieved_chunk_ids": [
+      "semantic_256::hotpot::Helen Zahavi::0",
+      "semantic_256::hotpot::Dirty Weekend (novel)::0",
+      "semantic_256::hotpot::C. S. Forester::0",
+      "semantic_256::hotpot::Hornblower and the Crisis::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Helen Zahavi",
+      "hotpot::Dirty Weekend (novel)",
+      "hotpot::C. S. Forester",
+      "hotpot::Hornblower and the Crisis"
+    ],
+    "retrieved_titles": [
+      "Helen Zahavi",
+      "Dirty Weekend (novel)",
+      "C. S. Forester",
+      "Hornblower and the Crisis"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "precision_at_k": 0.75,
+    "recall_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  }
+]

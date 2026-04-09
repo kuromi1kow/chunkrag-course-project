@@ -1,0 +1,107 @@
+[
+  {
+    "seed": 7,
+    "example_id": "5710f114a58dae1900cd6b63",
+    "question": "Who was the famous Huguenot theologian and writer in London?",
+    "gold_answers": [
+      "Andrew Lortie",
+      "Andrew Lortie",
+      "Andrew Lortie"
+    ],
+    "prediction": "charles dickens",
+    "exact_match": 0.0,
+    "f1": 0.0
+  },
+  {
+    "seed": 7,
+    "example_id": "572843304b864d190016484b",
+    "question": "Who disliked the affiliate program?",
+    "gold_answers": [
+      "passed",
+      "Several University of Chicago professors",
+      "Several University of Chicago professors"
+    ],
+    "prediction": "the saxophone player",
+    "exact_match": 0.0,
+    "f1": 0.0
+  },
+  {
+    "seed": 7,
+    "example_id": "56e181d9e3433e1400422fa3",
+    "question": "In the encoding of mathematical objects, what is the way in which integers are commonly expressed?",
+    "gold_answers": [
+      "binary notation",
+      "binary notation",
+      "binary notation"
+    ],
+    "prediction": "integers",
+    "exact_match": 0.0,
+    "f1": 0.0
+  },
+  {
+    "seed": 7,
+    "example_id": "57113c6da58dae1900cd6d33",
+    "question": "Who conceptualized the aeolipile?",
+    "gold_answers": [
+      "Hero of Alexandria",
+      "Hero of Alexandria",
+      "Hero of Alexandria",
+      "Hero of Alexandria"
+    ],
+    "prediction": "aeolithic physicist",
+    "exact_match": 0.0,
+    "f1": 0.0
+  },
+  {
+    "seed": 7,
+    "example_id": "572ff7ab04bcaa1900d76f55",
+    "question": "What is the translation of Oude Maas?",
+    "gold_answers": [
+      "Old Meuse",
+      "Old Meuse",
+      "Old Meuse"
+    ],
+    "prediction": "\"the king of the sexes\"",
+    "exact_match": 0.0,
+    "f1": 0.0
+  },
+  {
+    "seed": 7,
+    "example_id": "5705e3f252bb89140068966e",
+    "question": "How many people does the Greater Los Angeles Area have?",
+    "gold_answers": [
+      "17.5 million",
+      "over 17.5 million",
+      "17.5 million"
+    ],
+    "prediction": "87,345",
+    "exact_match": 0.0,
+    "f1": 0.0
+  },
+  {
+    "seed": 7,
+    "example_id": "5727d4922ca10214002d977f",
+    "question": "From 2004 to 2005 Harvard reduced the number of students earning Latin honors from 90% to what?",
+    "gold_answers": [
+      "60%",
+      "60%",
+      "60%"
+    ],
+    "prediction": "80%",
+    "exact_match": 0.0,
+    "f1": 0.0
+  },
+  {
+    "seed": 7,
+    "example_id": "573368044776f41900660a2a",
+    "question": "Where is a palm house with subtropic plants from all over the world on display?",
+    "gold_answers": [
+      "New Orangery",
+      "New Orangery",
+      "New Orangery"
+    ],
+    "prediction": "Musée d'Orsay",
+    "exact_match": 0.0,
+    "f1": 0.0
+  }
+]

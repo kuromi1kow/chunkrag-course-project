@@ -19,6 +19,16 @@ def resolve_device(device: str) -> str:
     return "cpu"
 
 
+def resolve_torch_dtype(torch_dtype: str | None):
+    if torch_dtype is None:
+        return None
+    if torch_dtype == "auto":
+        return "auto"
+    if not hasattr(torch, torch_dtype):
+        raise ValueError(f"Unsupported torch dtype: {torch_dtype}")
+    return getattr(torch, torch_dtype)
+
+
 class QAGenerator:
     def __init__(
         self,
@@ -26,19 +36,28 @@ class QAGenerator:
         device: str = "auto",
         max_input_tokens: int = 768,
         max_new_tokens: int = 32,
+        torch_dtype: str | None = None,
+        use_device_map: bool = False,
     ) -> None:
         self.device = resolve_device(device)
         self.model_name = model_name
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         config = AutoConfig.from_pretrained(model_name)
         self.is_encoder_decoder = bool(config.is_encoder_decoder)
+        model_kwargs = {}
+        resolved_dtype = resolve_torch_dtype(torch_dtype)
+        if resolved_dtype is not None:
+            model_kwargs["torch_dtype"] = resolved_dtype
+        if use_device_map:
+            model_kwargs["device_map"] = "auto"
         if self.is_encoder_decoder:
-            self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+            self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name, **model_kwargs)
         else:
-            self.model = AutoModelForCausalLM.from_pretrained(model_name)
+            self.model = AutoModelForCausalLM.from_pretrained(model_name, **model_kwargs)
             if self.tokenizer.pad_token is None:
                 self.tokenizer.pad_token = self.tokenizer.eos_token
-        self.model.to(self.device)
+        if not use_device_map:
+            self.model.to(self.device)
         self.model.eval()
         self.max_input_tokens = max_input_tokens
         self.max_new_tokens = max_new_tokens

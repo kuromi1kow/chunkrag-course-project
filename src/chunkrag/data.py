@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import random
 from collections import defaultdict
 
 from datasets import load_dataset
@@ -11,6 +12,7 @@ def load_squad_documents_and_examples(
     split: str,
     max_examples: int,
     candidate_pool_size: int,
+    seed: int = 42,
     answerable_only: bool = True,
 ) -> tuple[list[Document], list[QAExample]]:
     raw = load_dataset("squad_v2", split=split)
@@ -18,9 +20,9 @@ def load_squad_documents_and_examples(
         raw = raw.filter(lambda row: len(row["answers"]["text"]) > 0)
 
     if candidate_pool_size < len(raw):
-        pooled = raw.shuffle(seed=42).select(range(candidate_pool_size))
+        pooled = raw.shuffle(seed=seed).select(range(candidate_pool_size))
     else:
-        pooled = raw
+        pooled = raw.shuffle(seed=seed)
 
     title_to_contexts: dict[str, list[str]] = defaultdict(list)
     title_to_seen: dict[str, set[str]] = defaultdict(set)
@@ -35,7 +37,8 @@ def load_squad_documents_and_examples(
 
     examples: list[QAExample] = []
     selected_titles: set[str] = set()
-    title_order = sorted(title_to_rows)
+    title_order = list(title_to_rows)
+    random.Random(seed).shuffle(title_order)
     row_indices = {title: 0 for title in title_order}
     while len(examples) < max_examples:
         made_progress = False
@@ -79,9 +82,10 @@ def load_hotpot_documents_and_examples(
     split: str,
     max_examples: int,
     config_name: str = "distractor",
+    seed: int = 42,
 ) -> tuple[list[Document], list[QAExample]]:
     raw = load_dataset("hotpot_qa", config_name, split=split)
-    raw = raw.select(range(min(len(raw), max_examples)))
+    raw = raw.shuffle(seed=seed).select(range(min(len(raw), max_examples)))
 
     documents: dict[str, Document] = {}
     examples: list[QAExample] = []

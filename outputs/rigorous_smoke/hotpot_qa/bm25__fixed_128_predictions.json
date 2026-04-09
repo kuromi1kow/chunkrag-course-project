@@ -1,0 +1,142 @@
+[
+  {
+    "seed": 7,
+    "retriever": "bm25",
+    "chunker": "fixed_128",
+    "example_id": "5ae2138c5542997283cd23b7",
+    "question": "Are Villa Paletti and Betrayal at House on the Hill both board games?",
+    "gold_answers": [
+      "yes"
+    ],
+    "prediction": "yes",
+    "retrieved_chunk_ids": [
+      "fixed_128::hotpot::Brian Campbell (game designer)::1",
+      "fixed_128::hotpot::Betrayal at House on the Hill::0",
+      "fixed_128::hotpot::Villa Paletti::0",
+      "fixed_128::hotpot::Brian Campbell (game designer)::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Brian Campbell (game designer)",
+      "hotpot::Betrayal at House on the Hill",
+      "hotpot::Villa Paletti",
+      "hotpot::Brian Campbell (game designer)"
+    ],
+    "retrieved_titles": [
+      "Brian Campbell (game designer)",
+      "Betrayal at House on the Hill",
+      "Villa Paletti",
+      "Brian Campbell (game designer)"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "precision_at_k": 0.5,
+    "recall_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 7,
+    "retriever": "bm25",
+    "chunker": "fixed_128",
+    "example_id": "5a77152355429966f1a36c2e",
+    "question": "What was the Roud Folk Song Index of the nursery rhyme inspiring What Are Little Girls Made Of?",
+    "gold_answers": [
+      "821"
+    ],
+    "prediction": "unanswerable",
+    "retrieved_chunk_ids": [
+      "fixed_128::hotpot::What Are Little Boys Made Of?::0",
+      "fixed_128::hotpot::What Are Little Girls Made Of?::0",
+      "fixed_128::hotpot::Tweedledum and Tweedledee::0",
+      "fixed_128::hotpot::Pretty Little Dutch Girl::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::What Are Little Boys Made Of?",
+      "hotpot::What Are Little Girls Made Of?",
+      "hotpot::Tweedledum and Tweedledee",
+      "hotpot::Pretty Little Dutch Girl"
+    ],
+    "retrieved_titles": [
+      "What Are Little Boys Made Of?",
+      "What Are Little Girls Made Of?",
+      "Tweedledum and Tweedledee",
+      "Pretty Little Dutch Girl"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "precision_at_k": 0.5,
+    "recall_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 7,
+    "retriever": "bm25",
+    "chunker": "fixed_128",
+    "example_id": "5ade99ad554299728e26c75d",
+    "question": "How many acts is the ballet Rita Sangalli premiered in, in the year 1876?",
+    "gold_answers": [
+      "two or three acts"
+    ],
+    "prediction": "three",
+    "retrieved_chunk_ids": [
+      "fixed_128::hotpot::Marie Bonfanti::0",
+      "fixed_128::hotpot::Rita Sangalli::0",
+      "fixed_128::hotpot::Sylvia (ballet)::0",
+      "fixed_128::hotpot::Rita Sangalli::1"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Marie Bonfanti",
+      "hotpot::Rita Sangalli",
+      "hotpot::Sylvia (ballet)",
+      "hotpot::Rita Sangalli"
+    ],
+    "retrieved_titles": [
+      "Marie Bonfanti",
+      "Rita Sangalli",
+      "Sylvia (ballet)",
+      "Rita Sangalli"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.4,
+    "precision_at_k": 0.75,
+    "recall_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 7,
+    "retriever": "bm25",
+    "chunker": "fixed_128",
+    "example_id": "5ab81cff5542990e739ec827",
+    "question": "Which novelist was educated in London, C. S. Forester or Helen Zahavi?",
+    "gold_answers": [
+      "Helen Zahavi"
+    ],
+    "prediction": "helen zahavi",
+    "retrieved_chunk_ids": [
+      "fixed_128::hotpot::Helen Zahavi::0",
+      "fixed_128::hotpot::Dirty Weekend (novel)::0",
+      "fixed_128::hotpot::C. S. Forester::0",
+      "fixed_128::hotpot::The Happy Return::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Helen Zahavi",
+      "hotpot::Dirty Weekend (novel)",
+      "hotpot::C. S. Forester",
+      "hotpot::The Happy Return"
+    ],
+    "retrieved_titles": [
+      "Helen Zahavi",
+      "Dirty Weekend (novel)",
+      "C. S. Forester",
+      "The Happy Return"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "precision_at_k": 0.75,
+    "recall_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  }
+]

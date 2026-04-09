@@ -1,0 +1,11 @@
+#!/bin/bash -l
+#$ -j y
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+CONFIG_PATH="${1:-$REPO_ROOT/configs/scc_rigorous_qwen.json}"
+OUTPUT_DIR="${2:-$REPO_ROOT/outputs/scc_rigorous_qwen}"
+
+cd "$REPO_ROOT"
+bash "$REPO_ROOT/scripts/run_scc_experiments.sh" "$CONFIG_PATH" "$OUTPUT_DIR"

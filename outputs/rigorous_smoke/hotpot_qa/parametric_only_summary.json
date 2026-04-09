@@ -1,0 +1,14 @@
+{
+  "dataset": "hotpot_qa",
+  "system": "parametric_only",
+  "seed": 7,
+  "retriever": "parametric_only",
+  "chunker": null,
+  "num_examples": 4,
+  "exact_match": 0.25,
+  "exact_match_ci_low": 0.0,
+  "exact_match_ci_high": 0.75,
+  "f1": 0.25,
+  "f1_ci_low": 0.0,
+  "f1_ci_high": 0.75
+}

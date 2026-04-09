@@ -1,0 +1,299 @@
+[
+  {
+    "seed": 7,
+    "retriever": "bm25",
+    "chunker": "semantic_256",
+    "example_id": "5710f114a58dae1900cd6b63",
+    "question": "Who was the famous Huguenot theologian and writer in London?",
+    "gold_answers": [
+      "Andrew Lortie",
+      "Andrew Lortie",
+      "Andrew Lortie"
+    ],
+    "prediction": "Andrew Lortie",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Huguenot::0",
+      "semantic_256::squad::Steam_engine::1",
+      "semantic_256::squad::Warsaw::1",
+      "semantic_256::squad::University_of_Chicago::1"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Huguenot",
+      "squad::Steam_engine",
+      "squad::Warsaw",
+      "squad::University_of_Chicago"
+    ],
+    "retrieved_titles": [
+      "Huguenot",
+      "Steam_engine",
+      "Warsaw",
+      "University_of_Chicago"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "precision_at_k": 0.25,
+    "recall_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 7,
+    "retriever": "bm25",
+    "chunker": "semantic_256",
+    "example_id": "572843304b864d190016484b",
+    "question": "Who disliked the affiliate program?",
+    "gold_answers": [
+      "passed",
+      "Several University of Chicago professors",
+      "Several University of Chicago professors"
+    ],
+    "prediction": "University of Chicago professors",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::University_of_Chicago::2",
+      "semantic_256::squad::Harvard_University::0",
+      "semantic_256::squad::University_of_Chicago::1",
+      "semantic_256::squad::Huguenot::0"
+    ],
+    "retrieved_doc_ids": [
+      "squad::University_of_Chicago",
+      "squad::Harvard_University",
+      "squad::University_of_Chicago",
+      "squad::Huguenot"
+    ],
+    "retrieved_titles": [
+      "University_of_Chicago",
+      "Harvard_University",
+      "University_of_Chicago",
+      "Huguenot"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.888888888888889,
+    "precision_at_k": 0.5,
+    "recall_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 7,
+    "retriever": "bm25",
+    "chunker": "semantic_256",
+    "example_id": "56e181d9e3433e1400422fa3",
+    "question": "In the encoding of mathematical objects, what is the way in which integers are commonly expressed?",
+    "gold_answers": [
+      "binary notation",
+      "binary notation",
+      "binary notation"
+    ],
+    "prediction": "binary notation",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Computational_complexity_theory::0",
+      "semantic_256::squad::Computational_complexity_theory::1",
+      "semantic_256::squad::Warsaw::1",
+      "semantic_256::squad::Southern_California::2"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Computational_complexity_theory",
+      "squad::Computational_complexity_theory",
+      "squad::Warsaw",
+      "squad::Southern_California"
+    ],
+    "retrieved_titles": [
+      "Computational_complexity_theory",
+      "Computational_complexity_theory",
+      "Warsaw",
+      "Southern_California"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "precision_at_k": 0.5,
+    "recall_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 7,
+    "retriever": "bm25",
+    "chunker": "semantic_256",
+    "example_id": "57113c6da58dae1900cd6d33",
+    "question": "Who conceptualized the aeolipile?",
+    "gold_answers": [
+      "Hero of Alexandria",
+      "Hero of Alexandria",
+      "Hero of Alexandria",
+      "Hero of Alexandria"
+    ],
+    "prediction": "Greek mathematician Hero of Alexandria",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Steam_engine::0",
+      "semantic_256::squad::University_of_Chicago::1",
+      "semantic_256::squad::Huguenot::0",
+      "semantic_256::squad::University_of_Chicago::5"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Steam_engine",
+      "squad::University_of_Chicago",
+      "squad::Huguenot",
+      "squad::University_of_Chicago"
+    ],
+    "retrieved_titles": [
+      "Steam_engine",
+      "University_of_Chicago",
+      "Huguenot",
+      "University_of_Chicago"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.7499999999999999,
+    "precision_at_k": 0.25,
+    "recall_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 7,
+    "retriever": "bm25",
+    "chunker": "semantic_256",
+    "example_id": "572ff7ab04bcaa1900d76f55",
+    "question": "What is the translation of Oude Maas?",
+    "gold_answers": [
+      "Old Meuse",
+      "Old Meuse",
+      "Old Meuse"
+    ],
+    "prediction": "Old Meuse",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Rhine::1",
+      "semantic_256::squad::Rhine::0",
+      "semantic_256::squad::Warsaw::1",
+      "semantic_256::squad::University_of_Chicago::5"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Rhine",
+      "squad::Rhine",
+      "squad::Warsaw",
+      "squad::University_of_Chicago"
+    ],
+    "retrieved_titles": [
+      "Rhine",
+      "Rhine",
+      "Warsaw",
+      "University_of_Chicago"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "precision_at_k": 0.5,
+    "recall_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 7,
+    "retriever": "bm25",
+    "chunker": "semantic_256",
+    "example_id": "5705e3f252bb89140068966e",
+    "question": "How many people does the Greater Los Angeles Area have?",
+    "gold_answers": [
+      "17.5 million",
+      "over 17.5 million",
+      "17.5 million"
+    ],
+    "prediction": "17.5 million",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Southern_California::1",
+      "semantic_256::squad::Southern_California::0",
+      "semantic_256::squad::Southern_California::2",
+      "semantic_256::squad::Computational_complexity_theory::1"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Southern_California",
+      "squad::Southern_California",
+      "squad::Southern_California",
+      "squad::Computational_complexity_theory"
+    ],
+    "retrieved_titles": [
+      "Southern_California",
+      "Southern_California",
+      "Southern_California",
+      "Computational_complexity_theory"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "precision_at_k": 0.75,
+    "recall_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 7,
+    "retriever": "bm25",
+    "chunker": "semantic_256",
+    "example_id": "5727d4922ca10214002d977f",
+    "question": "From 2004 to 2005 Harvard reduced the number of students earning Latin honors from 90% to what?",
+    "gold_answers": [
+      "60%",
+      "60%",
+      "60%"
+    ],
+    "prediction": "60%",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Harvard_University::1",
+      "semantic_256::squad::Harvard_University::0",
+      "semantic_256::squad::University_of_Chicago::7",
+      "semantic_256::squad::University_of_Chicago::1"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Harvard_University",
+      "squad::Harvard_University",
+      "squad::University_of_Chicago",
+      "squad::University_of_Chicago"
+    ],
+    "retrieved_titles": [
+      "Harvard_University",
+      "Harvard_University",
+      "University_of_Chicago",
+      "University_of_Chicago"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "precision_at_k": 0.5,
+    "recall_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 7,
+    "retriever": "bm25",
+    "chunker": "semantic_256",
+    "example_id": "573368044776f41900660a2a",
+    "question": "Where is a palm house with subtropic plants from all over the world on display?",
+    "gold_answers": [
+      "New Orangery",
+      "New Orangery",
+      "New Orangery"
+    ],
+    "prediction": "New Orangery",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Warsaw::0",
+      "semantic_256::squad::Southern_California::1",
+      "semantic_256::squad::Rhine::1",
+      "semantic_256::squad::Computational_complexity_theory::0"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Warsaw",
+      "squad::Southern_California",
+      "squad::Rhine",
+      "squad::Computational_complexity_theory"
+    ],
+    "retrieved_titles": [
+      "Warsaw",
+      "Southern_California",
+      "Rhine",
+      "Computational_complexity_theory"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "precision_at_k": 0.25,
+    "recall_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  }
+]
