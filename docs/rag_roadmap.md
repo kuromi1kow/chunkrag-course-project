@@ -104,3 +104,14 @@ flowchart TD
 - show retrieved chunks
 - show final answer
 - show why one answer is better
+- let users upload their own PDFs, notes, or tabular knowledge sources
+- expose query rewrites, compressed context, citations, and support estimates
+
+## Current implementation status
+
+The dashboard now includes a live playground that can:
+
+- ingest `PDF`, `TXT`, `Markdown`, `CSV`, `TSV`, and `JSON`
+- compare `Traditional`, `Advanced`, and `Multi-Agent` flows on one question
+- use either a local model, an OpenAI-compatible SCC endpoint, or a lightweight extractive fallback
+- surface query plans, retrieved evidence, compression outputs, and grounding confidence

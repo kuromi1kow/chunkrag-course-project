@@ -30,6 +30,7 @@ This gives:
 - clean visual chat UI
 - easier debugging
 - no need to expose a public SCC-hosted web service
+- the same model endpoint can also power the Streamlit playground for upload-and-test RAG demos
 
 ### Option B: Possible, but weaker
 
@@ -82,3 +83,9 @@ After the base model is available in OpenWebUI, the next step is not Agentic RAG
 2. Multi-Agent RAG
 
 That matches your architecture constraints better than a LangGraph-style autonomous agent.
+
+The dashboard now already supports that next step operationally:
+
+- upload a small corpus directly into the playground
+- compare `Traditional`, `Advanced`, and `Multi-Agent` modes
+- point the generator backend at the same SCC `vLLM` endpoint used by OpenWebUI

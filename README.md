@@ -20,6 +20,9 @@ The upgraded experiment runner now supports:
 - Figure generation from result JSONs
 - OpenWebUI + SCC deployment scripts
 - Streamlit demo dashboard for visual inspection
+- Live upload-and-test RAG playground with PDF, TXT, Markdown, CSV, TSV, and JSON ingestion
+- Side-by-side `Traditional`, `Advanced`, and `Multi-Agent` pipeline comparisons
+- Local Hugging Face, extractive fallback, or SCC-hosted OpenAI-compatible generation backends
 
 The default experimental setup uses:
 
@@ -119,6 +122,20 @@ This launches a Streamlit dashboard that shows:
 - aggregate metrics
 - example-level predictions
 - generated figures
+- a live playground for uploaded corpora
+- evidence traces, citations, query rewrites, and grounding estimates
+
+### Live playground workflow
+
+The `Playground` tab now supports:
+
+- uploading files or pasting a custom mini knowledge base
+- mixing in built-in project docs for demos
+- switching chunkers and retrievers without changing code
+- comparing `Traditional`, `Advanced`, and `Multi-Agent` flows on the same question
+- evaluating a live answer against an optional reference answer
+
+For the fastest smoke test, build the playground with the built-in docs and use the `Extractive fallback` generator. For a real end-to-end demo, point the `OpenAI-compatible endpoint` backend at the SCC `vLLM` tunnel.
 
 ## Project deliverables
 
