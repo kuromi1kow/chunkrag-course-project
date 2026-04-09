@@ -1,0 +1,62 @@
+[
+  {
+    "example_id": "56ddde6b9a695914005b9628",
+    "question": "In what country is Normandy located?",
+    "gold_answers": [
+      "France",
+      "France",
+      "France",
+      "France"
+    ],
+    "prediction": "France",
+    "retrieved_chunk_ids": [
+      "sentence_256::squad::Normans::2",
+      "sentence_256::squad::Normans::1",
+      "sentence_256::squad::Normans::3"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Normans",
+      "squad::Normans",
+      "squad::Normans"
+    ],
+    "retrieved_titles": [
+      "Normans",
+      "Normans",
+      "Normans"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "precision_at_k": 1.0,
+    "recall_at_k": 1.0
+  },
+  {
+    "example_id": "56ddde6b9a695914005b9629",
+    "question": "When were the Normans in Normandy?",
+    "gold_answers": [
+      "10th and 11th centuries",
+      "in the 10th and 11th centuries",
+      "10th and 11th centuries",
+      "10th and 11th centuries"
+    ],
+    "prediction": "9th century",
+    "retrieved_chunk_ids": [
+      "sentence_256::squad::Normans::2",
+      "sentence_256::squad::Normans::1",
+      "sentence_256::squad::Normans::0"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Normans",
+      "squad::Normans",
+      "squad::Normans"
+    ],
+    "retrieved_titles": [
+      "Normans",
+      "Normans",
+      "Normans"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "precision_at_k": 1.0,
+    "recall_at_k": 1.0
+  }
+]

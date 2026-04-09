@@ -1,0 +1,14 @@
+{
+  "dataset": "hotpot_qa",
+  "system": "chonkie_semantic_256",
+  "num_documents": 291,
+  "num_examples": 30,
+  "num_chunks": 363,
+  "avg_chunk_tokens": 98.17906336088154,
+  "exact_match": 0.36666666666666664,
+  "f1": 0.4969047619047619,
+  "recall_at_k": 1.0,
+  "precision_at_k": 0.4583333333333333,
+  "avg_retrieval_latency_s": 0.00477732076663718,
+  "avg_generation_latency_s": 0.09538935276656654
+}

@@ -1,0 +1,14 @@
+{
+  "dataset": "hotpot_qa",
+  "system": "fixed_512",
+  "num_documents": 291,
+  "num_examples": 30,
+  "num_chunks": 294,
+  "avg_chunk_tokens": 121.98639455782313,
+  "exact_match": 0.36666666666666664,
+  "f1": 0.4477777777777778,
+  "recall_at_k": 1.0,
+  "precision_at_k": 0.4666666666666667,
+  "avg_retrieval_latency_s": 0.00478865986672948,
+  "avg_generation_latency_s": 0.09438809020017895
+}

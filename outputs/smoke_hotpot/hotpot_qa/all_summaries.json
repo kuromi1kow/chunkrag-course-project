@@ -1,0 +1,23 @@
+[
+  {
+    "dataset": "hotpot_qa",
+    "system": "parametric_only",
+    "num_examples": 2,
+    "exact_match": 0.0,
+    "f1": 0.16666666666666666
+  },
+  {
+    "dataset": "hotpot_qa",
+    "system": "fixed_128",
+    "num_documents": 20,
+    "num_examples": 2,
+    "num_chunks": 25,
+    "avg_chunk_tokens": 86.32,
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.3333333333333333,
+    "avg_retrieval_latency_s": 0.1803462705001948,
+    "avg_generation_latency_s": 0.26838327049972577
+  }
+]

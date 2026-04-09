@@ -1,0 +1,93 @@
+[
+  {
+    "dataset": "squad_v2",
+    "system": "parametric_only",
+    "num_examples": 60,
+    "exact_match": 0.016666666666666666,
+    "f1": 0.06743284493284493
+  },
+  {
+    "dataset": "squad_v2",
+    "system": "fixed_128",
+    "num_documents": 35,
+    "num_examples": 60,
+    "num_chunks": 631,
+    "avg_chunk_tokens": 125.2852614896989,
+    "exact_match": 0.6166666666666667,
+    "f1": 0.7276512884356021,
+    "recall_at_k": 0.95,
+    "precision_at_k": 0.7875,
+    "avg_retrieval_latency_s": 0.010979225699854094,
+    "avg_generation_latency_s": 0.13759016461660092
+  },
+  {
+    "dataset": "squad_v2",
+    "system": "fixed_256",
+    "num_documents": 35,
+    "num_examples": 60,
+    "num_chunks": 322,
+    "avg_chunk_tokens": 244.01863354037266,
+    "exact_match": 0.5166666666666667,
+    "f1": 0.5985107376283847,
+    "recall_at_k": 0.9166666666666666,
+    "precision_at_k": 0.7458333333333333,
+    "avg_retrieval_latency_s": 0.004872198599847858,
+    "avg_generation_latency_s": 0.11400635896655634
+  },
+  {
+    "dataset": "squad_v2",
+    "system": "fixed_512",
+    "num_documents": 35,
+    "num_examples": 60,
+    "num_chunks": 164,
+    "avg_chunk_tokens": 472.1585365853659,
+    "exact_match": 0.4666666666666667,
+    "f1": 0.5341151332327803,
+    "recall_at_k": 0.9333333333333333,
+    "precision_at_k": 0.65,
+    "avg_retrieval_latency_s": 0.0048225728831918484,
+    "avg_generation_latency_s": 0.10998426943330439
+  },
+  {
+    "dataset": "squad_v2",
+    "system": "recursive_256",
+    "num_documents": 35,
+    "num_examples": 60,
+    "num_chunks": 389,
+    "avg_chunk_tokens": 175.83033419023135,
+    "exact_match": 0.65,
+    "f1": 0.750995670995671,
+    "recall_at_k": 0.9166666666666666,
+    "precision_at_k": 0.7375,
+    "avg_retrieval_latency_s": 0.004921720833256889,
+    "avg_generation_latency_s": 0.11320073680005104
+  },
+  {
+    "dataset": "squad_v2",
+    "system": "sentence_256",
+    "num_documents": 35,
+    "num_examples": 60,
+    "num_chunks": 302,
+    "avg_chunk_tokens": 223.90066225165563,
+    "exact_match": 0.6,
+    "f1": 0.6840302181478652,
+    "recall_at_k": 0.8833333333333333,
+    "precision_at_k": 0.7291666666666666,
+    "avg_retrieval_latency_s": 0.004758277066806234,
+    "avg_generation_latency_s": 0.11028036809987801
+  },
+  {
+    "dataset": "squad_v2",
+    "system": "semantic_256",
+    "num_documents": 35,
+    "num_examples": 60,
+    "num_chunks": 467,
+    "avg_chunk_tokens": 144.79229122055673,
+    "exact_match": 0.7666666666666667,
+    "f1": 0.8540037631214101,
+    "recall_at_k": 0.95,
+    "precision_at_k": 0.7708333333333334,
+    "avg_retrieval_latency_s": 0.004799218033319145,
+    "avg_generation_latency_s": 0.13834739588325343
+  }
+]

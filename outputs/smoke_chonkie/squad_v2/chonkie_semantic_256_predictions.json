@@ -1,0 +1,55 @@
+[
+  {
+    "example_id": "572659535951b619008f7040",
+    "question": "Name a larger car that Toyota came up with as buyers lamented the small sized compacts?",
+    "gold_answers": [
+      "Toyota Corona Mark II",
+      "Corona Mark II",
+      "Toyota Corona Mark II",
+      "Corona Mark II"
+    ],
+    "prediction": "Toyota Corona Mark II",
+    "retrieved_chunk_ids": [
+      "chonkie_semantic_256::squad::1973_oil_crisis::0",
+      "chonkie_semantic_256::squad::Amazon_rainforest::0"
+    ],
+    "retrieved_doc_ids": [
+      "squad::1973_oil_crisis",
+      "squad::Amazon_rainforest"
+    ],
+    "retrieved_titles": [
+      "1973_oil_crisis",
+      "Amazon_rainforest"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "precision_at_k": 0.5,
+    "recall_at_k": 1.0
+  },
+  {
+    "example_id": "5728455bff5b5019007da07b",
+    "question": "How much Saharan dust remains in the air over the Amazon each year?",
+    "gold_answers": [
+      "132 million tons",
+      "132 million tons",
+      "132 million tons"
+    ],
+    "prediction": "132 million tons",
+    "retrieved_chunk_ids": [
+      "chonkie_semantic_256::squad::Amazon_rainforest::0",
+      "chonkie_semantic_256::squad::1973_oil_crisis::0"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Amazon_rainforest",
+      "squad::1973_oil_crisis"
+    ],
+    "retrieved_titles": [
+      "Amazon_rainforest",
+      "1973_oil_crisis"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "precision_at_k": 0.5,
+    "recall_at_k": 1.0
+  }
+]

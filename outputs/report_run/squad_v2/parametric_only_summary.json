@@ -1,0 +1,7 @@
+{
+  "dataset": "squad_v2",
+  "system": "parametric_only",
+  "num_examples": 60,
+  "exact_match": 0.016666666666666666,
+  "f1": 0.06743284493284493
+}

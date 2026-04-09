@@ -1,0 +1,14 @@
+{
+  "dataset": "squad_v2",
+  "system": "sentence_256",
+  "num_documents": 35,
+  "num_examples": 60,
+  "num_chunks": 302,
+  "avg_chunk_tokens": 223.90066225165563,
+  "exact_match": 0.6,
+  "f1": 0.6840302181478652,
+  "recall_at_k": 0.8833333333333333,
+  "precision_at_k": 0.7291666666666666,
+  "avg_retrieval_latency_s": 0.004758277066806234,
+  "avg_generation_latency_s": 0.11028036809987801
+}

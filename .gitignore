@@ -1,0 +1,9 @@
+.venv/
+.venv_chonkie/
+__pycache__/
+.DS_Store
+*.pyc
+*.egg-info/
+data/raw/
+data/processed/
+.cache/

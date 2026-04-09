@@ -1,0 +1,14 @@
+{
+  "dataset": "squad_v2",
+  "system": "fixed_128",
+  "num_documents": 1,
+  "num_examples": 2,
+  "num_chunks": 24,
+  "avg_chunk_tokens": 124.125,
+  "exact_match": 1.0,
+  "f1": 1.0,
+  "recall_at_k": 1.0,
+  "precision_at_k": 1.0,
+  "avg_retrieval_latency_s": 0.14292610400025296,
+  "avg_generation_latency_s": 0.2138463960000081
+}

@@ -1,0 +1,93 @@
+[
+  {
+    "dataset": "hotpot_qa",
+    "system": "parametric_only",
+    "num_examples": 30,
+    "exact_match": 0.13333333333333333,
+    "f1": 0.17896825396825397
+  },
+  {
+    "dataset": "hotpot_qa",
+    "system": "fixed_128",
+    "num_documents": 291,
+    "num_examples": 30,
+    "num_chunks": 427,
+    "avg_chunk_tokens": 89.55737704918033,
+    "exact_match": 0.36666666666666664,
+    "f1": 0.4311111111111111,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.475,
+    "avg_retrieval_latency_s": 0.013169591733397585,
+    "avg_generation_latency_s": 0.11616609706658589
+  },
+  {
+    "dataset": "hotpot_qa",
+    "system": "fixed_256",
+    "num_documents": 291,
+    "num_examples": 30,
+    "num_chunks": 310,
+    "avg_chunk_tokens": 117.29354838709678,
+    "exact_match": 0.36666666666666664,
+    "f1": 0.4477777777777778,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.4666666666666667,
+    "avg_retrieval_latency_s": 0.004859441633258636,
+    "avg_generation_latency_s": 0.10435222770011024
+  },
+  {
+    "dataset": "hotpot_qa",
+    "system": "fixed_512",
+    "num_documents": 291,
+    "num_examples": 30,
+    "num_chunks": 294,
+    "avg_chunk_tokens": 121.98639455782313,
+    "exact_match": 0.36666666666666664,
+    "f1": 0.4477777777777778,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.4666666666666667,
+    "avg_retrieval_latency_s": 0.00478865986672948,
+    "avg_generation_latency_s": 0.09438809020017895
+  },
+  {
+    "dataset": "hotpot_qa",
+    "system": "recursive_256",
+    "num_documents": 291,
+    "num_examples": 30,
+    "num_chunks": 310,
+    "avg_chunk_tokens": 116.3,
+    "exact_match": 0.36666666666666664,
+    "f1": 0.4969047619047619,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.4666666666666667,
+    "avg_retrieval_latency_s": 0.004567697166567086,
+    "avg_generation_latency_s": 0.11400437083339057
+  },
+  {
+    "dataset": "hotpot_qa",
+    "system": "sentence_256",
+    "num_documents": 291,
+    "num_examples": 30,
+    "num_chunks": 310,
+    "avg_chunk_tokens": 114.96451612903226,
+    "exact_match": 0.36666666666666664,
+    "f1": 0.4969047619047619,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.4666666666666667,
+    "avg_retrieval_latency_s": 0.004606327800077755,
+    "avg_generation_latency_s": 0.0866554707996329
+  },
+  {
+    "dataset": "hotpot_qa",
+    "system": "semantic_256",
+    "num_documents": 291,
+    "num_examples": 30,
+    "num_chunks": 368,
+    "avg_chunk_tokens": 96.84510869565217,
+    "exact_match": 0.36666666666666664,
+    "f1": 0.4719047619047619,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.4583333333333333,
+    "avg_retrieval_latency_s": 0.004729940199952883,
+    "avg_generation_latency_s": 0.10675476109984933
+  }
+]

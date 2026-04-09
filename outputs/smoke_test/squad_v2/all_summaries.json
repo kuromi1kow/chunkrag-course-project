@@ -1,0 +1,37 @@
+[
+  {
+    "dataset": "squad_v2",
+    "system": "parametric_only",
+    "num_examples": 2,
+    "exact_match": 0.5,
+    "f1": 0.5
+  },
+  {
+    "dataset": "squad_v2",
+    "system": "fixed_128",
+    "num_documents": 1,
+    "num_examples": 2,
+    "num_chunks": 24,
+    "avg_chunk_tokens": 124.125,
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "avg_retrieval_latency_s": 0.14292610400025296,
+    "avg_generation_latency_s": 0.2138463960000081
+  },
+  {
+    "dataset": "squad_v2",
+    "system": "sentence_256",
+    "num_documents": 1,
+    "num_examples": 2,
+    "num_chunks": 11,
+    "avg_chunk_tokens": 230.45454545454547,
+    "exact_match": 0.5,
+    "f1": 0.5,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "avg_retrieval_latency_s": 0.004923374999634689,
+    "avg_generation_latency_s": 0.03189837450008781
+  }
+]

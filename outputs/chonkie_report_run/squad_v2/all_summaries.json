@@ -1,0 +1,79 @@
+[
+  {
+    "dataset": "squad_v2",
+    "system": "parametric_only",
+    "num_examples": 60,
+    "exact_match": 0.016666666666666666,
+    "f1": 0.06743284493284493
+  },
+  {
+    "dataset": "squad_v2",
+    "system": "fixed_128",
+    "num_documents": 35,
+    "num_examples": 60,
+    "num_chunks": 631,
+    "avg_chunk_tokens": 125.2852614896989,
+    "exact_match": 0.6166666666666667,
+    "f1": 0.7276512884356021,
+    "recall_at_k": 0.95,
+    "precision_at_k": 0.7875,
+    "avg_retrieval_latency_s": 0.010711967283320216,
+    "avg_generation_latency_s": 0.12963435284988614
+  },
+  {
+    "dataset": "squad_v2",
+    "system": "recursive_256",
+    "num_documents": 35,
+    "num_examples": 60,
+    "num_chunks": 389,
+    "avg_chunk_tokens": 175.83033419023135,
+    "exact_match": 0.65,
+    "f1": 0.750995670995671,
+    "recall_at_k": 0.9166666666666666,
+    "precision_at_k": 0.7375,
+    "avg_retrieval_latency_s": 0.004456048616611951,
+    "avg_generation_latency_s": 0.10362389723313754
+  },
+  {
+    "dataset": "squad_v2",
+    "system": "semantic_256",
+    "num_documents": 35,
+    "num_examples": 60,
+    "num_chunks": 467,
+    "avg_chunk_tokens": 144.79229122055673,
+    "exact_match": 0.7666666666666667,
+    "f1": 0.8540037631214101,
+    "recall_at_k": 0.95,
+    "precision_at_k": 0.7708333333333334,
+    "avg_retrieval_latency_s": 0.004585545133401562,
+    "avg_generation_latency_s": 0.129814534650086
+  },
+  {
+    "dataset": "squad_v2",
+    "system": "chonkie_recursive_256",
+    "num_documents": 35,
+    "num_examples": 60,
+    "num_chunks": 388,
+    "avg_chunk_tokens": 174.27319587628867,
+    "exact_match": 0.6666666666666666,
+    "f1": 0.7593290043290043,
+    "recall_at_k": 0.9166666666666666,
+    "precision_at_k": 0.7333333333333333,
+    "avg_retrieval_latency_s": 0.004746207599904058,
+    "avg_generation_latency_s": 0.10739563193334713
+  },
+  {
+    "dataset": "squad_v2",
+    "system": "chonkie_semantic_256",
+    "num_documents": 35,
+    "num_examples": 60,
+    "num_chunks": 666,
+    "avg_chunk_tokens": 101.52852852852853,
+    "exact_match": 0.65,
+    "f1": 0.7705116996293467,
+    "recall_at_k": 0.9,
+    "precision_at_k": 0.7291666666666666,
+    "avg_retrieval_latency_s": 0.004792590983379341,
+    "avg_generation_latency_s": 0.1375762299166733
+  }
+]
