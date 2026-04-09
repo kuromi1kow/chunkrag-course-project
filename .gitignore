@@ -1,11 +1,16 @@
 .venv/
 .venv_chonkie/
+.venv_openwebui/
+.venv_demo/
 __pycache__/
 .DS_Store
 *.pyc
 *.egg-info/
 .hf-cache/
+.open-webui/
+.webui_secret_key
 logs/
 data/raw/
 data/processed/
 .cache/
+outputs/openwebui_vllm/
