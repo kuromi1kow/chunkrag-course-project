@@ -101,30 +101,39 @@ def latex_escape_system(name: str) -> str:
     return name.replace("_", r"\_")
 
 
-def highlight_if_needed(system: str, metric_name: str, value: str, dataset: str) -> str:
-    highlight_rules = {
-        "squad_v2": {"exact_match": {"semantic_256"}, "f1": {"semantic_256"}},
-        "hotpot_qa": {"f1": {"recursive_256", "sentence_256"}},
-    }
-    if system in highlight_rules.get(dataset, {}).get(metric_name, set()):
-        return rf"\textbf{{{value}}}"
-    return value
+def max_metric_values(rows: list[dict[str, Any]], metric_names: list[str]) -> dict[str, float | None]:
+    maxima: dict[str, float | None] = {}
+    for metric_name in metric_names:
+        values = [float(row[metric_name]) for row in rows if row.get(metric_name) is not None]
+        maxima[metric_name] = max(values) if values else None
+    return maxima
+
+
+def highlight_if_max(value: float | None, maximum: float | None, rendered: str) -> str:
+    if value is None or maximum is None:
+        return rendered
+    if abs(float(value) - maximum) < 1e-12:
+        return rf"\textbf{{{rendered}}}"
+    return rendered
 
 
 def latex_main_table(dataset: str, rows: list[dict[str, Any]], caption: str, label: str) -> str:
+    maxima = max_metric_values(rows, ["exact_match", "f1", "recall_at_k", "precision_at_k"])
     body_lines: list[str] = []
     for row in rows:
         system = row["system"]
-        em = highlight_if_needed(system, "exact_match", percent(row.get("exact_match")), dataset)
-        f1 = highlight_if_needed(system, "f1", percent(row.get("f1")), dataset)
+        em = highlight_if_max(row.get("exact_match"), maxima["exact_match"], percent(row.get("exact_match")))
+        f1 = highlight_if_max(row.get("f1"), maxima["f1"], percent(row.get("f1")))
+        recall = highlight_if_max(row.get("recall_at_k"), maxima["recall_at_k"], percent(row.get("recall_at_k")))
+        precision = highlight_if_max(row.get("precision_at_k"), maxima["precision_at_k"], percent(row.get("precision_at_k")))
         body_lines.append(
             " & ".join(
                 [
                     rf"\texttt{{{latex_escape_system(system)}}}",
                     em,
                     f1,
-                    percent(row.get("recall_at_k")),
-                    percent(row.get("precision_at_k")),
+                    recall,
+                    precision,
                     decimal(row.get("avg_chunk_tokens")),
                     int_or_dash(row.get("num_chunks")),
                 ]
@@ -153,6 +162,19 @@ def latex_main_table(dataset: str, rows: list[dict[str, Any]], caption: str, lab
 def latex_chonkie_table(grouped: dict[str, dict[str, dict[str, Any]]]) -> str:
     squad_rows = grouped.get("squad_v2", {})
     hotpot_rows = grouped.get("hotpot_qa", {})
+    combined_rows = []
+    for system in CHONKIE_SYSTEM_ORDER:
+        if system not in squad_rows or system not in hotpot_rows:
+            continue
+        combined_rows.append(
+            {
+                "system": system,
+                "squad_exact_match": squad_rows[system].get("exact_match"),
+                "squad_f1": squad_rows[system].get("f1"),
+                "hotpot_f1": hotpot_rows[system].get("f1"),
+            }
+        )
+    maxima = max_metric_values(combined_rows, ["squad_exact_match", "squad_f1", "hotpot_f1"])
     body_lines: list[str] = []
     for system in CHONKIE_SYSTEM_ORDER:
         if system not in squad_rows or system not in hotpot_rows:
@@ -163,9 +185,9 @@ def latex_chonkie_table(grouped: dict[str, dict[str, dict[str, Any]]]) -> str:
             " & ".join(
                 [
                     rf"\texttt{{{latex_escape_system(system)}}}",
-                    percent(squad.get("exact_match")),
-                    percent(squad.get("f1")),
-                    percent(hotpot.get("f1")),
+                    highlight_if_max(squad.get("exact_match"), maxima["squad_exact_match"], percent(squad.get("exact_match"))),
+                    highlight_if_max(squad.get("f1"), maxima["squad_f1"], percent(squad.get("f1"))),
+                    highlight_if_max(hotpot.get("f1"), maxima["hotpot_f1"], percent(hotpot.get("f1"))),
                     decimal(squad.get("avg_chunk_tokens")),
                 ]
             )

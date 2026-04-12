@@ -130,6 +130,15 @@ def sentence_chunks(
     return _chunk_from_texts(document, texts, tokenizer, chunker_name)
 
 
+def _sentence_token_count_tables(
+    tokenizer: PreTrainedTokenizerBase,
+    sentences: list[str],
+) -> tuple[list[int], list[int]]:
+    first_position_counts = [count_tokens(tokenizer, sentence) for sentence in sentences]
+    continuation_counts = [0] + [count_tokens(tokenizer, f" {sentence}") for sentence in sentences[1:]]
+    return first_position_counts, continuation_counts
+
+
 def semantic_chunks(
     document: Document,
     tokenizer: PreTrainedTokenizerBase,
@@ -151,22 +160,25 @@ def semantic_chunks(
         show_progress_bar=False,
     )
 
+    first_position_counts, continuation_counts = _sentence_token_count_tables(tokenizer, sentences)
     texts: list[str] = []
+    current_start = 0
     current_sentences = [sentences[0]]
+    current_token_count = first_position_counts[0]
     for idx in range(1, len(sentences)):
-        candidate = " ".join(current_sentences + [sentences[idx]])
         similarity = float(np.dot(embeddings[idx - 1], embeddings[idx]))
-        current_text = " ".join(current_sentences)
-        current_token_count = count_tokens(tokenizer, current_text)
-        candidate_token_count = count_tokens(tokenizer, candidate)
+        candidate_token_count = current_token_count + continuation_counts[idx]
         similarity_break = similarity < similarity_threshold and current_token_count >= min_chunk_tokens
         size_break = candidate_token_count > chunk_size
         should_split = similarity_break or size_break
         if should_split:
-            texts.append(current_text)
+            texts.append(" ".join(current_sentences))
+            current_start = idx
             current_sentences = [sentences[idx]]
+            current_token_count = first_position_counts[current_start]
         else:
             current_sentences.append(sentences[idx])
+            current_token_count = candidate_token_count
     if current_sentences:
         texts.append(" ".join(current_sentences))
     return _chunk_from_texts(document, texts, tokenizer, chunker_name)
