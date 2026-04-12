@@ -51,6 +51,29 @@ pip install -e .[chonkie]
 python scripts/run_experiments.py --config configs/chonkie_comparison.json
 ```
 
+## Rebuild report tables
+
+The midway report tables can be regenerated directly from the saved experiment artifacts:
+
+```bash
+python scripts/export_report_tables.py
+```
+
+This writes:
+
+- `reports/generated/midway_tables.tex`
+- `reports/generated/chonkie_table.tex`
+- `reports/generated/midway_tables.md`
+
+The ACL midway report pulls its main tables from `reports/generated/midway_tables.tex`, which helps keep the PDF aligned with the stored JSON results.
+
+To rebuild the ACL PDF after regenerating tables:
+
+```bash
+cd reports
+tectonic midway_report_acl.tex
+```
+
 ## Rigorous local sweep
 
 ```bash

@@ -1,0 +1,167 @@
+\documentclass[11pt]{article}
+\usepackage[hyperref]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+
+\title{Comparing Chunking Strategies for Retrieval-Augmented Question Answering}
+
+\author{
+  Assylkhan Geniyat \\
+  Boston University \\
+  \texttt{kuromiqo@bu.edu} \And
+  Pablo Bello \\
+  Boston University \\
+  \texttt{pbello@bu.edu} \And
+  Jaime Bernal \\
+  Boston University \\
+  \texttt{jaimebm@bu.edu} \AND
+  Batyrkhan Baimukhanov \\
+  Boston University \\
+  \texttt{batyr@bu.edu}
+}
+
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This empirical project studies how document chunking affects retrieval-augmented question answering. Our proposal asked whether chunking strategy changes end-to-end QA accuracy, and whether the best strategy depends on query complexity. To investigate this, we built a controlled RAG pipeline that holds the embedding model, dense retriever, and generator fixed while varying only the chunking function. The current comparison includes fixed-size token chunking, recursive chunking, sentence-based chunking, and semantic chunking, where the semantic splitter acts as a dynamic content-aware chunker rather than a fixed window. Experiments on SQuAD v2 pseudo-documents and HotpotQA distractor examples already show a clear chunking effect. On SQuAD, semantic chunking is the strongest system so far, while on HotpotQA recursive and sentence chunking provide the best token-level F1. A no-retrieval baseline performs much worse on both datasets, confirming that the task is retrieval-sensitive rather than purely parametric. We also implemented an auxiliary Chonkie comparison and a stronger retrieval stack for final-stage analysis. Because the current results come from small subsets and a lightweight generator, we treat them as preliminary but informative. The main remaining work is to scale the experiments, strengthen retrieval diagnostics, and rerun the comparison with a stronger instruction-tuned generator on SCC.
+\end{abstract}
+
+\section{Introduction}
+
+Retrieval-augmented generation (RAG) answers questions by retrieving external evidence and passing it to a language model \citep{lewis2020rag}. In a standard pipeline, however, retrieval is performed over chunks rather than full documents. Chunking is therefore not a minor preprocessing choice: it determines what evidence stays together, how likely the retriever is to recover it, and whether the generator receives coherent support or fragmented context.
+
+This project follows the empirical plan in our proposal. The central question is: \textit{which chunking strategy maximizes end-to-end QA accuracy in a fixed RAG pipeline, and does the answer differ between relatively local questions and more complex multi-hop questions?}
+
+Formally, let a corpus be $D$, let a question be $q$, and let a chunking function be $c : D \rightarrow \{d_1, \dots, d_n\}$. After chunking, each chunk is embedded and indexed. At inference time, the system retrieves the top-$K$ chunks for $q$, concatenates them into a prompt, and produces an answer $\hat{a}$. The optimization target is end-to-end QA quality rather than retrieval in isolation:
+\[
+c^* = \arg\max_c \; \mathbb{E}_{(q,a)} \left[ F_1(\hat{a}, a) \right].
+\]
+
+This problem is interesting for two reasons. First, chunking is widely treated as an implementation detail, even though recent studies suggest that it can substantially affect retrieval behavior. Second, retrieval quality and answer quality do not always move together: a system may retrieve locally relevant text yet still fail if the evidence is incomplete, noisy, or badly fragmented. These observations motivated our proposal to evaluate chunking with both end-to-end QA metrics and retrieval diagnostics.
+
+Simple baselines are informative here. A no-retrieval system should fail whenever the answer depends on the supplied corpus rather than parametric memory. Likewise, naive fixed windows can fail in opposite ways: large chunks may include distractors, while very small chunks may separate evidence that should remain together. Our current experiments already reveal both effects.
+
+\section{Related Work}
+
+RAG typically combines neural retrieval with text generation by retrieving passages and conditioning a generator on them \citep{lewis2020rag}. Dense Passage Retrieval \citep{karpukhin2020dpr} established dense retrieval as a strong backbone for open-domain question answering, which makes it a natural fixed retriever for our chunking study.
+
+For evaluation, we use the same dataset pair proposed originally. SQuAD~2.0 \citep{rajpurkar2018squad2} provides mostly local answer extraction over Wikipedia passages, while HotpotQA \citep{yang2018hotpotqa} stresses multi-hop reasoning and evidence composition. This pairing lets us test whether chunking behaves differently for local factoid questions and multi-document reasoning.
+
+Our chunking motivation also comes from recent engineering and benchmarking analyses. \citet{smith2024chunking} show that retrieval quality can vary substantially across chunking policies. NVIDIA's engineering study argues that chunking should be judged end-to-end rather than only through retrieval recall \citep{nvidia2024chunking}. \citet{qu2024semanticchunking} further question whether semantic chunking always justifies its extra computational cost. Our contribution is narrower but controlled: we isolate chunking as the only experimental variable inside a reproducible QA pipeline.
+
+\section{Methods}
+
+The implemented system follows the proposal closely. For each chunking strategy, the pipeline is:
+\begin{enumerate}
+  \item Chunk each document.
+  \item Embed every chunk with the same encoder.
+  \item Build the same FAISS dense index.
+  \item Retrieve the top 4 chunks for each question.
+  \item Pass the retrieved context to the same generator.
+\end{enumerate}
+
+The chunking function is the only variable.
+
+\subsection{Chunking Strategies}
+
+We currently implement the four chunking families from the proposal:
+\begin{itemize}
+  \item \textbf{Fixed token chunking:} \texttt{fixed\_128}, \texttt{fixed\_256}, and \texttt{fixed\_512}, each with approximately 15\% overlap.
+  \item \textbf{Recursive chunking:} \texttt{recursive\_256}, implemented with LangChain's recursive splitter.
+  \item \textbf{Sentence chunking:} \texttt{sentence\_256}, implemented with spaCy sentence segmentation and greedy packing to a token budget.
+  \item \textbf{Semantic chunking:} \texttt{semantic\_256}, implemented by embedding consecutive sentences and splitting when cosine similarity falls below a threshold, with a minimum-length guard. In practice, this is our dynamic chunker: chunk length varies with local semantic continuity rather than a fixed token budget.
+\end{itemize}
+
+We also implemented auxiliary \texttt{chonkie\_recursive\_256} and \texttt{chonkie\_semantic\_256} variants. These are useful because they let us compare not only chunking families, but also whether a result is robust across different library implementations of the same basic idea.
+
+\subsection{Models and Software}
+
+For the midway milestone, the rest of the pipeline is fixed as follows:
+\begin{itemize}
+  \item Embedding model: \texttt{sentence-transformers/all-MiniLM-L6-v2}
+  \item Retriever: FAISS inner-product search over normalized dense embeddings
+  \item Generator: \texttt{google/flan-t5-base}
+  \item Retrieval depth: top 4 chunks
+  \item Runtime: local Apple MPS
+\end{itemize}
+
+This is the main deviation from the original proposal. We initially planned to use a stronger 7B-class generator such as Mistral-7B or Llama-3-8B, but for the midway report we prioritized a fully reproducible comparison on local hardware. We treat stronger-model reruns on SCC as a final-stage validation step. Beyond the dense-retrieval table reported here, the broader codebase now also supports BM25, hybrid dense+sparse retrieval, reranking, supporting-document coverage, and bootstrap confidence intervals. Those components are implemented already, but the main midway analysis keeps the ablation focused on chunking.
+
+\subsection{Baseline}
+
+The proposal required at least one simple baseline. Our current baseline is \textbf{parametric-only QA}, in which the generator answers the question without retrieved context. This tests whether retrieval is actually necessary and gives a clear lower bound for retrieval-based systems.
+
+\section{Experiments}
+
+\subsection{Datasets}
+
+We use the two datasets proposed originally:
+\begin{itemize}
+  \item \textbf{SQuAD v2:} 60 answerable validation questions are sampled from a shuffled 500-example candidate pool. Paragraphs with the same title are concatenated into article-level pseudo-documents to make chunking non-trivial. The resulting corpus has 35 pseudo-documents.
+  \item \textbf{HotpotQA distractor:} 30 validation questions are used, with the induced document collection built from the distractor and supporting titles in each example. The resulting corpus has 291 documents.
+\end{itemize}
+
+The current subsets are small, but they are already large enough to expose clear differences between chunking strategies.
+
+\subsection{Evaluation}
+
+Our evaluation follows the proposal:
+\begin{itemize}
+  \item \textbf{End-to-end QA:} Exact Match (EM) and token-level F1
+  \item \textbf{Retrieval:} Recall@4 and Precision@4
+  \item \textbf{Efficiency:} average chunk size, number of indexed chunks, and latency-related statistics
+\end{itemize}
+
+We also began organizing failures into three categories:
+\begin{enumerate}
+  \item retrieval failure,
+  \item context fragmentation, and
+  \item generation failure.
+\end{enumerate}
+
+\section{Results}
+
+\input{generated/midway_tables.tex}
+
+The midway results already support the proposal's main hypothesis that chunking is a meaningful experimental variable.
+
+First, the no-retrieval baseline is dramatically worse than every retrieval-based system on both datasets. This confirms that our setup is genuinely retrieval-sensitive rather than mostly driven by parametric memory.
+
+Second, the strongest chunker appears to depend on question type. On SQuAD, semantic chunking is clearly the strongest system, with recursive chunking as the best non-semantic baseline. This is consistent with the idea that local factoid questions benefit from compact but semantically coherent evidence. On HotpotQA, exact match is flat while token-level F1 improves under recursive and sentence chunking, suggesting that multi-hop questions benefit from chunk boundaries that preserve more local structure.
+
+Third, simple fixed windows are not reliably strong. Smaller fixed chunks outperform larger fixed chunks on SQuAD, which supports the claim that large windows can introduce distractor context. At the same time, the multi-hop setting does not reward extremely coarse or purely semantic splits in the same way.
+
+An auxiliary Chonkie comparison adds one more useful finding. Recursive chunking is fairly stable across implementations, but semantic chunking is more implementation-sensitive. That is important for the final report because it suggests that ``dynamic'' or ``semantic'' chunking should not be treated as a single method; the exact boundary heuristic can materially change the tradeoff between compactness and evidence preservation.
+
+Overall, we view these scores as good midway results rather than final claims. They are strong enough to justify the project's direction, but they still need validation on larger subsets and under stronger generation settings.
+
+\section{Discussion and Project Plan}
+
+The current failure profile matches the taxonomy laid out in the proposal. Some errors are clear retrieval failures, especially when no answer-bearing chunk appears in the top 4. Others are context-fragmentation failures, where evidence is partially retrieved but split in an unhelpful way. On HotpotQA in particular, many remaining errors appear to be generation failures: relevant evidence is retrieved, but the small generator does not compose the answer exactly.
+
+The remaining work is concrete:
+\begin{enumerate}
+  \item \textbf{Scale the experiments.} Increase the evaluation subsets so the comparison is statistically more stable.
+  \item \textbf{Move to SCC and use a stronger generator.} Replace \texttt{flan-t5-base} with a stronger instruction-tuned model, closer to the original 7B-class plan.
+  \item \textbf{Strengthen retrieval diagnostics.} Add supporting-document coverage and a cleaner separation between retrieval failure and generation failure, especially for HotpotQA.
+  \item \textbf{Deepen error analysis.} Add more qualitative examples showing when chunking helps and when it fragments evidence.
+  \item \textbf{Integrate the broader retrieval stack.} Use the already implemented BM25, hybrid, and reranked settings to test whether chunking effects persist under stronger retrieval.
+\end{enumerate}
+
+Relative to the proposal, the project has stayed on the same conceptual trajectory. The largest change is computational rather than methodological: the midway milestone uses a smaller local generator for reproducibility, while the final report will emphasize larger-scale runs and stronger-model validation.
+
+\bibliography{references}
+\bibliographystyle{acl_natbib}
+
+\end{document}
