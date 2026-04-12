@@ -17,7 +17,7 @@ from transformers import AutoTokenizer, PreTrainedTokenizerBase
 from chunkrag.chunking import count_tokens, sentence_split
 from chunkrag.generation import ExtractiveFallbackGenerator
 from chunkrag.pipeline import build_chunks
-from chunkrag.retrieval import BM25Retriever, DenseRetriever, HybridRetriever, RerankRetriever, lexical_tokenize
+from chunkrag.retrieval import RetrieverFactory, RetrieverFactoryContext, lexical_tokenize
 from chunkrag.schemas import Chunk, Document
 
 
@@ -252,50 +252,35 @@ def _make_chunker_spec(
     return spec
 
 
-def _materialize_retriever(
-    chunks: list[Chunk],
-    encoder: SentenceTransformer,
-    *,
-    device: str,
-    retriever_name: str,
-    retrieval_top_k: int,
-) -> tuple[Any, dict[str, Any]]:
+def _make_retriever_spec(retriever_name: str, retrieval_top_k: int) -> dict[str, Any]:
     if retriever_name == "dense":
-        dense = DenseRetriever(encoder=encoder, device=device, batch_size=32)
-        dense.build(chunks)
-        return dense, {"name": "dense", "type": "dense"}
-
+        return {"name": "dense", "type": "dense"}
     if retriever_name == "bm25":
-        sparse = BM25Retriever()
-        sparse.build(chunks)
-        return sparse, {"name": "bm25", "type": "bm25"}
-
-    dense = DenseRetriever(encoder=encoder, device=device, batch_size=32)
-    dense.build(chunks)
-    sparse = BM25Retriever()
-    sparse.build(chunks)
-    hybrid = HybridRetriever(
-        dense_retriever=dense,
-        sparse_retriever=sparse,
-        candidate_pool_size=max(retrieval_top_k * 4, 12),
-        dense_weight=0.55,
-        sparse_weight=0.45,
-        rrf_k=60.0,
-    )
-
+        return {"name": "bm25", "type": "bm25"}
     if retriever_name == "hybrid":
-        return hybrid, {"name": "hybrid", "type": "hybrid"}
-
+        return {
+            "name": "hybrid",
+            "type": "hybrid",
+            "candidate_pool_size": max(retrieval_top_k * 4, 12),
+            "dense_weight": 0.55,
+            "sparse_weight": 0.45,
+            "rrf_k": 60.0,
+        }
     if retriever_name == "hybrid_rerank":
-        reranker = RerankRetriever(
-            base_retriever=hybrid,
-            model_name="cross-encoder/ms-marco-MiniLM-L-6-v2",
-            device=device,
-            candidate_pool_size=max(retrieval_top_k * 4, 12),
-            batch_size=16,
-        )
-        return reranker, {"name": "hybrid_rerank", "type": "rerank", "base_retriever": {"type": "hybrid"}}
-
+        return {
+            "name": "hybrid_rerank",
+            "type": "rerank",
+            "candidate_pool_size": max(retrieval_top_k * 4, 12),
+            "batch_size": 16,
+            "base_retriever": {
+                "type": "hybrid",
+                "candidate_pool_size": max(retrieval_top_k * 4, 12),
+                "dense_weight": 0.55,
+                "sparse_weight": 0.45,
+                "rrf_k": 60.0,
+            },
+            "model_name": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+        }
     raise ValueError(f"Unsupported retriever: {retriever_name}")
 
 
@@ -325,13 +310,17 @@ def build_demo_index(
     chunks = build_chunks(documents, chunker_spec, tokenizer, encoder)
     if not chunks:
         raise ValueError("The configured chunker did not produce any chunks for the provided documents.")
-    retriever, retriever_spec = _materialize_retriever(
+    retriever_spec = _make_retriever_spec(retriever_name, retrieval_top_k)
+    retriever = RetrieverFactory(
         chunks,
-        encoder,
-        device=device,
-        retriever_name=retriever_name,
-        retrieval_top_k=retrieval_top_k,
-    )
+        RetrieverFactoryContext(
+            encoder=encoder,
+            encoder_identifier=embedding_model,
+            device=device,
+            embedding_batch_size=32,
+            retrieval_top_k=retrieval_top_k,
+        ),
+    ).create(retriever_spec)
     return DemoIndex(
         documents=documents,
         chunks=chunks,

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from collections.abc import Iterable
+from typing import Any, Callable
 
 import numpy as np
 import spacy
@@ -22,6 +24,12 @@ except ImportError:  # pragma: no cover - optional dependency
 
 _SPACY_PIPELINE = None
 _CHONKIE_EMBEDDINGS_CACHE = {}
+
+
+@dataclass(slots=True)
+class ChunkingContext:
+    tokenizer: PreTrainedTokenizerBase
+    semantic_encoder: SentenceTransformer | None = None
 
 
 def get_sentencizer():
@@ -233,3 +241,103 @@ def chonkie_semantic_chunks(
         for index, chunk in enumerate(raw_chunks)
         if chunk.text.strip()
     ]
+
+
+ChunkerBuilder = Callable[[Document, dict[str, Any], ChunkingContext], list[Chunk]]
+
+
+def _build_fixed_chunks(document: Document, spec: dict[str, Any], context: ChunkingContext) -> list[Chunk]:
+    return fixed_token_chunks(
+        document,
+        context.tokenizer,
+        chunk_size=spec["chunk_size"],
+        chunk_overlap=spec.get("chunk_overlap", 0),
+        chunker_name=spec["name"],
+    )
+
+
+def _build_recursive_chunks(document: Document, spec: dict[str, Any], context: ChunkingContext) -> list[Chunk]:
+    return recursive_chunks(
+        document,
+        context.tokenizer,
+        chunk_size=spec["chunk_size"],
+        chunk_overlap=spec.get("chunk_overlap", 0),
+        chunker_name=spec["name"],
+    )
+
+
+def _build_sentence_chunks(document: Document, spec: dict[str, Any], context: ChunkingContext) -> list[Chunk]:
+    return sentence_chunks(
+        document,
+        context.tokenizer,
+        chunk_size=spec["chunk_size"],
+        chunker_name=spec["name"],
+    )
+
+
+def _build_semantic_chunks(document: Document, spec: dict[str, Any], context: ChunkingContext) -> list[Chunk]:
+    if context.semantic_encoder is None:
+        raise ValueError("Semantic chunking requires a semantic encoder in the chunking context.")
+    return semantic_chunks(
+        document,
+        context.tokenizer,
+        chunk_size=spec["chunk_size"],
+        similarity_threshold=spec.get("similarity_threshold", 0.72),
+        embedding_model=context.semantic_encoder,
+        chunker_name=spec["name"],
+        min_chunk_tokens=spec.get("min_chunk_tokens"),
+    )
+
+
+def _build_chonkie_recursive_chunks(document: Document, spec: dict[str, Any], context: ChunkingContext) -> list[Chunk]:
+    return chonkie_recursive_chunks(
+        document,
+        context.tokenizer,
+        chunk_size=spec["chunk_size"],
+        chunker_name=spec["name"],
+    )
+
+
+def _build_chonkie_semantic_chunks(document: Document, spec: dict[str, Any], context: ChunkingContext) -> list[Chunk]:
+    return chonkie_semantic_chunks(
+        document,
+        chunk_size=spec["chunk_size"],
+        chunker_name=spec["name"],
+        embedding_model_name=spec.get("embedding_model", "sentence-transformers/all-MiniLM-L6-v2"),
+        threshold=spec.get("similarity_threshold", 0.7),
+        min_sentences_per_chunk=spec.get("min_sentences_per_chunk", 1),
+        similarity_window=spec.get("similarity_window", 3),
+        skip_window=spec.get("skip_window", 0),
+    )
+
+
+CHUNKER_REGISTRY: dict[str, ChunkerBuilder] = {
+    "fixed": _build_fixed_chunks,
+    "recursive": _build_recursive_chunks,
+    "sentence": _build_sentence_chunks,
+    "semantic": _build_semantic_chunks,
+    "chonkie_recursive": _build_chonkie_recursive_chunks,
+    "chonkie_semantic": _build_chonkie_semantic_chunks,
+}
+
+
+def build_document_chunks(document: Document, chunker_spec: dict[str, Any], context: ChunkingContext) -> list[Chunk]:
+    chunker_type = chunker_spec["type"]
+    try:
+        builder = CHUNKER_REGISTRY[chunker_type]
+    except KeyError as exc:
+        raise ValueError(f"Unsupported chunker type: {chunker_type}") from exc
+    return builder(document, chunker_spec, context)
+
+
+def build_chunks(
+    documents: list[Document],
+    chunker_spec: dict[str, Any],
+    tokenizer: PreTrainedTokenizerBase,
+    semantic_encoder: SentenceTransformer | None = None,
+) -> list[Chunk]:
+    context = ChunkingContext(tokenizer=tokenizer, semantic_encoder=semantic_encoder)
+    chunks: list[Chunk] = []
+    for document in documents:
+        chunks.extend(build_document_chunks(document, chunker_spec, context))
+    return chunks

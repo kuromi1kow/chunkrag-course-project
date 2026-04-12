@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import re
-from collections.abc import Iterable
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Callable, Protocol, runtime_checkable
 
 import faiss
 import numpy as np
@@ -15,6 +19,15 @@ def lexical_tokenize(text: str) -> list[str]:
     return re.findall(r"\w+", text.lower())
 
 
+@runtime_checkable
+class Retriever(Protocol):
+    def build(self, chunks: list[Chunk]) -> None:
+        ...
+
+    def retrieve(self, query: str, top_k: int) -> list[tuple[Chunk, float]]:
+        ...
+
+
 class DenseRetriever:
     def __init__(
         self,
@@ -22,6 +35,9 @@ class DenseRetriever:
         device: str = "cpu",
         batch_size: int = 32,
         encoder: SentenceTransformer | None = None,
+        encoder_identifier: str | None = None,
+        cache_dir: str | Path | None = None,
+        cache_namespace: str | None = None,
     ) -> None:
         if encoder is None:
             if model_name is None:
@@ -31,11 +47,61 @@ class DenseRetriever:
         self.batch_size = batch_size
         self.chunks: list[Chunk] = []
         self.index: faiss.IndexFlatIP | None = None
+        self.encoder_identifier = encoder_identifier or model_name or type(encoder).__name__
+        self.cache_dir = Path(cache_dir) if cache_dir is not None else None
+        self.cache_namespace = cache_namespace
+
+    def _cache_prefix(self, chunks: list[Chunk]) -> Path | None:
+        if self.cache_dir is None:
+            return None
+        digest = hashlib.sha256()
+        digest.update(self.encoder_identifier.encode("utf-8"))
+        for chunk in chunks:
+            digest.update(chunk.chunk_id.encode("utf-8"))
+            digest.update(b"\0")
+            digest.update(chunk.doc_id.encode("utf-8"))
+            digest.update(b"\0")
+            digest.update(chunk.text.encode("utf-8"))
+            digest.update(b"\0")
+        namespace = self.cache_namespace or "default"
+        safe_namespace = re.sub(r"[^a-zA-Z0-9_.-]+", "_", namespace).strip("_") or "default"
+        return self.cache_dir / safe_namespace / digest.hexdigest()
+
+    def _load_cached_index(self, prefix: Path) -> bool:
+        embeddings_path = prefix.with_suffix(".npy")
+        index_path = prefix.with_suffix(".faiss")
+        metadata_path = prefix.with_suffix(".json")
+        if not embeddings_path.exists() or not index_path.exists() or not metadata_path.exists():
+            return False
+        try:
+            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+            if metadata.get("encoder_identifier") != self.encoder_identifier:
+                return False
+            self.index = faiss.read_index(str(index_path))
+            return True
+        except Exception:
+            return False
+
+    def _save_cached_index(self, prefix: Path, embeddings: np.ndarray) -> None:
+        if self.index is None:
+            return
+        prefix.parent.mkdir(parents=True, exist_ok=True)
+        np.save(prefix.with_suffix(".npy"), embeddings)
+        faiss.write_index(self.index, str(prefix.with_suffix(".faiss")))
+        metadata = {
+            "encoder_identifier": self.encoder_identifier,
+            "num_chunks": len(self.chunks),
+            "embedding_dim": int(embeddings.shape[1]),
+        }
+        prefix.with_suffix(".json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
 
     def build(self, chunks: list[Chunk]) -> None:
         self.chunks = chunks
         if not chunks:
             self.index = None
+            return
+        cache_prefix = self._cache_prefix(chunks)
+        if cache_prefix is not None and self._load_cached_index(cache_prefix):
             return
         embeddings = self.encoder.encode(
             [chunk.text for chunk in chunks],
@@ -47,6 +113,8 @@ class DenseRetriever:
         embeddings = np.asarray(embeddings, dtype="float32")
         self.index = faiss.IndexFlatIP(embeddings.shape[1])
         self.index.add(embeddings)
+        if cache_prefix is not None:
+            self._save_cached_index(cache_prefix, embeddings)
 
     def retrieve(self, query: str, top_k: int) -> list[tuple[Chunk, float]]:
         if self.index is None:
@@ -86,8 +154,8 @@ class BM25Retriever:
 class HybridRetriever:
     def __init__(
         self,
-        dense_retriever: DenseRetriever,
-        sparse_retriever: BM25Retriever,
+        dense_retriever: Retriever,
+        sparse_retriever: Retriever,
         candidate_pool_size: int = 20,
         dense_weight: float = 0.5,
         sparse_weight: float = 0.5,
@@ -106,25 +174,21 @@ class HybridRetriever:
 
     def retrieve(self, query: str, top_k: int) -> list[tuple[Chunk, float]]:
         candidate_k = max(top_k, self.candidate_pool_size)
-        dense_results = self.dense_retriever.retrieve(query, candidate_k)
-        sparse_results = self.sparse_retriever.retrieve(query, candidate_k)
-
-        fused_scores: dict[str, float] = {}
-        chunk_lookup: dict[str, Chunk] = {}
-        for weight, results in ((self.dense_weight, dense_results), (self.sparse_weight, sparse_results)):
-            for rank, (chunk, _) in enumerate(results, start=1):
-                chunk_lookup[chunk.chunk_id] = chunk
-                fused_scores.setdefault(chunk.chunk_id, 0.0)
-                fused_scores[chunk.chunk_id] += weight / (self.rrf_k + rank)
-
-        ranked_chunk_ids = sorted(fused_scores, key=fused_scores.get, reverse=True)[:top_k]
-        return [(chunk_lookup[chunk_id], fused_scores[chunk_id]) for chunk_id in ranked_chunk_ids]
+        fused = mean_reciprocal_rank_fusion(
+            [
+                self.dense_retriever.retrieve(query, candidate_k),
+                self.sparse_retriever.retrieve(query, candidate_k),
+            ],
+            [self.dense_weight, self.sparse_weight],
+            self.rrf_k,
+        )
+        return fused[:top_k]
 
 
 class RerankRetriever:
     def __init__(
         self,
-        base_retriever,
+        base_retriever: Retriever,
         model_name: str,
         device: str,
         candidate_pool_size: int = 20,
@@ -159,8 +223,8 @@ class RerankRetriever:
 
 
 def mean_reciprocal_rank_fusion(
-    result_sets: Iterable[list[tuple[Chunk, float]]],
-    weights: Iterable[float],
+    result_sets: list[list[tuple[Chunk, float]]],
+    weights: list[float],
     rrf_k: float,
 ) -> list[tuple[Chunk, float]]:
     fused_scores: dict[str, float] = {}
@@ -172,3 +236,102 @@ def mean_reciprocal_rank_fusion(
             fused_scores[chunk.chunk_id] += weight / (rrf_k + rank)
     ranked_chunk_ids = sorted(fused_scores, key=fused_scores.get, reverse=True)
     return [(chunk_lookup[chunk_id], fused_scores[chunk_id]) for chunk_id in ranked_chunk_ids]
+
+
+@dataclass(slots=True)
+class RetrieverFactoryContext:
+    encoder: SentenceTransformer
+    encoder_identifier: str
+    device: str
+    embedding_batch_size: int = 32
+    retrieval_top_k: int = 4
+    cache_dir: Path | None = None
+    cache_namespace: str | None = None
+
+
+RetrieverBuilder = Callable[[dict[str, Any], "RetrieverFactory"], Retriever]
+
+
+class RetrieverFactory:
+    def __init__(self, chunks: list[Chunk], context: RetrieverFactoryContext) -> None:
+        self.chunks = chunks
+        self.context = context
+        self._shared_retrievers: dict[str, Retriever] = {}
+
+    def get_dense(self) -> Retriever:
+        if "dense" not in self._shared_retrievers:
+            dense = DenseRetriever(
+                encoder=self.context.encoder,
+                encoder_identifier=self.context.encoder_identifier,
+                device=self.context.device,
+                batch_size=self.context.embedding_batch_size,
+                cache_dir=self.context.cache_dir,
+                cache_namespace=self.context.cache_namespace,
+            )
+            dense.build(self.chunks)
+            self._shared_retrievers["dense"] = dense
+        return self._shared_retrievers["dense"]
+
+    def get_sparse(self) -> Retriever:
+        if "bm25" not in self._shared_retrievers:
+            sparse = BM25Retriever()
+            sparse.build(self.chunks)
+            self._shared_retrievers["bm25"] = sparse
+        return self._shared_retrievers["bm25"]
+
+    def create(self, spec: dict[str, Any]) -> Retriever:
+        retriever_type = spec.get("type", "dense")
+        try:
+            builder = RETRIEVER_REGISTRY[retriever_type]
+        except KeyError as exc:
+            raise ValueError(f"Unsupported retriever type: {retriever_type}") from exc
+        return builder(spec, self)
+
+
+def _build_dense_retriever(spec: dict[str, Any], factory: RetrieverFactory) -> Retriever:
+    return factory.get_dense()
+
+
+def _build_bm25_retriever(spec: dict[str, Any], factory: RetrieverFactory) -> Retriever:
+    return factory.get_sparse()
+
+
+def _build_hybrid_retriever(spec: dict[str, Any], factory: RetrieverFactory) -> Retriever:
+    candidate_pool_size = spec.get("candidate_pool_size", max(factory.context.retrieval_top_k * 5, 20))
+    return HybridRetriever(
+        dense_retriever=factory.get_dense(),
+        sparse_retriever=factory.get_sparse(),
+        candidate_pool_size=candidate_pool_size,
+        dense_weight=spec.get("dense_weight", 0.5),
+        sparse_weight=spec.get("sparse_weight", 0.5),
+        rrf_k=spec.get("rrf_k", 60.0),
+    )
+
+
+def _build_rerank_retriever(spec: dict[str, Any], factory: RetrieverFactory) -> Retriever:
+    base_retriever_spec = dict(spec.get("base_retriever", {"type": "dense"}))
+    base_retriever = factory.create(base_retriever_spec)
+    candidate_pool_size = spec.get("candidate_pool_size", max(factory.context.retrieval_top_k * 5, 20))
+    return RerankRetriever(
+        base_retriever=base_retriever,
+        model_name=spec.get("model_name", "cross-encoder/ms-marco-MiniLM-L-6-v2"),
+        device=factory.context.device,
+        candidate_pool_size=candidate_pool_size,
+        batch_size=spec.get("batch_size", 16),
+    )
+
+
+RETRIEVER_REGISTRY: dict[str, RetrieverBuilder] = {
+    "dense": _build_dense_retriever,
+    "bm25": _build_bm25_retriever,
+    "hybrid": _build_hybrid_retriever,
+    "rerank": _build_rerank_retriever,
+}
+
+
+def create_retriever(
+    chunks: list[Chunk],
+    spec: dict[str, Any],
+    context: RetrieverFactoryContext,
+) -> Retriever:
+    return RetrieverFactory(chunks, context).create(spec)

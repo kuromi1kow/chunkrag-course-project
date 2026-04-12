@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from typing import Protocol, runtime_checkable
 
 import torch
 from transformers import (
@@ -9,6 +10,15 @@ from transformers import (
     AutoModelForSeq2SeqLM,
     AutoTokenizer,
 )
+
+
+@runtime_checkable
+class Generator(Protocol):
+    def answer(self, question: str, context: str | None = None) -> str:
+        ...
+
+    def chat(self, messages: list[dict[str, str]]) -> str:
+        ...
 
 
 def build_qa_prompt(question: str, context: str | None) -> str:
@@ -25,6 +35,24 @@ def build_qa_prompt(question: str, context: str | None) -> str:
         f"Question: {question}\n\n"
         "Answer:"
     )
+
+
+def build_chat_prompt(messages: list[dict[str, str]]) -> str:
+    lines = [
+        "You are a helpful, concise assistant.",
+        "Respond naturally to greetings and short chat messages.",
+        "If the user's message is unclear, ask a brief clarifying question instead of saying unanswerable.",
+        "",
+        "Conversation:",
+    ]
+    for message in messages:
+        role = message["role"].strip().capitalize()
+        content = message["content"].strip()
+        if not content:
+            continue
+        lines.append(f"{role}: {content}")
+    lines.append("Assistant:")
+    return "\n".join(lines)
 
 
 def resolve_device(device: str) -> str:
@@ -81,8 +109,7 @@ class QAGenerator:
         self.max_new_tokens = max_new_tokens
 
     @torch.inference_mode()
-    def answer(self, question: str, context: str | None = None) -> str:
-        prompt = build_qa_prompt(question, context)
+    def generate_from_prompt(self, prompt: str, max_new_tokens: int | None = None) -> str:
         encoded = self.tokenizer(
             prompt,
             return_tensors="pt",
@@ -91,7 +118,7 @@ class QAGenerator:
         ).to(self.device)
         generated = self.model.generate(
             **encoded,
-            max_new_tokens=self.max_new_tokens,
+            max_new_tokens=max_new_tokens or self.max_new_tokens,
             do_sample=False,
             num_beams=1,
             pad_token_id=self.tokenizer.pad_token_id,
@@ -103,6 +130,25 @@ class QAGenerator:
             prompt_length = encoded["input_ids"].shape[1]
             text = self.tokenizer.decode(generated[0][prompt_length:], skip_special_tokens=True)
         return text.strip()
+
+    @torch.inference_mode()
+    def answer(self, question: str, context: str | None = None) -> str:
+        prompt = build_qa_prompt(question, context)
+        return self.generate_from_prompt(prompt)
+
+    def chat(self, messages: list[dict[str, str]]) -> str:
+        if hasattr(self.tokenizer, "apply_chat_template"):
+            try:
+                prompt = self.tokenizer.apply_chat_template(
+                    messages,
+                    tokenize=False,
+                    add_generation_prompt=True,
+                )
+            except Exception:
+                prompt = build_chat_prompt(messages)
+        else:
+            prompt = build_chat_prompt(messages)
+        return self.generate_from_prompt(prompt)
 
 
 class ExtractiveFallbackGenerator:
@@ -161,6 +207,12 @@ class ExtractiveFallbackGenerator:
             answer = sentences[0]
         return answer[: self.max_characters].strip()
 
+    def chat(self, messages: list[dict[str, str]]) -> str:
+        user_messages = [message["content"] for message in messages if message.get("role") == "user" and message.get("content")]
+        if not user_messages:
+            return "I do not have a user message yet."
+        return self.answer(user_messages[-1], context=None)
+
 
 class OpenAICompatibleGenerator:
     def __init__(
@@ -168,6 +220,7 @@ class OpenAICompatibleGenerator:
         model_name: str,
         base_url: str,
         api_key: str,
+        tokenizer_name: str | None = None,
         max_input_tokens: int = 1_024,
         max_new_tokens: int = 128,
         temperature: float = 0.0,
@@ -179,7 +232,7 @@ class OpenAICompatibleGenerator:
 
         self.model_name = model_name
         self.client = OpenAI(base_url=base_url, api_key=api_key)
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name or model_name)
         self.max_input_tokens = max_input_tokens
         self.max_new_tokens = max_new_tokens
         self.temperature = temperature
@@ -205,6 +258,16 @@ class OpenAICompatibleGenerator:
                 },
                 {"role": "user", "content": truncated_prompt},
             ],
+            temperature=self.temperature,
+            max_tokens=self.max_new_tokens,
+        )
+        message = response.choices[0].message
+        return (message.content or "").strip()
+
+    def chat(self, messages: list[dict[str, str]]) -> str:
+        response = self.client.chat.completions.create(
+            model=self.model_name,
+            messages=messages,
             temperature=self.temperature,
             max_tokens=self.max_new_tokens,
         )
