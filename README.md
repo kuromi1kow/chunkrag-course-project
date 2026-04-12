@@ -65,14 +65,20 @@ This writes:
 - `reports/generated/chonkie_table.tex`
 - `reports/generated/midway_tables.md`
 
-The ACL midway report pulls its main tables from `reports/generated/midway_tables.tex`, which helps keep the PDF aligned with the stored JSON results.
+Both ACL reports pull their experiment tables from `reports/generated/midway_tables.tex`, and the final report also uses `reports/generated/chonkie_table.tex`.
 
-To rebuild the ACL PDF after regenerating tables:
+## Build report PDFs
+
+Rebuild generated tables and compile both ACL PDFs:
 
 ```bash
-cd reports
-tectonic midway_report_acl.tex
+bash scripts/build_reports.sh
 ```
+
+Optional modes:
+
+- `bash scripts/build_reports.sh midway`
+- `bash scripts/build_reports.sh final`
 
 ## Rigorous local sweep
 
@@ -163,7 +169,11 @@ For the fastest smoke test, build the playground with the built-in docs and use 
 ## Project deliverables
 
 - Final report: [`reports/final_report.md`](/Users/assylkhan/Documents/NLP/reports/final_report.md)
+- Final report PDF: [`reports/final_report.pdf`](/Users/assylkhan/Documents/NLP/reports/final_report.pdf)
+- Final ACL report source: [`reports/final_report_acl.tex`](/Users/assylkhan/Documents/NLP/reports/final_report_acl.tex)
 - Midway report: [`reports/midway_report.md`](/Users/assylkhan/Documents/NLP/reports/midway_report.md)
+- Midway report PDF: [`reports/midway_report.pdf`](/Users/assylkhan/Documents/NLP/reports/midway_report.pdf)
+- Midway ACL report source: [`reports/midway_report_acl.tex`](/Users/assylkhan/Documents/NLP/reports/midway_report_acl.tex)
 - Reference list: [`reports/references.bib`](/Users/assylkhan/Documents/NLP/reports/references.bib)
 - OpenWebUI deployment guide: [`docs/openwebui_scc_deployment.md`](/Users/assylkhan/Documents/NLP/docs/openwebui_scc_deployment.md)
 - RAG upgrade roadmap: [`docs/rag_roadmap.md`](/Users/assylkhan/Documents/NLP/docs/rag_roadmap.md)

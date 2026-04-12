@@ -1,0 +1,138 @@
+\documentclass[11pt]{article}
+\usepackage[hyperref]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+
+\title{Comparing Chunking Strategies for Retrieval-Augmented Question Answering}
+
+\author{
+  Assylkhan Geniyat \\
+  Boston University \\
+  \texttt{kuromiqo@bu.edu} \And
+  Pablo Bello \\
+  Boston University \\
+  \texttt{pbello@bu.edu} \And
+  Jaime Bernal \\
+  Boston University \\
+  \texttt{jaimebm@bu.edu} \AND
+  Batyrkhan Baimukhanov \\
+  Boston University \\
+  \texttt{batyr@bu.edu}
+}
+
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This project studies how document chunking affects retrieval-augmented question answering in a controlled retrieval-augmented generation pipeline. We compare fixed-size token chunking, recursive chunking, sentence-based chunking, and semantic chunking while holding the embedding model, dense retriever, and generator fixed. On SQuAD v2 pseudo-documents, semantic chunking is the strongest setting, reaching 76.7 exact match and 85.4 F1. On HotpotQA distractor examples, exact match is flat across systems, but recursive and sentence chunking yield the best token-level F1. An auxiliary Chonkie comparison shows that recursive chunking is relatively robust across implementations, whereas semantic chunking is more sensitive to the exact boundary heuristic. These results suggest that chunking materially affects end-to-end QA quality, that local factoid QA benefits from compact semantically coherent evidence, and that multi-hop QA benefits from chunkers that preserve local textual structure.
+\end{abstract}
+
+\section{Introduction}
+
+Retrieval-augmented generation (RAG) improves factual question answering by retrieving external evidence before generation \citep{lewis2020rag}. In practice, however, RAG systems do not retrieve full documents; they retrieve chunks. Chunking is therefore a central design choice: it determines which evidence remains together, how much distractor text reaches the prompt, and how much useful context can be recovered by the retriever.
+
+Despite that importance, chunking is often treated as a preprocessing detail rather than an experimental variable. Recent engineering studies have reported meaningful retrieval swings from chunking alone \citep{smith2024chunking,nvidia2024chunking}, which motivates a controlled end-to-end comparison. This project asks two questions:
+\begin{enumerate}
+  \item Which chunking strategy works best for retrieval-augmented QA?
+  \item Does the answer differ between relatively local questions and multi-hop questions?
+\end{enumerate}
+
+We answer these questions with a compact empirical study on SQuAD~2.0 \citep{rajpurkar2018squad2} and HotpotQA \citep{yang2018hotpotqa}. The pipeline holds the embedding model, retriever, and generator fixed while varying only the chunking strategy. This setup makes it possible to attribute quality differences to chunking rather than to unrelated modeling changes.
+
+\section{Related Work}
+
+RAG combines retrieval and generation by conditioning a language model on retrieved evidence \citep{lewis2020rag}. Dense Passage Retrieval \citep{karpukhin2020dpr} established dense retrieval as a strong backbone for open-domain QA, making it a natural fixed retriever for a chunking study.
+
+Our dataset pair provides two complementary QA settings. SQuAD~2.0 mostly tests local answer extraction from Wikipedia passages \citep{rajpurkar2018squad2}, while HotpotQA stresses multi-hop reasoning and evidence composition across documents \citep{yang2018hotpotqa}. This contrast is useful because chunking may behave differently when answers are local spans versus when evidence must be composed.
+
+Chunking itself has recently become a more explicit topic of study. \citet{smith2024chunking} show that retrieval quality can change meaningfully under different chunking policies, NVIDIA's engineering analysis argues that chunk size should be evaluated end-to-end rather than only through retrieval metrics \citep{nvidia2024chunking}, and \citet{qu2024semanticchunking} question whether semantic chunking consistently justifies its extra computational cost. More recent work also finds that content-aware chunking can outperform naive fixed windows, but that the effect depends on the retrieval setup and domain \citep{shaukat2026systematicchunking}. Our contribution is narrower but controlled: we isolate chunking inside a fully reproducible QA pipeline.
+
+\section{Experimental Setup}
+
+\subsection{Task and Pipeline}
+
+Given a corpus $D$, a question $q$, and a chunking function $c$, the pipeline:
+\begin{enumerate}
+  \item splits documents into chunks,
+  \item embeds each chunk,
+  \item retrieves the top 4 chunks for $q$,
+  \item concatenates the retrieved chunks into a prompt, and
+  \item generates a short answer.
+\end{enumerate}
+
+The only experimental variable is the chunking strategy.
+
+\subsection{Datasets}
+
+We use two QA benchmarks.
+\begin{itemize}
+  \item \textbf{SQuAD v2:} We restrict to answerable validation examples, shuffle a 500-example candidate pool, and sample 60 questions in a round-robin fashion across titles. Paragraphs sharing a title are concatenated into article-level pseudo-documents, producing 35 documents in the final corpus. This makes chunking non-trivial.
+  \item \textbf{HotpotQA distractor:} We use 30 validation examples and build the induced corpus from the titles provided in each example's distractor set, yielding 291 documents.
+\end{itemize}
+
+\subsection{Models and Chunking Strategies}
+
+The default setup uses \texttt{sentence-transformers/all-MiniLM-L6-v2} for embeddings, FAISS inner-product search over normalized dense embeddings for retrieval, and \texttt{google/flan-t5-base} for generation. Retrieval depth is fixed at 4 chunks.
+
+We compare four chunking families:
+\begin{enumerate}
+  \item fixed-size token chunking with sizes 128, 256, and 512,
+  \item recursive chunking with a recursive text splitter,
+  \item sentence-based chunking with sentence segmentation and greedy packing, and
+  \item semantic chunking based on sentence embedding similarity, with a minimum-length guard to avoid pathological micro-chunks.
+\end{enumerate}
+
+We also run an auxiliary implementation comparison with Chonkie's recursive and semantic chunkers at the 256-token setting. This lets us separate conceptual chunking effects from library-specific behavior.
+
+\subsection{Metrics}
+
+We report exact match (EM), token-level F1, Recall@4, Precision@4, average chunk size, and number of chunks. For SQuAD, a retrieved chunk counts as relevant if it comes from the gold document or contains a gold answer string. For HotpotQA, the metric is similar but uses the example's supporting documents. Retrieval metrics are therefore useful but still coarse, especially for multi-hop reasoning.
+
+\section{Results}
+
+\input{generated/midway_tables.tex}
+
+The SQuAD results show a strong chunking effect. All retrieval-based systems greatly outperform the parametric-only baseline, and the ranking among chunkers is clear. The best fixed-size baseline is \texttt{fixed\_128}, while \texttt{semantic\_256} is the best overall system. Larger fixed windows degrade both EM and F1, suggesting that broad chunks increasingly mix relevant evidence with distractor context.
+
+HotpotQA tells a different story. Exact match is flat across chunkers at 36.7, but token-level F1 differs meaningfully. Recursive and sentence chunking outperform all fixed-size baselines on F1, while semantic chunking falls between the best structure-aware systems and the fixed-window baselines. This suggests that multi-hop QA benefits from chunk boundaries that preserve more interpretable local structure.
+
+\input{generated/chonkie_table.tex}
+
+The Chonkie comparison adds an important nuance. Recursive chunking is stable across implementations: Chonkie's recursive splitter behaves almost identically to the in-repo recursive baseline. Semantic chunking is less stable. Chonkie's semantic splitter produces more, smaller chunks, which helps HotpotQA F1 but substantially reduces SQuAD accuracy relative to the custom semantic chunker. In other words, ``semantic chunking'' is not a single method so much as a family of boundary heuristics whose behavior depends heavily on implementation details.
+
+\section{Error Analysis}
+
+Two qualitative patterns stood out. First, on SQuAD, chunking affected both retrieval quality and answer generation quality. The custom semantic chunker produced fewer retrieval failures and fewer wrong-with-context cases than the weaker fixed baselines, suggesting that it often preserved short answer-bearing statements as cleaner units.
+
+Second, on HotpotQA, chunking mostly affected answer completeness rather than raw retrieval recall. Structure-aware chunkers were more likely to recover the correct entity mention, while fixed and semantic chunking more often latched onto distractor locations or partially relevant spans. This pattern is consistent with the flat exact match but improved F1 under recursive and sentence chunking.
+
+\section{Discussion}
+
+Three conclusions are most important. First, chunking is not a cosmetic preprocessing choice: it changes both what gets retrieved and how useful the retrieved evidence is to the generator. Second, the best chunking strategy depends on the QA setting. For relatively local questions like SQuAD, semantic chunking works best once over-fragmentation is controlled. For multi-hop questions like HotpotQA, recursive and sentence chunking are safer choices because they preserve more local structure. Third, retrieval metrics can saturate while answer quality still changes, which makes end-to-end QA evaluation essential for chunking studies.
+
+These results also sharpen a methodological point for future work. Recursive chunking appears conceptually robust across implementations, while semantic chunking is more implementation-sensitive. That means reported gains from ``semantic chunking'' should be interpreted with care unless the exact boundary heuristic is clearly specified.
+
+\section{Limitations}
+
+This study has several limitations. The evaluation subsets are still small, SQuAD uses only answerable questions rather than the full unanswerable setting, the generator is \texttt{flan-t5-base} rather than the stronger 7B-class models in the original proposal, and the Hotpot retrieval metric is coarse. In addition, the Chonkie comparison remains an auxiliary implementation study rather than a full factorial experiment. These limitations do not erase the observed chunking trends, but they do constrain how far the conclusions should be generalized.
+
+\section{Conclusion}
+
+This project shows that chunking strategy can substantially affect retrieval-augmented QA. On the SQuAD-style local QA setting, semantic chunking delivers the strongest results, while recursive chunking is the best broadly robust alternative. On HotpotQA, recursive and sentence chunking achieve the best F1, suggesting that structure-aware segmentation is especially useful when answers depend on composing evidence from multiple places. The auxiliary Chonkie run strengthens that conclusion by showing that recursive chunking is fairly stable across libraries, whereas semantic chunking depends more strongly on implementation details.
+
+The next step is to rerun the same pipeline with larger subsets and a stronger instruction-tuned generator on SCC. Even in its current form, however, the project supports the central claim from the proposal: chunking is a meaningful experimental variable, and the best chunker depends on the QA setting.
+
+\bibliography{references}
+\bibliographystyle{acl_natbib}
+
+\end{document}

@@ -294,14 +294,14 @@ def main() -> None:
         latex_main_table(
             "squad_v2",
             squad_rows,
-            "Midway results on SQuAD v2. Semantic chunking is the strongest end-to-end setting so far.",
+            "Results on SQuAD v2. Semantic chunking is the strongest end-to-end setting in the current run.",
             "tab:squad",
         ),
         "",
         latex_main_table(
             "hotpot_qa",
             hotpot_rows,
-            "Midway results on HotpotQA. Recursive and sentence chunking currently give the best token-level F1.",
+            "Results on HotpotQA. Recursive and sentence chunking currently give the best token-level F1.",
             "tab:hotpot",
         ),
         "",
