@@ -1,5 +1,5 @@
 {
-  "seed": 7,
+  "seed": 42,
   "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
   "generator_model": "mistralai/Mistral-7B-Instruct-v0.3",
   "generator_base_url": "http://127.0.0.1:8000/v1",
@@ -9,23 +9,22 @@
   "device": "auto",
   "retrieval_top_k": 4,
   "max_new_tokens": 48,
-  "embedding_batch_size": 16,
+  "embedding_batch_size": 32,
   "generation_max_input_tokens": 1024,
   "run_parametric_baseline": true,
-  "bootstrap_samples": 200,
   "datasets": [
     {
       "name": "squad_v2",
       "split": "validation",
-      "max_examples": 6,
-      "candidate_pool_size": 60,
+      "max_examples": 60,
+      "candidate_pool_size": 500,
       "answerable_only": true
     },
     {
       "name": "hotpot_qa",
       "config": "distractor",
       "split": "validation",
-      "max_examples": 4
+      "max_examples": 30
     }
   ],
   "chunkers": [
@@ -34,6 +33,18 @@
       "type": "fixed",
       "chunk_size": 128,
       "chunk_overlap": 19
+    },
+    {
+      "name": "fixed_256",
+      "type": "fixed",
+      "chunk_size": 256,
+      "chunk_overlap": 38
+    },
+    {
+      "name": "fixed_512",
+      "type": "fixed",
+      "chunk_size": 512,
+      "chunk_overlap": 76
     },
     {
       "name": "recursive_256",

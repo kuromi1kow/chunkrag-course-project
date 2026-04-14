@@ -117,6 +117,23 @@ def highlight_if_max(value: float | None, maximum: float | None, rendered: str) 
     return rendered
 
 
+def caption_for_dataset(dataset: str, rows: list[dict[str, Any]]) -> str:
+    if dataset == "hotpot_qa":
+        return "Results on HotpotQA. Doc-level Recall@4 shows that recovering all supporting documents remains incomplete in the current run."
+
+    dataset_label = DATASET_LABELS.get(dataset, dataset)
+    f1_values = [float(row["f1"]) for row in rows if row.get("f1") is not None]
+    if not f1_values:
+        return f"Results on {dataset_label}."
+    max_f1 = max(f1_values)
+    winners = [row["system"] for row in rows if row.get("f1") is not None and abs(float(row["f1"]) - max_f1) < 1e-12]
+    if len(winners) == 1:
+        winner_text = winners[0].replace("_", " ")
+        return f"Results on {dataset_label}. {winner_text.capitalize()} is the strongest end-to-end setting in the current run."
+    winner_text = " and ".join(system.replace("_", " ") for system in winners)
+    return f"Results on {dataset_label}. {winner_text.capitalize()} tie for the strongest end-to-end setting in the current run."
+
+
 def latex_main_table(dataset: str, rows: list[dict[str, Any]], caption: str, label: str) -> str:
     maxima = max_metric_values(rows, ["exact_match", "f1", "recall_at_k", "precision_at_k"])
     body_lines: list[str] = []
@@ -316,14 +333,14 @@ def main() -> None:
         latex_main_table(
             "squad_v2",
             squad_rows,
-            "Results on SQuAD v2. Semantic chunking is the strongest end-to-end setting in the current run.",
+            caption_for_dataset("squad_v2", squad_rows),
             "tab:squad",
         ),
         "",
         latex_main_table(
             "hotpot_qa",
             hotpot_rows,
-            "Results on HotpotQA. Doc-level Recall@4 shows that recovering all supporting documents remains incomplete in the current run.",
+            caption_for_dataset("hotpot_qa", hotpot_rows),
             "tab:hotpot",
         ),
         "",

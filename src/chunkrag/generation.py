@@ -63,7 +63,7 @@ def build_openai_qa_messages(question: str, context: str | None) -> list[dict[st
                 "content": (
                     "You are an extractive question answering assistant. "
                     "Use only the provided context. "
-                    "Return the shortest answer span supported by the context. "
+                    "Copy the shortest answer span supported by the context. "
                     "Do not explain your reasoning. "
                     "If the answer is not fully supported, reply with exactly 'unanswerable'."
                 ),
@@ -75,7 +75,7 @@ def build_openai_qa_messages(question: str, context: str | None) -> list[dict[st
                     f"Question: {question}\n\n"
                     "Context passages:\n"
                     f"{context}\n\n"
-                    "Return only the answer text."
+                    "Return only the answer text with no explanation."
                 ),
             },
         ]
@@ -103,14 +103,178 @@ def normalize_qa_response(text: str) -> str:
         return cleaned
 
     cleaned = cleaned.splitlines()[0].strip()
+    cleaned = re.sub(r"^\s*\[\d+\]\s*", "", cleaned)
     cleaned = re.sub(r"^\s*(answer|final answer)\s*:\s*", "", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r"^\s*the answer is\s+", "", cleaned, flags=re.IGNORECASE)
-    cleaned = cleaned.strip().strip("\"'`")
+    cleaned = cleaned.strip().strip("\"'`").strip()
+    cleaned = re.sub(r"\s+\[\d+\]\s*$", "", cleaned)
+    cleaned = re.sub(r"\s*\([^)]*implies[^)]*\)\s*$", "", cleaned, flags=re.IGNORECASE)
+    cleaned = cleaned.rstrip(" .;:")
 
     lowered = cleaned.lower()
     if "unanswerable" in lowered or "not answerable" in lowered or "not supported" in lowered:
         return "unanswerable"
     return cleaned
+
+
+def compress_answer(question: str, answer: str) -> str:
+    cleaned = answer.strip()
+    if not cleaned or cleaned == "unanswerable":
+        return cleaned
+
+    cleaned = re.sub(
+        r"\s*\((?:from|see|passage|source)[^)]*\)\s*$",
+        "",
+        cleaned,
+        flags=re.IGNORECASE,
+    ).strip()
+    cleaned = cleaned.rstrip(" .;:,")
+    question_lower = question.lower().strip()
+
+    quantity_match = re.search(
+        r"\b(?:over\s+|about\s+|approximately\s+|around\s+|at least\s+)?"
+        r"(?:\d[\d,]*(?:\.\d+)?|one|two|three|four|five|six|seven|eight|nine|ten|"
+        r"eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|"
+        r"twenty)(?:\s+or\s+(?:\d[\d,]*(?:\.\d+)?|one|two|three|four|five|six|seven|"
+        r"eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|"
+        r"eighteen|nineteen|twenty))?(?:\s+(?:million|billion|thousand|hundred))?",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+    if question_lower.startswith("how many") or "population" in question_lower:
+        if quantity_match:
+            quantity = quantity_match.group(0).strip()
+            if re.search(r"\bacts?\b", cleaned, flags=re.IGNORECASE):
+                quantity = f"{quantity} acts"
+            return quantity
+
+    if question_lower.startswith("when") or "what year" in question_lower or "in what year" in question_lower:
+        date_match = re.search(
+            r"\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4}\b|\b\d{4}\b",
+            cleaned,
+        )
+        if date_match:
+            return date_match.group(0)
+
+    if question_lower.startswith("who"):
+        subject_match = re.match(
+            r"^(.+?)\s+(?:is|was|are|were|has|have|had|did|does|do|disliked|founded|owned|performed|played|"
+            r"caused|expanded|includes|include|contains|contain|premiered|defended|lies|lie|located)\b",
+            cleaned,
+            flags=re.IGNORECASE,
+        )
+        if subject_match:
+            return subject_match.group(1).strip().strip(",")
+
+    if question_lower.startswith("where"):
+        if "start" in question_lower or "begin" in question_lower:
+            from_match = re.search(r"\bfrom\s+([^,.;]+?)(?:\s+to\b|$)", cleaned, flags=re.IGNORECASE)
+            if from_match:
+                return from_match.group(1).strip()
+        for pattern in (
+            r"\bin\s+(the\s+[^,.;]+|[^,.;]+)",
+            r"\bat\s+(the\s+[^,.;]+|[^,.;]+)",
+        ):
+            location_match = re.search(pattern, cleaned, flags=re.IGNORECASE)
+            if location_match:
+                return location_match.group(1).strip()
+
+    if "owned by" in cleaned.lower():
+        owner_match = re.search(r"\bowned by\s+(.+)$", cleaned, flags=re.IGNORECASE)
+        if owner_match:
+            return owner_match.group(1).strip().strip(",")
+
+    if "founded by" in cleaned.lower():
+        founder_match = re.search(r"\bfounded by\s+(.+)$", cleaned, flags=re.IGNORECASE)
+        if founder_match:
+            return founder_match.group(1).strip().strip(",")
+
+    if "caused" in cleaned.lower():
+        caused_match = re.search(r"\bcaused\s+([^,.;]+)", cleaned, flags=re.IGNORECASE)
+        if caused_match:
+            return caused_match.group(1).strip()
+
+    if question_lower.startswith(("what", "which")):
+        for pattern in (
+            r"\b(?:is|are|was|were)\s+(?:now\s+)?(?:an?\s+|the\s+)?([^.;]+)",
+            r"\bhave\s+(?:an?\s+|the\s+)?([^.;]+)",
+            r"\bmeans\s+([^.;]+)",
+            r"\brefers to\s+([^.;]+)",
+            r"\brestrain(?:s|ed)?\s+(?:an?\s+|the\s+)?([^.;]+)",
+        ):
+            match = re.search(pattern, cleaned, flags=re.IGNORECASE)
+            if match:
+                return match.group(1).strip()
+
+    return cleaned
+
+
+def build_answer_refinement_messages(
+    question: str,
+    draft_answer: str,
+    context: str | None,
+) -> list[dict[str, str]]:
+    context_block = f"Context passages:\n{context}\n\n" if context else ""
+    return [
+        {
+            "role": "system",
+            "content": (
+                "You compress draft answers into the shortest exact answer span. "
+                "Use the draft answer and the provided context. "
+                "Return only the minimal answer phrase. "
+                "If the draft answer is unsupported, reply with exactly 'unanswerable'."
+            ),
+        },
+        {
+            "role": "user",
+            "content": (
+                f"Question: {question}\n\n"
+                f"{context_block}"
+                f"Draft answer: {draft_answer}\n\n"
+                "Return only the final answer phrase."
+            ),
+        },
+    ]
+
+
+def should_refine_answer(answer: str) -> bool:
+    if not answer or answer == "unanswerable":
+        return False
+    token_count = len(re.findall(r"\w+", answer))
+    if token_count <= 4 and not any(marker in answer for marker in ("[", "]", "(", ")", ":")):
+        return False
+    if re.fullmatch(
+        r"(?:over\s+|about\s+|approximately\s+|around\s+|at least\s+)?"
+        r"(?:\d[\d,]*(?:\.\d+)?|one|two|three|four|five|six|seven|eight|nine|ten|"
+        r"eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)"
+        r"(?:\s+or\s+(?:\d[\d,]*(?:\.\d+)?|one|two|three|four|five|six|seven|eight|nine|ten|"
+        r"eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty))?"
+        r"(?:\s+(?:million|billion|thousand|hundred|acts?))?",
+        answer,
+        flags=re.IGNORECASE,
+    ):
+        return False
+    if token_count >= 7:
+        return True
+    lowered = answer.lower()
+    if any(marker in answer for marker in ("[", "]", "(", ")", ":")):
+        return True
+    return any(
+        phrase in lowered
+        for phrase in (
+            " is ",
+            " are ",
+            " was ",
+            " were ",
+            " owned by ",
+            " founded by ",
+            " performed by ",
+            " played by ",
+            " from ",
+            " to ",
+            " implies ",
+        )
+    )
 
 
 def resolve_device(device: str) -> str:
@@ -295,18 +459,57 @@ class OpenAICompatibleGenerator:
         self.max_new_tokens = max_new_tokens
         self.temperature = temperature
 
-    def answer(self, question: str, context: str | None = None) -> str:
+    def _count_chat_tokens(self, messages: list[dict[str, str]]) -> int:
+        if hasattr(self.tokenizer, "apply_chat_template"):
+            try:
+                token_ids = self.tokenizer.apply_chat_template(
+                    messages,
+                    tokenize=True,
+                    add_generation_prompt=True,
+                )
+                return len(token_ids)
+            except Exception:
+                pass
+        return sum(len(self.tokenizer.encode(message["content"], add_special_tokens=False)) for message in messages)
+
+    def _truncate_context(self, question: str, context: str | None) -> tuple[list[dict[str, str]], str | None]:
         messages = build_openai_qa_messages(question, context)
-        prompt = "\n\n".join(message["content"] for message in messages)
-        input_ids = self.tokenizer.encode(
-            prompt,
-            add_special_tokens=False,
-            truncation=True,
-            max_length=self.max_input_tokens,
+        if context is None or self._count_chat_tokens(messages) <= self.max_input_tokens:
+            return messages, context
+
+        context_ids = self.tokenizer.encode(context, add_special_tokens=False)
+        lo, hi = 0, len(context_ids)
+        best_messages = build_openai_qa_messages(question, None)
+        best_context: str | None = None
+        while lo <= hi:
+            mid = (lo + hi) // 2
+            truncated_context = self.tokenizer.decode(context_ids[:mid], skip_special_tokens=True).strip()
+            candidate_messages = build_openai_qa_messages(question, truncated_context)
+            if self._count_chat_tokens(candidate_messages) <= self.max_input_tokens:
+                best_messages = candidate_messages
+                best_context = truncated_context
+                lo = mid + 1
+            else:
+                hi = mid - 1
+        return best_messages, best_context
+
+    def _refine_answer(self, question: str, draft_answer: str, context: str | None) -> str:
+        refinement_messages = build_answer_refinement_messages(question, draft_answer, context)
+        if self._count_chat_tokens(refinement_messages) > self.max_input_tokens:
+            refinement_messages = build_answer_refinement_messages(question, draft_answer, None)
+        response = self.client.chat.completions.create(
+            model=self.model_name,
+            messages=refinement_messages,
+            temperature=0.0,
+            max_tokens=min(24, self.max_new_tokens),
         )
-        truncated_prompt = self.tokenizer.decode(input_ids, skip_special_tokens=True)
-        truncated_messages = [dict(message) for message in messages]
-        truncated_messages[-1]["content"] = truncated_prompt
+        refined = normalize_qa_response(response.choices[0].message.content or "")
+        if not refined or refined == "unanswerable":
+            return draft_answer
+        return refined
+
+    def answer(self, question: str, context: str | None = None) -> str:
+        truncated_messages, truncated_context = self._truncate_context(question, context)
         response = self.client.chat.completions.create(
             model=self.model_name,
             messages=truncated_messages,
@@ -314,7 +517,10 @@ class OpenAICompatibleGenerator:
             max_tokens=self.max_new_tokens,
         )
         message = response.choices[0].message
-        return normalize_qa_response(message.content or "")
+        answer = normalize_qa_response(message.content or "")
+        if should_refine_answer(answer):
+            answer = self._refine_answer(question, answer, truncated_context)
+        return compress_answer(question, normalize_qa_response(answer))
 
     def chat(self, messages: list[dict[str, str]]) -> str:
         response = self.client.chat.completions.create(

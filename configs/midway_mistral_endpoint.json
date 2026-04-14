@@ -8,9 +8,9 @@
   "generator_temperature": 0.0,
   "device": "auto",
   "retrieval_top_k": 4,
-  "max_new_tokens": 32,
+  "max_new_tokens": 48,
   "embedding_batch_size": 32,
-  "generation_max_input_tokens": 768,
+  "generation_max_input_tokens": 1024,
   "run_parametric_baseline": true,
   "datasets": [
     {

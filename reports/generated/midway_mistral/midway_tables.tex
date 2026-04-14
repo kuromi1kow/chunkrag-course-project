@@ -6,16 +6,16 @@
 \toprule
 System & EM & F1 & Recall@4 & Precision@4 & Avg chunk tokens & \# chunks \\
 \midrule
-\texttt{parametric\_only} & 6.7 & 24.9 & 0.0 & 0.0 & -- & -- \\
-\texttt{fixed\_128} & 35.0 & 51.9 & \textbf{95.0} & \textbf{77.1} & 125.3 & 631 \\
-\texttt{fixed\_256} & 21.7 & 39.3 & 88.3 & 73.8 & 244.0 & 322 \\
-\texttt{fixed\_512} & 26.7 & 42.5 & 90.0 & 63.7 & 472.2 & 164 \\
-\texttt{recursive\_256} & 28.3 & 46.2 & 91.7 & 72.5 & 175.8 & 389 \\
-\texttt{sentence\_256} & 23.3 & 41.4 & 86.7 & 72.1 & 223.9 & 302 \\
-\texttt{semantic\_256} & \textbf{38.3} & \textbf{53.2} & \textbf{95.0} & 74.6 & 144.8 & 467 \\
+\texttt{parametric\_only} & 13.3 & 29.2 & 0.0 & 0.0 & -- & -- \\
+\texttt{fixed\_128} & 38.3 & 50.7 & \textbf{95.0} & \textbf{77.1} & 125.3 & 631 \\
+\texttt{fixed\_256} & 38.3 & 56.7 & 88.3 & 73.8 & 244.0 & 322 \\
+\texttt{fixed\_512} & 40.0 & 53.7 & 90.0 & 63.7 & 472.2 & 164 \\
+\texttt{recursive\_256} & \textbf{41.7} & \textbf{60.6} & 91.7 & 72.5 & 175.8 & 389 \\
+\texttt{sentence\_256} & 35.0 & 51.0 & 86.7 & 72.1 & 223.9 & 302 \\
+\texttt{semantic\_256} & \textbf{41.7} & 56.9 & \textbf{95.0} & 74.6 & 144.8 & 467 \\
 \bottomrule
 \end{tabular}
-\caption{Results on SQuAD v2. Semantic chunking is the strongest end-to-end setting in the current run.}
+\caption{Results on SQuAD v2. Recursive 256 is the strongest end-to-end setting in the current run.}
 \label{tab:squad}
 \end{table*}
 
@@ -26,13 +26,13 @@ System & EM & F1 & Recall@4 & Precision@4 & Avg chunk tokens & \# chunks \\
 \toprule
 System & EM & F1 & Recall@4 & Precision@4 & Avg chunk tokens & \# chunks \\
 \midrule
-\texttt{parametric\_only} & 3.3 & 23.8 & 0.0 & 0.0 & -- & -- \\
-\texttt{fixed\_128} & 20.0 & 31.6 & 75.0 & \textbf{42.5} & 89.3 & 421 \\
-\texttt{fixed\_256} & \textbf{30.0} & \textbf{41.2} & 75.0 & 40.8 & 114.2 & 313 \\
-\texttt{fixed\_512} & 26.7 & 38.2 & \textbf{76.7} & 41.7 & 117.4 & 301 \\
-\texttt{recursive\_256} & 16.7 & 31.6 & \textbf{76.7} & \textbf{42.5} & 113.6 & 313 \\
-\texttt{sentence\_256} & 16.7 & 31.2 & \textbf{76.7} & 41.7 & 112.7 & 313 \\
-\texttt{semantic\_256} & 20.0 & 32.7 & \textbf{76.7} & \textbf{42.5} & 97.2 & 363 \\
+\texttt{parametric\_only} & 10.0 & 27.7 & 0.0 & 0.0 & -- & -- \\
+\texttt{fixed\_128} & 20.0 & 36.5 & 75.0 & \textbf{42.5} & 89.3 & 421 \\
+\texttt{fixed\_256} & 20.0 & 34.3 & 75.0 & 40.8 & 114.2 & 313 \\
+\texttt{fixed\_512} & 20.0 & 35.7 & \textbf{76.7} & 41.7 & 117.4 & 301 \\
+\texttt{recursive\_256} & \textbf{26.7} & \textbf{42.6} & \textbf{76.7} & \textbf{42.5} & 113.6 & 313 \\
+\texttt{sentence\_256} & 23.3 & 37.0 & \textbf{76.7} & 41.7 & 112.7 & 313 \\
+\texttt{semantic\_256} & 23.3 & 42.4 & \textbf{76.7} & \textbf{42.5} & 97.2 & 363 \\
 \bottomrule
 \end{tabular}
 \caption{Results on HotpotQA. Doc-level Recall@4 shows that recovering all supporting documents remains incomplete in the current run.}

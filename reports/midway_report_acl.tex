@@ -34,7 +34,7 @@
 \maketitle
 
 \begin{abstract}
-This empirical project studies how document chunking affects retrieval-augmented question answering. We keep the embedding model and dense retriever fixed while varying only the chunking function: fixed windows, recursive chunking, sentence chunking, and semantic chunking. The current generator is \texttt{mistralai/Mistral-7B-Instruct-v0.3} served through vLLM on SCC with a constrained QA prompt for short grounded answers. On SQuAD v2 pseudo-documents, semantic chunking is strongest at 53.2 F1; on HotpotQA distractor examples, \texttt{fixed\_256} currently leads at 41.2 F1. A no-retrieval baseline remains much weaker overall, confirming that the task is retrieval-sensitive rather than purely parametric. Relative to our first SCC endpoint pass, the prompt-tuned rerun improves absolute scores substantially while preserving the main chunking trend.
+This empirical project studies how document chunking affects retrieval-augmented question answering. We keep the embedding model and dense retriever fixed while varying only the chunking function: fixed windows, recursive chunking, sentence chunking, and semantic chunking. The current generator is \texttt{mistralai/Mistral-7B-Instruct-v0.3} served through vLLM on SCC with a constrained QA prompt and answer-compression step for grounded span extraction. On SQuAD v2 pseudo-documents, \texttt{recursive\_256} is currently strongest at 60.6 F1, with \texttt{semantic\_256} close behind at 56.9 F1. On HotpotQA distractor examples, \texttt{recursive\_256} also leads at 42.6 F1. A no-retrieval baseline remains much weaker overall, confirming that the task is retrieval-sensitive rather than purely parametric. Relative to our first SCC endpoint pass, the improved prompting and post-processing substantially raise absolute scores and make the chunking comparison much more interpretable.
 \end{abstract}
 
 \section{Introduction}
@@ -92,9 +92,9 @@ For the current midway rerun, the rest of the pipeline is fixed as follows:
   \item Embedding model: \texttt{sentence-transformers/all-MiniLM-L6-v2}
   \item Retriever: FAISS inner-product search over normalized dense embeddings
   \item Generator: \texttt{mistralai/Mistral-7B-Instruct-v0.3} served through vLLM on SCC
-  \item Prompting: a short extractive QA instruction that forces answer-only outputs and returns \texttt{unanswerable} when the retrieved context is insufficient
+  \item Prompting: a short extractive QA instruction plus a lightweight answer-compression step for verbose outputs
   \item Retrieval depth: top 4 chunks
-  \item Generation limits: 768 input tokens and 32 new tokens
+  \item Generation limits: 1024 input tokens and 48 new tokens
   \item Embedding batch size: 32
   \item Runtime: local retrieval/chunking with remote OpenAI-compatible generation on SCC
 \end{itemize}
@@ -132,15 +132,15 @@ For SQuAD, Recall@4 reduces to single-document recall. For HotpotQA, it is the f
 
 \input{generated/midway_mistral/midway_tables.tex}
 
-The midway results still support the proposal's main hypothesis that chunking matters. The parametric-only baseline is weak overall, so the task remains retrieval-sensitive rather than purely solvable from parametric memory alone. Just as importantly, the tuned SCC rerun is much stronger than our first Mistral endpoint pass, which confirms that generator interface design can move end-to-end QA quality substantially without changing retrieval.
+The midway results still support the proposal's main hypothesis that chunking matters. The parametric-only baseline is weak overall, so the task remains retrieval-sensitive rather than purely solvable from parametric memory alone. Just as importantly, the improved SCC rerun is much stronger than our first Mistral endpoint pass, which confirms that generator interface design can move end-to-end QA quality substantially without changing retrieval.
 
-On SQuAD, \texttt{semantic\_256} is the strongest retrieval-based setting at 53.2 F1 and 38.3 EM, while tying for the best Recall@4 at 95.0. \texttt{fixed\_128} remains the precision leader at 77.1 and is close at 51.9 F1, but the semantic splitter still gives the best end-to-end answers. This suggests that local factoid questions benefit from semantically coherent boundaries, not just from retrieving a pure top-4 set.
+On SQuAD, \texttt{recursive\_256} is now strongest at 60.6 F1 and 41.7 EM. \texttt{semantic\_256} remains competitive at 56.9 F1 and ties for the best Recall@4 at 95.0, while \texttt{fixed\_128} still has the highest retrieval precision at 77.1. This suggests that once the generator is better aligned to extract short answers, chunkers that preserve moderately large coherent spans can outperform both very small fixed windows and purely sentence-level segmentation.
 
-HotpotQA is more diagnostic. \texttt{fixed\_256} is best at 41.2 F1 and 30.0 EM, while doc-level Recall@4 tops out at 76.7 rather than saturating at 100.0. Semantic chunking helps most when answer evidence is locally self-contained, but its advantage does not transfer uniformly to HotpotQA, where the model must assemble evidence across documents and chunk boundaries.
+HotpotQA is more diagnostic. \texttt{recursive\_256} is best at 42.6 F1 and 26.7 EM, with \texttt{semantic\_256} essentially tied on F1 at 42.4. Doc-level Recall@4 still tops out at 76.7 rather than saturating at 100.0. This gives a more realistic picture of multi-hop retrieval quality: once support recovery is only partial, the main bottleneck is evidence composition rather than any single chunk boundary heuristic.
 
 \section{Discussion and Project Plan}
 
-The current failure profile matches the proposal. Some errors are retrieval failures, some are context-fragmentation failures, and some are generator-interface failures where retrieval looks adequate but the model still misses the span or fails to combine evidence. On SQuAD, the strongest semantic results suggest that preserving local coherence matters more than maximizing top-4 purity alone. On HotpotQA, the stronger \texttt{fixed\_256} result implies that moderate chunk size may currently offer the best trade-off between evidence locality and cross-document coverage under the tuned prompt.
+The current failure profile matches the proposal. Some errors are retrieval failures, some are context-fragmentation failures, and some are generator-interface failures where retrieval looks adequate but the model still misses the span or fails to combine evidence. The main new insight from the stronger SCC rerun is that chunking quality and generator alignment interact closely: once the prompt is tuned for short grounded spans, recursive chunking becomes the most robust setting across both datasets, while semantic chunking remains highly competitive and keeps the strongest recall on SQuAD.
 
 The remaining work is concrete:
 \begin{enumerate}
@@ -149,7 +149,7 @@ The remaining work is concrete:
   \item \textbf{Broaden the stack.} Use the already implemented BM25, hybrid, and reranked settings to test whether chunking effects persist under stronger retrieval.
 \end{enumerate}
 
-Relative to the proposal, the project has stayed on the same conceptual trajectory. The main new insight is that switching to a stronger 7B-class model is useful only when the interface is tuned for grounded QA; once that prompt mismatch is reduced, the chunking comparison becomes much more interpretable and supports a sharper final-stage analysis.
+Relative to the proposal, the project has stayed on the same conceptual trajectory. The main new insight is that switching to a stronger 7B-class model is useful only when the interface is tuned for grounded QA; once that mismatch is reduced, the chunking comparison becomes substantially cleaner and more useful for final-stage analysis.
 
 \bibliography{references}
 \bibliographystyle{acl_natbib}

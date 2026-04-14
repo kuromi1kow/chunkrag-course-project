@@ -1,0 +1,1052 @@
+[
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5add1d575542992c1e3a2540",
+    "question": "What nationality was Oliver Reed's character in the film Royal Flash?",
+    "gold_answers": [
+      "Prussian"
+    ],
+    "prediction": "German",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Royal Flash (film)::0",
+      "fixed_512::hotpot::Royal Flash::0",
+      "fixed_512::hotpot::Oliver Reed::0",
+      "fixed_512::hotpot::Harry Flashman::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Royal Flash (film)",
+      "hotpot::Royal Flash",
+      "hotpot::Oliver Reed",
+      "hotpot::Harry Flashman"
+    ],
+    "retrieved_titles": [
+      "Royal Flash (film)",
+      "Royal Flash",
+      "Oliver Reed",
+      "Harry Flashman"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.5,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 0.5,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5ac55ea55542993e66e82377",
+    "question": "Pacific Mozart Ensemble performed which German composer's Der Lindberghflug in 2002?",
+    "gold_answers": [
+      "Kurt Julian Weill"
+    ],
+    "prediction": "Kurt Weill",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::The Flight Across the Ocean::0",
+      "fixed_512::hotpot::Pacific Mozart Ensemble::0",
+      "fixed_512::hotpot::Martin Boykan::0",
+      "fixed_512::hotpot::Portland Youth Philharmonic::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::The Flight Across the Ocean",
+      "hotpot::Pacific Mozart Ensemble",
+      "hotpot::Martin Boykan",
+      "hotpot::Portland Youth Philharmonic"
+    ],
+    "retrieved_titles": [
+      "The Flight Across the Ocean",
+      "Pacific Mozart Ensemble",
+      "Martin Boykan",
+      "Portland Youth Philharmonic"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.8,
+    "recall_at_k": 0.5,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 0.5,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5ac3a76e554299741d48a2be",
+    "question": "Who released the song \"With or Without You\" first, Jai McDowall or U2?",
+    "gold_answers": [
+      "U2"
+    ],
+    "prediction": "U2",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Believe (Jai McDowall album)::0",
+      "fixed_512::hotpot::With or Without You::0",
+      "fixed_512::hotpot::Heartbeat (The Fray song)::0",
+      "fixed_512::hotpot::Bill Grainer::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Believe (Jai McDowall album)",
+      "hotpot::With or Without You",
+      "hotpot::Heartbeat (The Fray song)",
+      "hotpot::Bill Grainer"
+    ],
+    "retrieved_titles": [
+      "Believe (Jai McDowall album)",
+      "With or Without You",
+      "Heartbeat (The Fray song)",
+      "Bill Grainer"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.75,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5a7133565542994082a3e65c",
+    "question": "What Kentucky county has a population of 60,316 and features the Lake Louisvilla neighborhood?",
+    "gold_answers": [
+      "Oldham County"
+    ],
+    "prediction": "Oldham County, Kentucky",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Lake Louisvilla, Louisville::0",
+      "fixed_512::hotpot::Kentucky County, Virginia::0",
+      "fixed_512::hotpot::Oldham County, Kentucky::0",
+      "fixed_512::hotpot::Casey County, Kentucky::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Lake Louisvilla, Louisville",
+      "hotpot::Kentucky County, Virginia",
+      "hotpot::Oldham County, Kentucky",
+      "hotpot::Casey County, Kentucky"
+    ],
+    "retrieved_titles": [
+      "Lake Louisvilla, Louisville",
+      "Kentucky County, Virginia",
+      "Oldham County, Kentucky",
+      "Casey County, Kentucky"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.8,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5ac1a4745542991316484b82",
+    "question": "Para Hills West, South Australia lies within a city with what estimated population?",
+    "gold_answers": [
+      "138,535"
+    ],
+    "prediction": "The city of Salisbury",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Para Hills, South Australia::0",
+      "fixed_512::hotpot::Para Hills West, South Australia::0",
+      "fixed_512::hotpot::Para Hills Knights SC::0",
+      "fixed_512::hotpot::Electoral district of Playford::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Para Hills, South Australia",
+      "hotpot::Para Hills West, South Australia",
+      "hotpot::Para Hills Knights SC",
+      "hotpot::Electoral district of Playford"
+    ],
+    "retrieved_titles": [
+      "Para Hills, South Australia",
+      "Para Hills West, South Australia",
+      "Para Hills Knights SC",
+      "Electoral district of Playford"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.5,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 0.5,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5adc597d55429947ff17392f",
+    "question": "In what year was the narrator of \"Blackadder's Christmas Carol\" born?",
+    "gold_answers": [
+      "1959"
+    ],
+    "prediction": "unanswerable",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Blackadder's Christmas Carol::0",
+      "fixed_512::hotpot::A Christmas Carol::0",
+      "fixed_512::hotpot::A Christmas Carol (1999 film)::0",
+      "fixed_512::hotpot::The Muppet Christmas Carol::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Blackadder's Christmas Carol",
+      "hotpot::A Christmas Carol",
+      "hotpot::A Christmas Carol (1999 film)",
+      "hotpot::The Muppet Christmas Carol"
+    ],
+    "retrieved_titles": [
+      "Blackadder's Christmas Carol",
+      "A Christmas Carol",
+      "A Christmas Carol (1999 film)",
+      "The Muppet Christmas Carol"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.5,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 0.5,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5ac55e835542993e66e82375",
+    "question": "Thomas Fitch defended John Henry Holliday when he was accused of killing men during the gunfight at the o.k. corral, when was that?",
+    "gold_answers": [
+      "October 25, 1881"
+    ],
+    "prediction": "October 26, 1881",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Thomas Fitch (politician)::0",
+      "fixed_512::hotpot::Doc Holliday::0",
+      "fixed_512::hotpot::Morgan Earp::0",
+      "fixed_512::hotpot::O.K. Corral hearing and aftermath::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Thomas Fitch (politician)",
+      "hotpot::Doc Holliday",
+      "hotpot::Morgan Earp",
+      "hotpot::O.K. Corral hearing and aftermath"
+    ],
+    "retrieved_titles": [
+      "Thomas Fitch (politician)",
+      "Doc Holliday",
+      "Morgan Earp",
+      "O.K. Corral hearing and aftermath"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.6666666666666666,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5a8d9e0f554299441c6ba015",
+    "question": "The actor that played Gutthi on Comedy nights with Kapil Show also starred in what 2016 Punjabi film directed by Smeep Kang?",
+    "gold_answers": [
+      "Vaisakhi List"
+    ],
+    "prediction": "unanswerable",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Sunil Grover::0",
+      "fixed_512::hotpot::Kapil Sharma (comedian)::0",
+      "fixed_512::hotpot::Smeep Kang::0",
+      "fixed_512::hotpot::Bhaji in Problem::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Sunil Grover",
+      "hotpot::Kapil Sharma (comedian)",
+      "hotpot::Smeep Kang",
+      "hotpot::Bhaji in Problem"
+    ],
+    "retrieved_titles": [
+      "Sunil Grover",
+      "Kapil Sharma (comedian)",
+      "Smeep Kang",
+      "Bhaji in Problem"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.5,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 0.5,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5ae70ed7554299572ea546a1",
+    "question": "Victor Varnada directed Twisted Fortune, which starred which brother of Eddie Murphy?",
+    "gold_answers": [
+      "Charlie Murphy"
+    ],
+    "prediction": "Charlie Murphy",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Twisted Fortune::0",
+      "fixed_512::hotpot::Life (1999 film)::0",
+      "fixed_512::hotpot::Eddie Murphy Raw::0",
+      "fixed_512::hotpot::Eddie Murphy Delirious::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Twisted Fortune",
+      "hotpot::Life (1999 film)",
+      "hotpot::Eddie Murphy Raw",
+      "hotpot::Eddie Murphy Delirious"
+    ],
+    "retrieved_titles": [
+      "Twisted Fortune",
+      "Life (1999 film)",
+      "Eddie Murphy Raw",
+      "Eddie Murphy Delirious"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "recall_at_k": 0.5,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 0.5,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5a74a8fa55429929fddd8497",
+    "question": "After his curacy at the village that is a suburb of Scunthorpe, who was Industrial Chaplain to the Bishop of Lincoln?",
+    "gold_answers": [
+      "Dudman"
+    ],
+    "prediction": "Bill Dudman",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::John Gathercole::0",
+      "fixed_512::hotpot::Bill Dudman::0",
+      "fixed_512::hotpot::Randolph Wise::0",
+      "fixed_512::hotpot::William Everingham::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::John Gathercole",
+      "hotpot::Bill Dudman",
+      "hotpot::Randolph Wise",
+      "hotpot::William Everingham"
+    ],
+    "retrieved_titles": [
+      "John Gathercole",
+      "Bill Dudman",
+      "Randolph Wise",
+      "William Everingham"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.6666666666666666,
+    "recall_at_k": 0.5,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 0.5,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5a7cb94f554299683c1c6353",
+    "question": "What is the first two words of the fifth studio album of Joseph Edgar Foreman?",
+    "gold_answers": [
+      "The Hungry"
+    ],
+    "prediction": "The Hungry",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Afroman::0",
+      "fixed_512::hotpot::The Hungry Hustlerz: Starvation Is Motivation::0",
+      "fixed_512::hotpot::Clement Greenberg::0",
+      "fixed_512::hotpot::The College Dropout Video Anthology::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Afroman",
+      "hotpot::The Hungry Hustlerz: Starvation Is Motivation",
+      "hotpot::Clement Greenberg",
+      "hotpot::The College Dropout Video Anthology"
+    ],
+    "retrieved_titles": [
+      "Afroman",
+      "The Hungry Hustlerz: Starvation Is Motivation",
+      "Clement Greenberg",
+      "The College Dropout Video Anthology"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5ab874ba5542990e739ec904",
+    "question": "The Twelfth United States Army Group commander was the first chairman of what?",
+    "gold_answers": [
+      "Joint Chiefs of Staff"
+    ],
+    "prediction": "The Twelfth United States Army Group commander was the first chairman of the joint chiefs of staff",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Twelfth United States Army Group::0",
+      "fixed_512::hotpot::Charles W. Bagnal::0",
+      "fixed_512::hotpot::Sixth United States Army Group::0",
+      "fixed_512::hotpot::Omar Bradley::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Twelfth United States Army Group",
+      "hotpot::Charles W. Bagnal",
+      "hotpot::Sixth United States Army Group",
+      "hotpot::Omar Bradley"
+    ],
+    "retrieved_titles": [
+      "Twelfth United States Army Group",
+      "Charles W. Bagnal",
+      "Sixth United States Army Group",
+      "Omar Bradley"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.4444444444444445,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5ae3a8985542992f92d82329",
+    "question": "Politician Lyman Sherwood was born in what New York county?",
+    "gold_answers": [
+      "Rensselaer County"
+    ],
+    "prediction": "Rensselaer county",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Lyman Sherwood::0",
+      "fixed_512::hotpot::Sherwood Equal Rights Historic District::0",
+      "fixed_512::hotpot::Charles D. Sherwood::0",
+      "fixed_512::hotpot::Slocum and Hannah Howland House::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Lyman Sherwood",
+      "hotpot::Sherwood Equal Rights Historic District",
+      "hotpot::Charles D. Sherwood",
+      "hotpot::Slocum and Hannah Howland House"
+    ],
+    "retrieved_titles": [
+      "Lyman Sherwood",
+      "Sherwood Equal Rights Historic District",
+      "Charles D. Sherwood",
+      "Slocum and Hannah Howland House"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "recall_at_k": 0.5,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 0.5,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5ac39f7b554299218029dbe7",
+    "question": "Robert Earl Holding owned an oil company that was originally founded by who?",
+    "gold_answers": [
+      "Harry F. Sinclair"
+    ],
+    "prediction": "unanswerable",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Robert Holding::0",
+      "fixed_512::hotpot::101 Ranch Oil Company::0",
+      "fixed_512::hotpot::Skelly Oil::0",
+      "fixed_512::hotpot::Sinclair Oil Corporation::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Robert Holding",
+      "hotpot::101 Ranch Oil Company",
+      "hotpot::Skelly Oil",
+      "hotpot::Sinclair Oil Corporation"
+    ],
+    "retrieved_titles": [
+      "Robert Holding",
+      "101 Ranch Oil Company",
+      "Skelly Oil",
+      "Sinclair Oil Corporation"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5ae27b535542996483e649b6",
+    "question": "The chorus of \"On the Radio\" contains references to the song \"November Rain\" whose band's lead singer is?",
+    "gold_answers": [
+      "Axl Rose"
+    ],
+    "prediction": "Axl Rose",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::On the Radio (Regina Spektor song)::0",
+      "fixed_512::hotpot::November Rain::0",
+      "fixed_512::hotpot::Sky Radio::0",
+      "fixed_512::hotpot::U218 Singles::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::On the Radio (Regina Spektor song)",
+      "hotpot::November Rain",
+      "hotpot::Sky Radio",
+      "hotpot::U218 Singles"
+    ],
+    "retrieved_titles": [
+      "On the Radio (Regina Spektor song)",
+      "November Rain",
+      "Sky Radio",
+      "U218 Singles"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5a7331de5542994cef4bc4a8",
+    "question": "If the Charhki  Dadri crash was less dangerous than the Tenerife airport disaster, which occured firat? ",
+    "gold_answers": [
+      "On March 27, 1977, two Boeing 747 passenger jets, KLM Flight 4805 and Pan Am Flight 1736, collided on the runway at Los Rodeos Airport (now Tenerife North Airport)"
+    ],
+    "prediction": "Tenerife airport disaster occurred first",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Charkhi Dadri mid-air collision::0",
+      "fixed_512::hotpot::1977 in aviation::0",
+      "fixed_512::hotpot::Tenerife airport disaster::0",
+      "fixed_512::hotpot::Jacob Veldhuyzen van Zanten::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Charkhi Dadri mid-air collision",
+      "hotpot::1977 in aviation",
+      "hotpot::Tenerife airport disaster",
+      "hotpot::Jacob Veldhuyzen van Zanten"
+    ],
+    "retrieved_titles": [
+      "Charkhi Dadri mid-air collision",
+      "1977 in aviation",
+      "Tenerife airport disaster",
+      "Jacob Veldhuyzen van Zanten"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.12121212121212122,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5ac15de55542991316484afb",
+    "question": "Were the films Crazy Love and Welcome to Nollywood both released in 2008?",
+    "gold_answers": [
+      "no"
+    ],
+    "prediction": "unanswerable",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Welcome to Nollywood::0",
+      "fixed_512::hotpot::Crazy Love (2007 film)::0",
+      "fixed_512::hotpot::Crazy Love (Michael Bublé album)::0",
+      "fixed_512::hotpot::This Crazy Love::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Welcome to Nollywood",
+      "hotpot::Crazy Love (2007 film)",
+      "hotpot::Crazy Love (Michael Bublé album)",
+      "hotpot::This Crazy Love"
+    ],
+    "retrieved_titles": [
+      "Welcome to Nollywood",
+      "Crazy Love (2007 film)",
+      "Crazy Love (Michael Bublé album)",
+      "This Crazy Love"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.75,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5a7c6c9d554299683c1c6302",
+    "question": "In what county was Duffy Jackson born?",
+    "gold_answers": [
+      "Nassau County"
+    ],
+    "prediction": "Freeport, New York",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Duffy Jackson::0",
+      "fixed_512::hotpot::Charles Gavan Duffy::0",
+      "fixed_512::hotpot::Richard Duffy::0",
+      "fixed_512::hotpot::Rob Jackson::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Duffy Jackson",
+      "hotpot::Charles Gavan Duffy",
+      "hotpot::Richard Duffy",
+      "hotpot::Rob Jackson"
+    ],
+    "retrieved_titles": [
+      "Duffy Jackson",
+      "Charles Gavan Duffy",
+      "Richard Duffy",
+      "Rob Jackson"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.5,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 0.5,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5ae6363b55429929b0807af0",
+    "question": "When was the defending titlist of 2009–10 Biathlon World Cup – Pursuit Men born? ",
+    "gold_answers": [
+      "27 January 1974"
+    ],
+    "prediction": "unanswerable",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::2009–10 Biathlon World Cup – Pursuit Men::0",
+      "fixed_512::hotpot::2009–10 Biathlon World Cup – Pursuit Women::0",
+      "fixed_512::hotpot::2008–09 Biathlon World Cup – Pursuit Men::0",
+      "fixed_512::hotpot::2010–11 Biathlon World Cup – Pursuit Men::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::2009–10 Biathlon World Cup – Pursuit Men",
+      "hotpot::2009–10 Biathlon World Cup – Pursuit Women",
+      "hotpot::2008–09 Biathlon World Cup – Pursuit Men",
+      "hotpot::2010–11 Biathlon World Cup – Pursuit Men"
+    ],
+    "retrieved_titles": [
+      "2009–10 Biathlon World Cup – Pursuit Men",
+      "2009–10 Biathlon World Cup – Pursuit Women",
+      "2008–09 Biathlon World Cup – Pursuit Men",
+      "2010–11 Biathlon World Cup – Pursuit Men"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.5,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 0.5,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5a8cea40554299441c6b9f76",
+    "question": "Which mountain is taller, Gasherbrum II or Langtang Ri?",
+    "gold_answers": [
+      "Gasherbrum II"
+    ],
+    "prediction": "taller than Langtang Ri",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Gasherbrum II::0",
+      "fixed_512::hotpot::Langtang Ri::0",
+      "fixed_512::hotpot::Gasherbrum I::0",
+      "fixed_512::hotpot::Gasherbrum III::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Gasherbrum II",
+      "hotpot::Langtang Ri",
+      "hotpot::Gasherbrum I",
+      "hotpot::Gasherbrum III"
+    ],
+    "retrieved_titles": [
+      "Gasherbrum II",
+      "Langtang Ri",
+      "Gasherbrum I",
+      "Gasherbrum III"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.75,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5ab5ecd75542992aa134a3e6",
+    "question": "Which Dutch media tycoon transferred all of its media activities to Talpa Holding?",
+    "gold_answers": [
+      "John de Mol Jr."
+    ],
+    "prediction": "John de Mol Jr. transferred all of its media activities to Talpa Holding",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Talpa Holding::0",
+      "fixed_512::hotpot::John de Mol Jr.::0",
+      "fixed_512::hotpot::Talpa Radio::0",
+      "fixed_512::hotpot::Tien (TV channel)::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Talpa Holding",
+      "hotpot::John de Mol Jr.",
+      "hotpot::Talpa Radio",
+      "hotpot::Tien (TV channel)"
+    ],
+    "retrieved_titles": [
+      "Talpa Holding",
+      "John de Mol Jr.",
+      "Talpa Radio",
+      "Tien (TV channel)"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.47058823529411764,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5a84c5545542991dd0999dee",
+    "question": "When did the car depicted on the cover of Pentastar: In the Style of Demons cease production?",
+    "gold_answers": [
+      "1974"
+    ],
+    "prediction": "unanswerable",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Pentastar: In the Style of Demons::0",
+      "fixed_512::hotpot::Zeitoper::0",
+      "fixed_512::hotpot::Plymouth Barracuda::0",
+      "fixed_512::hotpot::Maiwand Lion::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Pentastar: In the Style of Demons",
+      "hotpot::Zeitoper",
+      "hotpot::Plymouth Barracuda",
+      "hotpot::Maiwand Lion"
+    ],
+    "retrieved_titles": [
+      "Pentastar: In the Style of Demons",
+      "Zeitoper",
+      "Plymouth Barracuda",
+      "Maiwand Lion"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5adeacf955429975fa854f66",
+    "question": "What commentator and author questioned the validity of CORE's non-profit status?",
+    "gold_answers": [
+      "Rachel Anne Maddow"
+    ],
+    "prediction": "Rachel Maddow and Michael Pollan",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Center for Organizational Research and Education::0",
+      "fixed_512::hotpot::Brown Association for Cooperative Housing::0",
+      "fixed_512::hotpot::American Bladesmith Society::0",
+      "fixed_512::hotpot::Endowment tax::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Center for Organizational Research and Education",
+      "hotpot::Brown Association for Cooperative Housing",
+      "hotpot::American Bladesmith Society",
+      "hotpot::Endowment tax"
+    ],
+    "retrieved_titles": [
+      "Center for Organizational Research and Education",
+      "Brown Association for Cooperative Housing",
+      "American Bladesmith Society",
+      "Endowment tax"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.5,
+    "recall_at_k": 0.5,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 0.5,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5a8ce15d554299653c1aa12f",
+    "question": "did Robert Wise have more award nominations than Zoltan Korda?",
+    "gold_answers": [
+      "yes"
+    ],
+    "prediction": "Yes",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Zoltan Korda::0",
+      "fixed_512::hotpot::Cash (1933 film)::0",
+      "fixed_512::hotpot::Robert Wise::0",
+      "fixed_512::hotpot::Baxter Dury::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Zoltan Korda",
+      "hotpot::Cash (1933 film)",
+      "hotpot::Robert Wise",
+      "hotpot::Baxter Dury"
+    ],
+    "retrieved_titles": [
+      "Zoltan Korda",
+      "Cash (1933 film)",
+      "Robert Wise",
+      "Baxter Dury"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5ade4da055429939a52fe878",
+    "question": "My Neighbor Totoro was produced by a Japanese animation film studio founded in what year?",
+    "gold_answers": [
+      "1985"
+    ],
+    "prediction": "1988",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::My Neighbor Totoro::0",
+      "fixed_512::hotpot::Azumi Inoue::0",
+      "fixed_512::hotpot::Ghibli Museum::0",
+      "fixed_512::hotpot::Makiko Futaki::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::My Neighbor Totoro",
+      "hotpot::Azumi Inoue",
+      "hotpot::Ghibli Museum",
+      "hotpot::Makiko Futaki"
+    ],
+    "retrieved_titles": [
+      "My Neighbor Totoro",
+      "Azumi Inoue",
+      "Ghibli Museum",
+      "Makiko Futaki"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.5,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 0.5,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5ab2a186554299295394677b",
+    "question": "When did the English local newspaper, featuring the sculpture and war memorial in the Forbury gardens, change names?",
+    "gold_answers": [
+      "2009"
+    ],
+    "prediction": "unanswerable",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Forbury Gardens::0",
+      "fixed_512::hotpot::Spalding War Memorial::0",
+      "fixed_512::hotpot::Maiwand Lion::0",
+      "fixed_512::hotpot::Devon County War Memorial::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Forbury Gardens",
+      "hotpot::Spalding War Memorial",
+      "hotpot::Maiwand Lion",
+      "hotpot::Devon County War Memorial"
+    ],
+    "retrieved_titles": [
+      "Forbury Gardens",
+      "Spalding War Memorial",
+      "Maiwand Lion",
+      "Devon County War Memorial"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.5,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 0.5,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5ade66e1554299728e26c713",
+    "question": "What years did Jose Gonzalo Rodriguez Gacha and other leaders of fthe Medallin Cartel operate in Boliva, Colombia, Central America, Peru, the United States, Canada, and Europe?",
+    "gold_answers": [
+      "1970s and 1980s"
+    ],
+    "prediction": "1970s-1980s",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::José Gonzalo Rodríguez Gacha::0",
+      "fixed_512::hotpot::Juan Carlos Ramírez Abadía::0",
+      "fixed_512::hotpot::Medellín Cartel::0",
+      "fixed_512::hotpot::Wilber Varela::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::José Gonzalo Rodríguez Gacha",
+      "hotpot::Juan Carlos Ramírez Abadía",
+      "hotpot::Medellín Cartel",
+      "hotpot::Wilber Varela"
+    ],
+    "retrieved_titles": [
+      "José Gonzalo Rodríguez Gacha",
+      "Juan Carlos Ramírez Abadía",
+      "Medellín Cartel",
+      "Wilber Varela"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5a7c634c55429907fabeef79",
+    "question": "Which writer died later, Agatha Christie or Clement Greenberg?",
+    "gold_answers": [
+      "Clement Greenberg"
+    ],
+    "prediction": "Agatha Christie (1890-1976) died later",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Agatha Christie::0",
+      "fixed_512::hotpot::Agatha Christie Award (Japan)::0",
+      "fixed_512::hotpot::Agatha Christie Memorial::0",
+      "fixed_512::hotpot::Agatha Christie (video game series)::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Agatha Christie",
+      "hotpot::Agatha Christie Award (Japan)",
+      "hotpot::Agatha Christie Memorial",
+      "hotpot::Agatha Christie (video game series)"
+    ],
+    "retrieved_titles": [
+      "Agatha Christie",
+      "Agatha Christie Award (Japan)",
+      "Agatha Christie Memorial",
+      "Agatha Christie (video game series)"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.5,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 0.5,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5ae13f3c5542997b2ef7d168",
+    "question": "Arthur Noss was a gunner for the commader during which two European theatre battles in WWII?",
+    "gold_answers": [
+      "Battle of Britain and the Battle of Malta"
+    ],
+    "prediction": "unanswerable",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Arthur Noss::0",
+      "fixed_512::hotpot::Theatre of War (video game)::0",
+      "fixed_512::hotpot::End of World War II in Europe::0",
+      "fixed_512::hotpot::Keith Park::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Arthur Noss",
+      "hotpot::Theatre of War (video game)",
+      "hotpot::End of World War II in Europe",
+      "hotpot::Keith Park"
+    ],
+    "retrieved_titles": [
+      "Arthur Noss",
+      "Theatre of War (video game)",
+      "End of World War II in Europe",
+      "Keith Park"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5ae17cd055429901ffe4aea3",
+    "question": "Between Pinanga and Alopecurus which genus is more common in temperate regions?",
+    "gold_answers": [
+      "Alopecurus"
+    ],
+    "prediction": "Alopecurus is more common in temperate regions",
+    "chunker": "fixed_512",
+    "retrieved_chunk_ids": [
+      "fixed_512::hotpot::Pinanga::0",
+      "fixed_512::hotpot::Alopecurus::0",
+      "fixed_512::hotpot::Alopecurus aequalis::0",
+      "fixed_512::hotpot::Pison::0"
+    ],
+    "retrieved_doc_ids": [
+      "hotpot::Pinanga",
+      "hotpot::Alopecurus",
+      "hotpot::Alopecurus aequalis",
+      "hotpot::Pison"
+    ],
+    "retrieved_titles": [
+      "Pinanga",
+      "Alopecurus",
+      "Alopecurus aequalis",
+      "Pison"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.25,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.75,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  }
+]

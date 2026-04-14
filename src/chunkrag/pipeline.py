@@ -161,6 +161,17 @@ class SystemRunner:
     examples: list[QAExample]
     retrieval_top_k: int
 
+    def _format_context(self, retrieved_chunks: list[Chunk]) -> str:
+        parts: list[str] = []
+        include_titles = self.dataset_name == "hotpot_qa"
+        for index, chunk in enumerate(retrieved_chunks, start=1):
+            title = chunk.title.strip() if chunk.title else chunk.doc_id
+            if include_titles:
+                parts.append(f"[{index}] Title: {title}\nPassage: {chunk.text}")
+            else:
+                parts.append(f"[{index}] {chunk.text}")
+        return "\n\n".join(parts)
+
     def run(self) -> SystemRunOutput:
         predictions: list[PredictionRecord] = []
         retrieval_times: list[float] = []
@@ -170,7 +181,7 @@ class SystemRunner:
             with Timer() as retrieval_timer:
                 retrieved = self.retriever.retrieve(example.question, self.retrieval_top_k)
             retrieved_chunks = [chunk for chunk, _ in retrieved]
-            context = "\n\n".join(f"[{index + 1}] {chunk.text}" for index, chunk in enumerate(retrieved_chunks))
+            context = self._format_context(retrieved_chunks)
             with Timer() as generation_timer:
                 prediction = self.generator.answer(example.question, context=context)
 
