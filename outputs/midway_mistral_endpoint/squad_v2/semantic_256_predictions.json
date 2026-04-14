@@ -1,0 +1,2244 @@
+[
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "572a058aaf94a219006aa753",
+    "question": "What is the nature of the relationship between T-cells and vitamin D?",
+    "gold_answers": [
+      "symbiotic relationship",
+      "symbiotic",
+      "symbiotic relationship"
+    ],
+    "prediction": "The relationship between T-cells and vitamin D is symbiotic. T-cells extend a vitamin D receptor to bind to the active",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Immune_system::0",
+      "semantic_256::squad::Immune_system::18",
+      "semantic_256::squad::Immune_system::1",
+      "semantic_256::squad::Immune_system::10"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Immune_system",
+      "squad::Immune_system",
+      "squad::Immune_system",
+      "squad::Immune_system"
+    ],
+    "retrieved_titles": [
+      "Immune_system",
+      "Immune_system",
+      "Immune_system",
+      "Immune_system"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.21052631578947367,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "572fad30a23a5019007fc870",
+    "question": "When did Prime Minister Wilson commit to some form of devolved legislature?",
+    "gold_answers": [
+      "1974",
+      "1974",
+      "1974"
+    ],
+    "prediction": "The Prime Minister Wilson committed to some form of devolved legislature in 1974, as stated in the provided context.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Scottish_Parliament::9",
+      "semantic_256::squad::Scottish_Parliament::0",
+      "semantic_256::squad::Prime_number::1",
+      "semantic_256::squad::Scottish_Parliament::10"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Scottish_Parliament",
+      "squad::Scottish_Parliament",
+      "squad::Prime_number",
+      "squad::Scottish_Parliament"
+    ],
+    "retrieved_titles": [
+      "Scottish_Parliament",
+      "Scottish_Parliament",
+      "Prime_number",
+      "Scottish_Parliament"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.1111111111111111,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.75,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "570d4030fed7b91900d45da1",
+    "question": "What entity owns V/Line?",
+    "gold_answers": [
+      "Victorian Government",
+      "the Victorian Government",
+      "Victorian Government"
+    ],
+    "prediction": "The Victorian Government owns V/Line. [4]",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::European_Union_law::23",
+      "semantic_256::squad::European_Union_law::21",
+      "semantic_256::squad::Packet_switching::10",
+      "semantic_256::squad::Victoria_(Australia)::0"
+    ],
+    "retrieved_doc_ids": [
+      "squad::European_Union_law",
+      "squad::European_Union_law",
+      "squad::Packet_switching",
+      "squad::Victoria_(Australia)"
+    ],
+    "retrieved_titles": [
+      "European_Union_law",
+      "European_Union_law",
+      "Packet_switching",
+      "Victoria_(Australia)"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.5714285714285715,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5726f96ddd62a815002e9698",
+    "question": "Which provinces in Canada limit the rights of pharmacists in prescribing?",
+    "gold_answers": [
+      "Alberta and British Columbia",
+      "Alberta and British Columbia",
+      "Alberta and British Columbia"
+    ],
+    "prediction": "Alberta and British Columbia in Canada limit the rights of pharmacists in prescribing.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Pharmacy::0",
+      "semantic_256::squad::Pharmacy::1",
+      "semantic_256::squad::Pharmacy::4",
+      "semantic_256::squad::Pharmacy::7"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Pharmacy",
+      "squad::Pharmacy",
+      "squad::Pharmacy",
+      "squad::Pharmacy"
+    ],
+    "retrieved_titles": [
+      "Pharmacy",
+      "Pharmacy",
+      "Pharmacy",
+      "Pharmacy"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.5,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "56e1b355e3433e14004230b0",
+    "question": "What type of Turing machine can be characterized by checking multiple possibilities at the same time?",
+    "gold_answers": [
+      "non-deterministic",
+      "non-deterministic",
+      "non-deterministic Turing machine"
+    ],
+    "prediction": "Non-deterministic Turing machine",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Computational_complexity_theory::7",
+      "semantic_256::squad::Computational_complexity_theory::5",
+      "semantic_256::squad::Computational_complexity_theory::10",
+      "semantic_256::squad::Computational_complexity_theory::9"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Computational_complexity_theory",
+      "squad::Computational_complexity_theory",
+      "squad::Computational_complexity_theory",
+      "squad::Computational_complexity_theory"
+    ],
+    "retrieved_titles": [
+      "Computational_complexity_theory",
+      "Computational_complexity_theory",
+      "Computational_complexity_theory",
+      "Computational_complexity_theory"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "572659535951b619008f7040",
+    "question": "Name a larger car that Toyota came up with as buyers lamented the small sized compacts?",
+    "gold_answers": [
+      "Toyota Corona Mark II",
+      "Corona Mark II",
+      "Toyota Corona Mark II",
+      "Corona Mark II"
+    ],
+    "prediction": "The larger car that Toyota came up with as buyers lamented the small sized compacts is the Toyota Corona Mark II.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::1973_oil_crisis::0",
+      "semantic_256::squad::1973_oil_crisis::6",
+      "semantic_256::squad::Victoria_(Australia)::5",
+      "semantic_256::squad::Fresno,_California::5"
+    ],
+    "retrieved_doc_ids": [
+      "squad::1973_oil_crisis",
+      "squad::1973_oil_crisis",
+      "squad::Victoria_(Australia)",
+      "squad::Fresno,_California"
+    ],
+    "retrieved_titles": [
+      "1973_oil_crisis",
+      "1973_oil_crisis",
+      "Victoria_(Australia)",
+      "Fresno,_California"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.3636363636363636,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5725f00938643c19005aceda",
+    "question": "What was the name given to a section of Kearney Boulevard in efforts to change the areas image?",
+    "gold_answers": [
+      "Brookhaven",
+      "Brookhaven",
+      "Brookhaven"
+    ],
+    "prediction": "The section of Kearney Boulevard that was given a name to revitalize the neighborhood's image is Brookhaven.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Fresno,_California::0",
+      "semantic_256::squad::Fresno,_California::11",
+      "semantic_256::squad::Huguenot::10",
+      "semantic_256::squad::Normans::2"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Fresno,_California",
+      "squad::Fresno,_California",
+      "squad::Huguenot",
+      "squad::Normans"
+    ],
+    "retrieved_titles": [
+      "Fresno,_California",
+      "Fresno,_California",
+      "Huguenot",
+      "Normans"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.13333333333333333,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5728455bff5b5019007da07b",
+    "question": "How much Saharan dust remains in the air over the Amazon each year?",
+    "gold_answers": [
+      "132 million tons",
+      "132 million tons",
+      "132 million tons"
+    ],
+    "prediction": "The provided context does not contain information about the amount of Saharan dust that remains in the air over the Amazon each year after it has fallen. However,",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Amazon_rainforest::0",
+      "semantic_256::squad::Amazon_rainforest::7",
+      "semantic_256::squad::Amazon_rainforest::5",
+      "semantic_256::squad::Amazon_rainforest::11"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Amazon_rainforest",
+      "squad::Amazon_rainforest",
+      "squad::Amazon_rainforest",
+      "squad::Amazon_rainforest"
+    ],
+    "retrieved_titles": [
+      "Amazon_rainforest",
+      "Amazon_rainforest",
+      "Amazon_rainforest",
+      "Amazon_rainforest"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "572863363acd2414000df988",
+    "question": "In the fall quarter of 2014, how many students signed up for the university's  in total?",
+    "gold_answers": [
+      "15,244",
+      "15,244",
+      "15,244"
+    ],
+    "prediction": "Unanswerable. The provided context does not contain information about the total number of students who signed up for any specific program or course in the fall quarter of",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::University_of_Chicago::0",
+      "semantic_256::squad::University_of_Chicago::11",
+      "semantic_256::squad::University_of_Chicago::3",
+      "semantic_256::squad::Private_school::4"
+    ],
+    "retrieved_doc_ids": [
+      "squad::University_of_Chicago",
+      "squad::University_of_Chicago",
+      "squad::University_of_Chicago",
+      "squad::Private_school"
+    ],
+    "retrieved_titles": [
+      "University_of_Chicago",
+      "University_of_Chicago",
+      "University_of_Chicago",
+      "Private_school"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.75,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5705f13d52bb8914006896f4",
+    "question": "How many counties initially made up the definition of southern California?",
+    "gold_answers": [
+      "seven",
+      "seven",
+      "seven"
+    ],
+    "prediction": "The context does not provide a specific number of counties initially making up the definition of southern California. However, it does mention that the proposed Territory of Colorado",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Southern_California::3",
+      "semantic_256::squad::Southern_California::5",
+      "semantic_256::squad::Southern_California::4",
+      "semantic_256::squad::Southern_California::9"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Southern_California",
+      "squad::Southern_California",
+      "squad::Southern_California",
+      "squad::Southern_California"
+    ],
+    "retrieved_titles": [
+      "Southern_California",
+      "Southern_California",
+      "Southern_California",
+      "Southern_California"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "57264586f1498d1400e8dac9",
+    "question": "Was the Use of the DATANET 1 name correct ",
+    "gold_answers": [
+      "use of the name was incorrect all these services were managed by the same people within one department of KPN contributed to the confusion",
+      "the name was incorrect",
+      "Dutch PTT Telecom"
+    ],
+    "prediction": "Unanswerable. The context provided does not mention the use of the name \"DATANET 1\" for any network other than the Dutch public switched data",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Packet_switching::0",
+      "semantic_256::squad::Packet_switching::6",
+      "semantic_256::squad::Packet_switching::8",
+      "semantic_256::squad::Packet_switching::12"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Packet_switching",
+      "squad::Packet_switching",
+      "squad::Packet_switching",
+      "squad::Packet_switching"
+    ],
+    "retrieved_titles": [
+      "Packet_switching",
+      "Packet_switching",
+      "Packet_switching",
+      "Packet_switching"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.14634146341463414,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "572ffce5a23a5019007fcc16",
+    "question": "How many major ice ages have occurred? ",
+    "gold_answers": [
+      "six",
+      "six",
+      "six"
+    ],
+    "prediction": "Six major Ice Ages have occurred, as stated in the context.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Rhine::0",
+      "semantic_256::squad::Geology::1",
+      "semantic_256::squad::Geology::2",
+      "semantic_256::squad::Amazon_rainforest::6"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Rhine",
+      "squad::Geology",
+      "squad::Geology",
+      "squad::Amazon_rainforest"
+    ],
+    "retrieved_titles": [
+      "Rhine",
+      "Geology",
+      "Geology",
+      "Amazon_rainforest"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.18181818181818182,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5711623e50c2381900b54aba",
+    "question": "What is restrained with a lever in the top of a boiler?",
+    "gold_answers": [
+      "plug valve",
+      "plug valve",
+      "a plug valve"
+    ],
+    "prediction": "The lever in the top of a boiler is used to restrain a plug valve, which is a part of a safety valve designed to prevent the",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Steam_engine::0",
+      "semantic_256::squad::Steam_engine::2",
+      "semantic_256::squad::Steam_engine::1",
+      "semantic_256::squad::Steam_engine::13"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Steam_engine",
+      "squad::Steam_engine",
+      "squad::Steam_engine",
+      "squad::Steam_engine"
+    ],
+    "retrieved_titles": [
+      "Steam_engine",
+      "Steam_engine",
+      "Steam_engine",
+      "Steam_engine"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.18181818181818182,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "57297a276aef051400154f89",
+    "question": "Besides Leibniz, what other mathematician proved the validity of Fermat's little theorem?",
+    "gold_answers": [
+      "Euler",
+      "Euler",
+      "Euler",
+      "Euler",
+      "Euler"
+    ],
+    "prediction": "The context does not provide information about another mathematician who proved Fermat's little theorem besides Leibniz and Euler. Therefore,",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Prime_number::0",
+      "semantic_256::squad::Prime_number::1",
+      "semantic_256::squad::University_of_Chicago::12",
+      "semantic_256::squad::Force::10"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Prime_number",
+      "squad::Prime_number",
+      "squad::University_of_Chicago",
+      "squad::Force"
+    ],
+    "retrieved_titles": [
+      "Prime_number",
+      "Prime_number",
+      "University_of_Chicago",
+      "Force"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.10526315789473684,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "57106d2fb654c5140001f8f1",
+    "question": "France laid siege to Montpellier in what year?",
+    "gold_answers": [
+      "1622",
+      "1622",
+      "1622"
+    ],
+    "prediction": "The context does not provide information about France laying siege to Montpellier in any specific year. However, it does mention a siege by the royal",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Huguenot::0",
+      "semantic_256::squad::French_and_Indian_War::14",
+      "semantic_256::squad::French_and_Indian_War::17",
+      "semantic_256::squad::Huguenot::10"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Huguenot",
+      "squad::French_and_Indian_War",
+      "squad::French_and_Indian_War",
+      "squad::Huguenot"
+    ],
+    "retrieved_titles": [
+      "Huguenot",
+      "French_and_Indian_War",
+      "French_and_Indian_War",
+      "Huguenot"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "57267ebfdd62a815002e872f",
+    "question": "What does critically tapered mean? ",
+    "gold_answers": [
+      "all angles remain the same",
+      "all angles remain the same",
+      "all angles remain the same"
+    ],
+    "prediction": "Unanswerable. The term \"critically tapered\" is not present in the provided context.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Civil_disobedience::9",
+      "semantic_256::squad::Imperialism::14",
+      "semantic_256::squad::Civil_disobedience::2",
+      "semantic_256::squad::Scottish_Parliament::10"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Civil_disobedience",
+      "squad::Imperialism",
+      "squad::Civil_disobedience",
+      "squad::Scottish_Parliament"
+    ],
+    "retrieved_titles": [
+      "Civil_disobedience",
+      "Imperialism",
+      "Civil_disobedience",
+      "Scottish_Parliament"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "57308f6b8ab72b1400f9c580",
+    "question": "Orientalism refers to how the West developed a what of the East?",
+    "gold_answers": [
+      "an imaginative geography",
+      "imaginative geography",
+      "imaginative geography",
+      "imaginative geography",
+      "imaginative geography"
+    ],
+    "prediction": "Orientalism refers to how the West developed an imaginative geography of the East, representing it as irrational and backward in opposition to the rational and progressive",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Imperialism::0",
+      "semantic_256::squad::Imperialism::1",
+      "semantic_256::squad::Imperialism::10",
+      "semantic_256::squad::Imperialism::11"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Imperialism",
+      "squad::Imperialism",
+      "squad::Imperialism",
+      "squad::Imperialism"
+    ],
+    "retrieved_titles": [
+      "Imperialism",
+      "Imperialism",
+      "Imperialism",
+      "Imperialism"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.16666666666666669,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5727cb4b2ca10214002d967a",
+    "question": "What historical figure was Jacksonville named after?",
+    "gold_answers": [
+      "Andrew Jackson",
+      "Andrew Jackson",
+      "Andrew Jackson"
+    ],
+    "prediction": "Jacksonville was named after Andrew Jackson, the first military governor of the Florida Territory and seventh President of the United States.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Jacksonville,_Florida::0",
+      "semantic_256::squad::Jacksonville,_Florida::1",
+      "semantic_256::squad::Jacksonville,_Florida::5",
+      "semantic_256::squad::Jacksonville,_Florida::2"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Jacksonville,_Florida",
+      "squad::Jacksonville,_Florida",
+      "squad::Jacksonville,_Florida",
+      "squad::Jacksonville,_Florida"
+    ],
+    "retrieved_titles": [
+      "Jacksonville,_Florida",
+      "Jacksonville,_Florida",
+      "Jacksonville,_Florida",
+      "Jacksonville,_Florida"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.19999999999999998,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "57286bb84b864d19001649ca",
+    "question": "Where did the Grand Canal start?",
+    "gold_answers": [
+      "southern China",
+      "southern China",
+      "southern China"
+    ],
+    "prediction": "Unanswerable. The provided context does not mention the start of the Grand Canal.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Rhine::14",
+      "semantic_256::squad::Rhine::6",
+      "semantic_256::squad::Yuan_dynasty::0",
+      "semantic_256::squad::French_and_Indian_War::19"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Rhine",
+      "squad::Rhine",
+      "squad::Yuan_dynasty",
+      "squad::French_and_Indian_War"
+    ],
+    "retrieved_titles": [
+      "Rhine",
+      "Rhine",
+      "Yuan_dynasty",
+      "French_and_Indian_War"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "573020f7b2c2fd14005688fa",
+    "question": "When did Hamas drive the PLO out of Gaza?",
+    "gold_answers": [
+      "2007",
+      "2007",
+      "2007"
+    ],
+    "prediction": "The context does not provide a specific date for when Hamas drove the PLO out of Gaza. However, it does state that Hamas drove the P",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Islamism::0",
+      "semantic_256::squad::Islamism::10",
+      "semantic_256::squad::Islamism::9",
+      "semantic_256::squad::Islamism::18"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Islamism",
+      "squad::Islamism",
+      "squad::Islamism",
+      "squad::Islamism"
+    ],
+    "retrieved_titles": [
+      "Islamism",
+      "Islamism",
+      "Islamism",
+      "Islamism"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5737804dc3c5551400e51f10",
+    "question": "What nuclear forces only act at short distances?",
+    "gold_answers": [
+      "strong and weak",
+      "strong and weak forces",
+      "strong and weak",
+      "strong and weak forces"
+    ],
+    "prediction": "The nuclear forces only act at short distances.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Force::0",
+      "semantic_256::squad::Force::5",
+      "semantic_256::squad::Force::6",
+      "semantic_256::squad::Force::11"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Force",
+      "squad::Force",
+      "squad::Force",
+      "squad::Force"
+    ],
+    "retrieved_titles": [
+      "Force",
+      "Force",
+      "Force",
+      "Force"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.18181818181818182,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5727515f708984140094dc11",
+    "question": "What South African law recognized two types of schools?",
+    "gold_answers": [
+      "South African Schools Act",
+      "South African Schools Act",
+      "South African Schools Act"
+    ],
+    "prediction": "The South African law that recognized two types of schools is the South African Schools Act of 1996, which distinguishes between \"public\" (state",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Private_school::0",
+      "semantic_256::squad::Private_school::3",
+      "semantic_256::squad::Private_school::1",
+      "semantic_256::squad::Private_school::4"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Private_school",
+      "squad::Private_school",
+      "squad::Private_school",
+      "squad::Private_school"
+    ],
+    "retrieved_titles": [
+      "Private_school",
+      "Private_school",
+      "Private_school",
+      "Private_school"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.32,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5727f6723acd2414000df0e7",
+    "question": "What types of organizations are on a decline in the US which adversely effects economic mobility?",
+    "gold_answers": [
+      "unions",
+      "union membership",
+      "unions"
+    ],
+    "prediction": "The context suggests that organizations which are on a decline in the US, adversely affecting economic mobility, could be those associated with economic liberalism and the reduction of",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Economic_inequality::1",
+      "semantic_256::squad::Economic_inequality::19",
+      "semantic_256::squad::Economic_inequality::0",
+      "semantic_256::squad::Economic_inequality::3"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Economic_inequality",
+      "squad::Economic_inequality",
+      "squad::Economic_inequality",
+      "squad::Economic_inequality"
+    ],
+    "retrieved_titles": [
+      "Economic_inequality",
+      "Economic_inequality",
+      "Economic_inequality",
+      "Economic_inequality"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "572646655951b619008f6ec0",
+    "question": "What do ctenophores have that no other animals have?",
+    "gold_answers": [
+      "colloblasts",
+      "colloblasts",
+      "colloblasts"
+    ],
+    "prediction": "Ctenophores have colloblasts, which are sticky cells that adhere to prey, unlike any other animals.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Ctenophora::0",
+      "semantic_256::squad::Ctenophora::5",
+      "semantic_256::squad::Ctenophora::10",
+      "semantic_256::squad::Ctenophora::2"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Ctenophora",
+      "squad::Ctenophora",
+      "squad::Ctenophora",
+      "squad::Ctenophora"
+    ],
+    "retrieved_titles": [
+      "Ctenophora",
+      "Ctenophora",
+      "Ctenophora",
+      "Ctenophora"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.125,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5727cebc2ca10214002d96f2",
+    "question": "How many graduate students does Harvard have?",
+    "gold_answers": [
+      "14,000",
+      "14,000",
+      "14,000"
+    ],
+    "prediction": "14,000 graduate students",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Harvard_University::1",
+      "semantic_256::squad::Harvard_University::4",
+      "semantic_256::squad::Harvard_University::5",
+      "semantic_256::squad::Harvard_University::0"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Harvard_University",
+      "squad::Harvard_University",
+      "squad::Harvard_University",
+      "squad::Harvard_University"
+    ],
+    "retrieved_titles": [
+      "Harvard_University",
+      "Harvard_University",
+      "Harvard_University",
+      "Harvard_University"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.5,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "56de3d594396321400ee26cb",
+    "question": "Who was Ralph in charge of being at war with?",
+    "gold_answers": [
+      "the Welsh",
+      "the Welsh",
+      "the Welsh"
+    ],
+    "prediction": "In the provided context, there is no mention of Ralph being in charge of anyone or any party during a war. Therefore, the answer is 'unanswerable",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::French_and_Indian_War::15",
+      "semantic_256::squad::French_and_Indian_War::5",
+      "semantic_256::squad::French_and_Indian_War::8",
+      "semantic_256::squad::French_and_Indian_War::9"
+    ],
+    "retrieved_doc_ids": [
+      "squad::French_and_Indian_War",
+      "squad::French_and_Indian_War",
+      "squad::French_and_Indian_War",
+      "squad::French_and_Indian_War"
+    ],
+    "retrieved_titles": [
+      "French_and_Indian_War",
+      "French_and_Indian_War",
+      "French_and_Indian_War",
+      "French_and_Indian_War"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "571c4132dd7acb1400e4c0b2",
+    "question": "In what year did Priestley publish the findings of his experiments?",
+    "gold_answers": [
+      "1775",
+      "1775",
+      "1775",
+      "1775",
+      "1775"
+    ],
+    "prediction": "1775",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Oxygen::0",
+      "semantic_256::squad::Oxygen::1",
+      "semantic_256::squad::University_of_Chicago::12",
+      "semantic_256::squad::University_of_Chicago::10"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Oxygen",
+      "squad::Oxygen",
+      "squad::University_of_Chicago",
+      "squad::University_of_Chicago"
+    ],
+    "retrieved_titles": [
+      "Oxygen",
+      "Oxygen",
+      "University_of_Chicago",
+      "University_of_Chicago"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "57092322efce8f15003a7db3",
+    "question": "What is the name of the holding company for BSkyB?",
+    "gold_answers": [
+      "Sky plc",
+      "British Sky Broadcasting Group plc",
+      "British Sky Broadcasting Group plc"
+    ],
+    "prediction": "The holding company for BSkyB changed its name to Sky plc in November 2014, as stated in the context. However, the original",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Sky_(United_Kingdom)::0",
+      "semantic_256::squad::Sky_(United_Kingdom)::2",
+      "semantic_256::squad::Sky_(United_Kingdom)::3",
+      "semantic_256::squad::Sky_(United_Kingdom)::1"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Sky_(United_Kingdom)",
+      "squad::Sky_(United_Kingdom)",
+      "squad::Sky_(United_Kingdom)",
+      "squad::Sky_(United_Kingdom)"
+    ],
+    "retrieved_titles": [
+      "Sky_(United_Kingdom)",
+      "Sky_(United_Kingdom)",
+      "Sky_(United_Kingdom)",
+      "Sky_(United_Kingdom)"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.1904761904761905,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5728151b4b864d1900164429",
+    "question": "Brownlee argues disobedience can be justified toward what institutions?",
+    "gold_answers": [
+      "trade unions, banks, and private universities",
+      "non-governmental agencies",
+      "decisions of non-governmental agencies",
+      "non-governmental agencies",
+      "non-governmental agencies"
+    ],
+    "prediction": "Brownlee argues that disobedience can be justified toward non-governmental institutions such as trade unions, banks, private universities, international organizations",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Civil_disobedience::0",
+      "semantic_256::squad::Civil_disobedience::10",
+      "semantic_256::squad::Civil_disobedience::9",
+      "semantic_256::squad::Civil_disobedience::14"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Civil_disobedience",
+      "squad::Civil_disobedience",
+      "squad::Civil_disobedience",
+      "squad::Civil_disobedience"
+    ],
+    "retrieved_titles": [
+      "Civil_disobedience",
+      "Civil_disobedience",
+      "Civil_disobedience",
+      "Civil_disobedience"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.39999999999999997,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "572751b4708984140094dc1e",
+    "question": "Contracts must be designed to ensure what?",
+    "gold_answers": [
+      "that each side is capable of performing the obligations set out",
+      "that each side is capable of performing the obligations set out",
+      "each side is capable of performing the obligations set out"
+    ],
+    "prediction": "Contracts must be designed to ensure that each side is capable of performing the obligations set out, and that the project flows smoothly by setting out clear expectations and clear",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Construction::0",
+      "semantic_256::squad::Construction::7",
+      "semantic_256::squad::Construction::2",
+      "semantic_256::squad::Construction::4"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Construction",
+      "squad::Construction",
+      "squad::Construction",
+      "squad::Construction"
+    ],
+    "retrieved_titles": [
+      "Construction",
+      "Construction",
+      "Construction",
+      "Construction"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.5263157894736842,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "572940973f37b319004781a7",
+    "question": "What was the source of the mistake?",
+    "gold_answers": [
+      "the WWF report",
+      "the IPCC from the WWF report",
+      "the WWF report"
+    ],
+    "prediction": "The question asks for the source of a mistake, but the provided context does not contain any information about a mistake being made. Therefore, the answer is 'un",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Civil_disobedience::12",
+      "semantic_256::squad::Rhine::14",
+      "semantic_256::squad::French_and_Indian_War::4",
+      "semantic_256::squad::1973_oil_crisis::7"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Civil_disobedience",
+      "squad::Rhine",
+      "squad::French_and_Indian_War",
+      "squad::1973_oil_crisis"
+    ],
+    "retrieved_titles": [
+      "Civil_disobedience",
+      "Rhine",
+      "French_and_Indian_War",
+      "1973_oil_crisis"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5733e5a14776f4190066145c",
+    "question": "Who was given land by British goovernment for development of Ohio Country?",
+    "gold_answers": [
+      "Ohio Company of Virginia",
+      "Ohio Company of Virginia",
+      "Ohio Company of Virginia",
+      "Ohio Company of Virginia",
+      "Ohio Company"
+    ],
+    "prediction": "The Ohio Country was given land by the British government to the Ohio Company of Virginia, as stated in the context provided.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::French_and_Indian_War::0",
+      "semantic_256::squad::French_and_Indian_War::3",
+      "semantic_256::squad::Jacksonville,_Florida::7",
+      "semantic_256::squad::French_and_Indian_War::6"
+    ],
+    "retrieved_doc_ids": [
+      "squad::French_and_Indian_War",
+      "squad::French_and_Indian_War",
+      "squad::Jacksonville,_Florida",
+      "squad::French_and_Indian_War"
+    ],
+    "retrieved_titles": [
+      "French_and_Indian_War",
+      "French_and_Indian_War",
+      "Jacksonville,_Florida",
+      "French_and_Indian_War"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.3636363636363636,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.75,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "57264fe65951b619008f6fa3",
+    "question": "What is thought to have happened to the y. pestis that caused the black death?",
+    "gold_answers": [
+      "may no longer exist",
+      "may no longer exist",
+      "may no longer exist"
+    ],
+    "prediction": "The context suggests that the Black Death was caused by a variant of Y. pestis, as concluded by Schuenemann et al. in 2",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Black_Death::0",
+      "semantic_256::squad::Black_Death::1",
+      "semantic_256::squad::Black_Death::4",
+      "semantic_256::squad::Black_Death::7"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Black_Death",
+      "squad::Black_Death",
+      "squad::Black_Death",
+      "squad::Black_Death"
+    ],
+    "retrieved_titles": [
+      "Black_Death",
+      "Black_Death",
+      "Black_Death",
+      "Black_Death"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "57335ddbd058e614000b5932",
+    "question": "Where can Aeolian sand with a number of dunes be found?",
+    "gold_answers": [
+      "plain Vistula terraces",
+      "highest terrace",
+      "highest terrace"
+    ],
+    "prediction": "Unanswerable. The context provided does not mention any location where Aeolian sand with a number of dunes can be found.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Amazon_rainforest::0",
+      "semantic_256::squad::Warsaw::1",
+      "semantic_256::squad::Geology::0",
+      "semantic_256::squad::Geology::7"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Amazon_rainforest",
+      "squad::Warsaw",
+      "squad::Geology",
+      "squad::Geology"
+    ],
+    "retrieved_titles": [
+      "Amazon_rainforest",
+      "Warsaw",
+      "Geology",
+      "Geology"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5725c28a271a42140099d14f",
+    "question": "What are the three sources of European Union law?",
+    "gold_answers": [
+      "primary law, secondary law and supplementary law",
+      "primary law, secondary law and supplementary law",
+      "primary law, secondary law and supplementary law",
+      "primary law, secondary law and supplementary law"
+    ],
+    "prediction": "The three sources of European Union law, as provided in the context, are:\n\n1. Primary law: This is primarily the Treaties establishing the European",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::European_Union_law::0",
+      "semantic_256::squad::European_Union_law::1",
+      "semantic_256::squad::European_Union_law::3",
+      "semantic_256::squad::European_Union_law::8"
+    ],
+    "retrieved_doc_ids": [
+      "squad::European_Union_law",
+      "squad::European_Union_law",
+      "squad::European_Union_law",
+      "squad::European_Union_law"
+    ],
+    "retrieved_titles": [
+      "European_Union_law",
+      "European_Union_law",
+      "European_Union_law",
+      "European_Union_law"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.2222222222222222,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "572a0a686aef0514001551ed",
+    "question": "Who was the main proponent of the cellular theory of immunity?",
+    "gold_answers": [
+      "Elie Metchnikoff",
+      "Elie Metchnikoff",
+      "Elie Metchnikoff"
+    ],
+    "prediction": "Elie Metchnikoff was the main proponent of the cellular theory of immunity.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Immune_system::1",
+      "semantic_256::squad::Immune_system::19",
+      "semantic_256::squad::Immune_system::2",
+      "semantic_256::squad::Immune_system::15"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Immune_system",
+      "squad::Immune_system",
+      "squad::Immune_system",
+      "squad::Immune_system"
+    ],
+    "retrieved_titles": [
+      "Immune_system",
+      "Immune_system",
+      "Immune_system",
+      "Immune_system"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.33333333333333337,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "572fd8efb2c2fd14005684fd",
+    "question": "Why do the island archipelagos comprise a smaller number of electors?",
+    "gold_answers": [
+      "dispersed population and distance",
+      "dispersed population and distance",
+      "their dispersed population and distance from the Scottish Parliament in Edinburgh"
+    ],
+    "prediction": "The island archipelagos comprise a smaller number of electors due to their dispersed population and distance from the Scottish Parliament in Edinburgh, as stated",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Scottish_Parliament::1",
+      "semantic_256::squad::Scottish_Parliament::8",
+      "semantic_256::squad::Amazon_rainforest::3",
+      "semantic_256::squad::Huguenot::1"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Scottish_Parliament",
+      "squad::Scottish_Parliament",
+      "squad::Amazon_rainforest",
+      "squad::Huguenot"
+    ],
+    "retrieved_titles": [
+      "Scottish_Parliament",
+      "Scottish_Parliament",
+      "Amazon_rainforest",
+      "Huguenot"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.6451612903225806,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "570d418dfed7b91900d45dc1",
+    "question": "Who is the current Governor of Victoria?",
+    "gold_answers": [
+      "Linda Dessau",
+      "Linda Dessau",
+      "Linda Dessau"
+    ],
+    "prediction": "Linda Dessau is the current Governor of Victoria. However, it's important to note that the Governor is a ceremonial role, while the Premier,",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Victoria_(Australia)::1",
+      "semantic_256::squad::Victoria_(Australia)::0",
+      "semantic_256::squad::Victoria_(Australia)::3",
+      "semantic_256::squad::Victoria_(Australia)::6"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Victoria_(Australia)",
+      "squad::Victoria_(Australia)",
+      "squad::Victoria_(Australia)",
+      "squad::Victoria_(Australia)"
+    ],
+    "retrieved_titles": [
+      "Victoria_(Australia)",
+      "Victoria_(Australia)",
+      "Victoria_(Australia)",
+      "Victoria_(Australia)"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.1904761904761905,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5726f635dd62a815002e9658",
+    "question": "What is the minimum distance between a patient's home and the nearest pharmacy that allows a physician to give out medication?",
+    "gold_answers": [
+      "1.6 kilometres",
+      "1.6 kilometres",
+      "1.6 kilometres"
+    ],
+    "prediction": "Unanswerable. The provided context does not specify the minimum distance between a patient's home and the nearest pharmacy in the United Kingdom, where the law",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Pharmacy::2",
+      "semantic_256::squad::Pharmacy::1",
+      "semantic_256::squad::Pharmacy::0",
+      "semantic_256::squad::Pharmacy::4"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Pharmacy",
+      "squad::Pharmacy",
+      "squad::Pharmacy",
+      "squad::Pharmacy"
+    ],
+    "retrieved_titles": [
+      "Pharmacy",
+      "Pharmacy",
+      "Pharmacy",
+      "Pharmacy"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "56e1a0dccd28a01900c67a2f",
+    "question": "If two integers are multiplied and output a value, what is this expression set called?",
+    "gold_answers": [
+      "set of triples",
+      "triple",
+      "the set of triples (a, b, c) such that the relation a × b = c holds"
+    ],
+    "prediction": "The expression set for the multiplication of two integers is unanswerable from the provided context. The context discusses computational complexity theory, prime numbers,",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Computational_complexity_theory::1",
+      "semantic_256::squad::Prime_number::2",
+      "semantic_256::squad::Oxygen::12",
+      "semantic_256::squad::Prime_number::7"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Computational_complexity_theory",
+      "squad::Prime_number",
+      "squad::Oxygen",
+      "squad::Prime_number"
+    ],
+    "retrieved_titles": [
+      "Computational_complexity_theory",
+      "Prime_number",
+      "Oxygen",
+      "Prime_number"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.18181818181818182,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "572649d8f1498d1400e8db38",
+    "question": "When did the series of strikes happen?",
+    "gold_answers": [
+      "winter of 1973–74",
+      "over the winter of 1973–74",
+      "1973–74",
+      "winter of 1973–74",
+      "the winter of 1973–74"
+    ],
+    "prediction": "The series of strikes happened over the winter of 1973–74.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::1973_oil_crisis::1",
+      "semantic_256::squad::Huguenot::19",
+      "semantic_256::squad::Islamism::17",
+      "semantic_256::squad::Islamism::9"
+    ],
+    "retrieved_doc_ids": [
+      "squad::1973_oil_crisis",
+      "squad::Huguenot",
+      "squad::Islamism",
+      "squad::Islamism"
+    ],
+    "retrieved_titles": [
+      "1973_oil_crisis",
+      "Huguenot",
+      "Islamism",
+      "Islamism"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.6666666666666666,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5725f5b1271a42140099d372",
+    "question": "What month is the warmest in Fresno?",
+    "gold_answers": [
+      "July",
+      "July",
+      "July"
+    ],
+    "prediction": "July is the warmest month in Fresno.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Fresno,_California::1",
+      "semantic_256::squad::Fresno,_California::2",
+      "semantic_256::squad::Fresno,_California::3",
+      "semantic_256::squad::Fresno,_California::5"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Fresno,_California",
+      "squad::Fresno,_California",
+      "squad::Fresno,_California",
+      "squad::Fresno,_California"
+    ],
+    "retrieved_titles": [
+      "Fresno,_California",
+      "Fresno,_California",
+      "Fresno,_California",
+      "Fresno,_California"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.2857142857142857,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5728455bff5b5019007da07c",
+    "question": "How much Saharan dust is blown and falls upon the Caribbean Sea each year?",
+    "gold_answers": [
+      "43 million tons",
+      "43 million tons",
+      "43 million tons"
+    ],
+    "prediction": "43 million tons of Saharan dust falls on the Caribbean Sea each year, according to the provided context.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Amazon_rainforest::0",
+      "semantic_256::squad::Amazon_rainforest::5",
+      "semantic_256::squad::Amazon_rainforest::11",
+      "semantic_256::squad::Amazon_rainforest::7"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Amazon_rainforest",
+      "squad::Amazon_rainforest",
+      "squad::Amazon_rainforest",
+      "squad::Amazon_rainforest"
+    ],
+    "retrieved_titles": [
+      "Amazon_rainforest",
+      "Amazon_rainforest",
+      "Amazon_rainforest",
+      "Amazon_rainforest"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.3157894736842105,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "57286bf84b864d19001649d2",
+    "question": "What alumni member also write the bestseller Before I Fall?",
+    "gold_answers": [
+      "Lauren Oliver",
+      "Lauren Oliver",
+      "Lauren Oliver"
+    ],
+    "prediction": "The alumni member who also wrote the bestseller 'Before I Fall' is unanswerable based on the provided context. The context only mentions",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::University_of_Chicago::1",
+      "semantic_256::squad::University_of_Chicago::5",
+      "semantic_256::squad::University_of_Chicago::4",
+      "semantic_256::squad::Harvard_University::3"
+    ],
+    "retrieved_doc_ids": [
+      "squad::University_of_Chicago",
+      "squad::University_of_Chicago",
+      "squad::University_of_Chicago",
+      "squad::Harvard_University"
+    ],
+    "retrieved_titles": [
+      "University_of_Chicago",
+      "University_of_Chicago",
+      "University_of_Chicago",
+      "Harvard_University"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.75,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5705ffde52bb891400689785",
+    "question": "What magnitude of earthquake can many faults produce?",
+    "gold_answers": [
+      "6.7",
+      "6.7+",
+      "6.7+"
+    ],
+    "prediction": "Many faults, such as the San Andreas Fault, the San Jacinto Fault, the Puente Hills Fault, and the Elsinore",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Southern_California::0",
+      "semantic_256::squad::Southern_California::10",
+      "semantic_256::squad::Geology::6",
+      "semantic_256::squad::Geology::0"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Southern_California",
+      "squad::Southern_California",
+      "squad::Geology",
+      "squad::Geology"
+    ],
+    "retrieved_titles": [
+      "Southern_California",
+      "Southern_California",
+      "Geology",
+      "Geology"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "57263b1638643c19005ad335",
+    "question": "What supplanted Frame Relay and X.25 ",
+    "gold_answers": [
+      "supplanted by the Internet Protocol (IP) at the network layer, and the Asynchronous Transfer Mode (ATM) and or versions of Multi-Protocol Label Switching",
+      "Internet Protocol (IP)",
+      "Internet Protocol"
+    ],
+    "prediction": "The Internet Protocol (IP) and Asynchronous Transfer Mode (ATM) or versions of Multi-Protocol Label Switching (MPLS) supplanted",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Packet_switching::1",
+      "semantic_256::squad::Packet_switching::3",
+      "semantic_256::squad::Packet_switching::4",
+      "semantic_256::squad::Packet_switching::5"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Packet_switching",
+      "squad::Packet_switching",
+      "squad::Packet_switching",
+      "squad::Packet_switching"
+    ],
+    "retrieved_titles": [
+      "Packet_switching",
+      "Packet_switching",
+      "Packet_switching",
+      "Packet_switching"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.8333333333333334,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "572fe4a304bcaa1900d76e57",
+    "question": "What delimits the delta of the Rhine in the west?",
+    "gold_answers": [
+      "Alter Rhein",
+      "Alter Rhein",
+      "Alter Rhein",
+      "Alter Rhein"
+    ],
+    "prediction": "The delta of the Rhine in the west is delimited by the Alter Rhein (\"Old Rhine\") as mentioned in the context [1].",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Rhine::1",
+      "semantic_256::squad::Rhine::2",
+      "semantic_256::squad::Rhine::5",
+      "semantic_256::squad::Rhine::10"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Rhine",
+      "squad::Rhine",
+      "squad::Rhine",
+      "squad::Rhine"
+    ],
+    "retrieved_titles": [
+      "Rhine",
+      "Rhine",
+      "Rhine",
+      "Rhine"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.21052631578947367,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "57115dbe2419e314009555a7",
+    "question": "Where was the centrifugal governor first observed by Boulton?",
+    "gold_answers": [
+      "flour mill",
+      "flour mill",
+      "a flour mill"
+    ],
+    "prediction": "The centrifugal governor was first observed by Boulton at a flour mill Boulton & Watt were building. (From the context provided)",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Steam_engine::1",
+      "semantic_256::squad::Steam_engine::8",
+      "semantic_256::squad::French_and_Indian_War::12",
+      "semantic_256::squad::French_and_Indian_War::2"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Steam_engine",
+      "squad::Steam_engine",
+      "squad::French_and_Indian_War",
+      "squad::French_and_Indian_War"
+    ],
+    "retrieved_titles": [
+      "Steam_engine",
+      "Steam_engine",
+      "French_and_Indian_War",
+      "French_and_Indian_War"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.21052631578947367,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "572995d46aef051400154fea",
+    "question": "According to Wilson's theorem, what factorial must be divisible by p if some integer p > 1 is to be considered prime?",
+    "gold_answers": [
+      "(p − 1)! + 1",
+      "(p − 1)! + 1",
+      "(p − 1)! + 1",
+      "(p − 1)! + 1",
+      "(p − 1)! + 1"
+    ],
+    "prediction": "According to the provided context, Wilson's theorem states that an integer p > 1 is prime if and only if the factorial (p - 1",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Prime_number::1",
+      "semantic_256::squad::Prime_number::2",
+      "semantic_256::squad::Prime_number::0",
+      "semantic_256::squad::Prime_number::7"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Prime_number",
+      "squad::Prime_number",
+      "squad::Prime_number",
+      "squad::Prime_number"
+    ],
+    "retrieved_titles": [
+      "Prime_number",
+      "Prime_number",
+      "Prime_number",
+      "Prime_number"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.24999999999999997,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "57108d69b654c5140001f984",
+    "question": "How many refugees emigrated to the Dutch Republic?",
+    "gold_answers": [
+      "an estimated total of 75,000 to 100,000 people",
+      "75,000 to 100,000",
+      "75,000 to 100,000"
+    ],
+    "prediction": "The context does not provide a specific number of refugees who emigrated to the Dutch Republic. However, it does mention that around 1700,",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Huguenot::1",
+      "semantic_256::squad::Huguenot::5",
+      "semantic_256::squad::Huguenot::18",
+      "semantic_256::squad::Huguenot::4"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Huguenot",
+      "squad::Huguenot",
+      "squad::Huguenot",
+      "squad::Huguenot"
+    ],
+    "retrieved_titles": [
+      "Huguenot",
+      "Huguenot",
+      "Huguenot",
+      "Huguenot"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.14814814814814817,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "572663a9f1498d1400e8ddf4",
+    "question": "Which timeline is further expanded in the fourth scale?",
+    "gold_answers": [
+      "Quaternary",
+      "Quaternary",
+      "Quaternary"
+    ],
+    "prediction": "The fourth scale is further expanded to include the Quaternary period, specifically the short periods within it such as the Holocene and the Pleistocene",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Geology::1",
+      "semantic_256::squad::Geology::2",
+      "semantic_256::squad::Intergovernmental_Panel_on_Climate_Change::0",
+      "semantic_256::squad::Rhine::0"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Geology",
+      "squad::Geology",
+      "squad::Intergovernmental_Panel_on_Climate_Change",
+      "squad::Rhine"
+    ],
+    "retrieved_titles": [
+      "Geology",
+      "Geology",
+      "Intergovernmental_Panel_on_Climate_Change",
+      "Rhine"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.1,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5730bc308ab72b1400f9c73d",
+    "question": "Who reigned over the Ottoman empire when it was at its most powerful.",
+    "gold_answers": [
+      "Suleiman the Magnificent",
+      "Suleiman the Magnificent",
+      "Suleiman the Magnificent",
+      "Suleiman the Magnificent",
+      "Suleiman the Magnificent,"
+    ],
+    "prediction": "Suleiman the Magnificent, during the 16th century, reigned over the Ottoman Empire when it was at its most powerful.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Imperialism::1",
+      "semantic_256::squad::Imperialism::10",
+      "semantic_256::squad::Imperialism::6",
+      "semantic_256::squad::Yuan_dynasty::17"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Imperialism",
+      "squad::Imperialism",
+      "squad::Imperialism",
+      "squad::Yuan_dynasty"
+    ],
+    "retrieved_titles": [
+      "Imperialism",
+      "Imperialism",
+      "Imperialism",
+      "Yuan_dynasty"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.2222222222222222,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.75,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "57280e1aff5b5019007d9bee",
+    "question": "What civilization did the pottery belong to?",
+    "gold_answers": [
+      "Timucua",
+      "Timucua people",
+      "Mocama"
+    ],
+    "prediction": "The pottery belonged to the Timucua civilization.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Jacksonville,_Florida::1",
+      "semantic_256::squad::Yuan_dynasty::12",
+      "semantic_256::squad::Yuan_dynasty::10",
+      "semantic_256::squad::Yuan_dynasty::11"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Jacksonville,_Florida",
+      "squad::Yuan_dynasty",
+      "squad::Yuan_dynasty",
+      "squad::Yuan_dynasty"
+    ],
+    "retrieved_titles": [
+      "Jacksonville,_Florida",
+      "Yuan_dynasty",
+      "Yuan_dynasty",
+      "Yuan_dynasty"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.33333333333333337,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "572881d34b864d1900164a5d",
+    "question": "What aspect of Western medicine did the Chinese dislike?",
+    "gold_answers": [
+      "its humoral system",
+      "its humoral system",
+      "humoral system"
+    ],
+    "prediction": "The Chinese disliked the humoral system of Western medicine because it contradicted the yin-yang and wuxing philosophy underlying traditional Chinese medicine.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Yuan_dynasty::1",
+      "semantic_256::squad::Yuan_dynasty::2",
+      "semantic_256::squad::Yuan_dynasty::19",
+      "semantic_256::squad::Yuan_dynasty::12"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Yuan_dynasty",
+      "squad::Yuan_dynasty",
+      "squad::Yuan_dynasty",
+      "squad::Yuan_dynasty"
+    ],
+    "retrieved_titles": [
+      "Yuan_dynasty",
+      "Yuan_dynasty",
+      "Yuan_dynasty",
+      "Yuan_dynasty"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.19999999999999998,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "57300ec0947a6a140053d006",
+    "question": "What did the conflict galvanize Muslims around the world to do?",
+    "gold_answers": [
+      "send aid and sometimes to go themselves to fight for their faith",
+      "send aid and sometimes to go themselves to fight for their faith",
+      "send aid and sometimes to go themselves to fight for their faith"
+    ],
+    "prediction": "The conflict galvanized Muslims around the world to send aid and sometimes to go themselves to fight for their faith, as described in the context. This pan-",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Islamism::11",
+      "semantic_256::squad::Islamism::1",
+      "semantic_256::squad::Islamism::16",
+      "semantic_256::squad::Islamism::3"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Islamism",
+      "squad::Islamism",
+      "squad::Islamism",
+      "squad::Islamism"
+    ],
+    "retrieved_titles": [
+      "Islamism",
+      "Islamism",
+      "Islamism",
+      "Islamism"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.6666666666666666,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "57377c98c3c5551400e51efd",
+    "question": "What value does the seperating into fermions and bosons depend?",
+    "gold_answers": [
+      "spin",
+      "value of the spin",
+      "the value of the spin",
+      "the spin",
+      "value of the spin,"
+    ],
+    "prediction": "The separation of particles into fermions and bosons depends on their spin properties. Fermions have half-integer spin (e.g., electrons,",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Force::2",
+      "semantic_256::squad::Force::11",
+      "semantic_256::squad::Force::8",
+      "semantic_256::squad::Force::10"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Force",
+      "squad::Force",
+      "squad::Force",
+      "squad::Force"
+    ],
+    "retrieved_titles": [
+      "Force",
+      "Force",
+      "Force",
+      "Force"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.1904761904761905,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "572759665951b619008f8885",
+    "question": "In what year was Wisconsin v. Yoder decided at the Supreme Court?",
+    "gold_answers": [
+      "1972",
+      "1972",
+      "1972"
+    ],
+    "prediction": "The Supreme Court case Wisconsin v. Yoder was decided in the year 1972, as stated in the context provided.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Private_school::1",
+      "semantic_256::squad::European_Union_law::23",
+      "semantic_256::squad::Civil_disobedience::10",
+      "semantic_256::squad::French_and_Indian_War::8"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Private_school",
+      "squad::European_Union_law",
+      "squad::Civil_disobedience",
+      "squad::French_and_Indian_War"
+    ],
+    "retrieved_titles": [
+      "Private_school",
+      "European_Union_law",
+      "Civil_disobedience",
+      "French_and_Indian_War"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.11764705882352941,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.25,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5729f60caf94a219006aa6f0",
+    "question": "Why does a lower level of economic growth occur due to high-end consumption?",
+    "gold_answers": [
+      "human capital is neglected",
+      "a lower level of economic utility in society",
+      "human capital is neglected"
+    ],
+    "prediction": "The high-end consumption leads to a lower level of economic growth due to the lower level of economic utility in society from resources devoted on high-end consumption,",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Economic_inequality::1",
+      "semantic_256::squad::Economic_inequality::5",
+      "semantic_256::squad::Economic_inequality::17",
+      "semantic_256::squad::Economic_inequality::15"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Economic_inequality",
+      "squad::Economic_inequality",
+      "squad::Economic_inequality",
+      "squad::Economic_inequality"
+    ],
+    "retrieved_titles": [
+      "Economic_inequality",
+      "Economic_inequality",
+      "Economic_inequality",
+      "Economic_inequality"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.45161290322580644,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "57265aaf5951b619008f706b",
+    "question": "What does the lobata have pair of?",
+    "gold_answers": [
+      "lobes",
+      "lobes",
+      "lobes"
+    ],
+    "prediction": "The lobata, as described in the context, has a pair of lobes.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Ctenophora::1",
+      "semantic_256::squad::Ctenophora::9",
+      "semantic_256::squad::Ctenophora::10",
+      "semantic_256::squad::Ctenophora::8"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Ctenophora",
+      "squad::Ctenophora",
+      "squad::Ctenophora",
+      "squad::Ctenophora"
+    ],
+    "retrieved_titles": [
+      "Ctenophora",
+      "Ctenophora",
+      "Ctenophora",
+      "Ctenophora"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.19999999999999998,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 42,
+    "retriever": "dense",
+    "example_id": "5727c8863acd2414000dec4c",
+    "question": "How far from the Yard is the Quad located?",
+    "gold_answers": [
+      "half a mile northwest of the Yard",
+      "half a mile",
+      "half a mile"
+    ],
+    "prediction": "Unanswerable. The provided context does not contain information about the location of the Quad in relation to the Yard at Harvard University.",
+    "chunker": "semantic_256",
+    "retrieved_chunk_ids": [
+      "semantic_256::squad::Harvard_University::1",
+      "semantic_256::squad::Huguenot::10",
+      "semantic_256::squad::Rhine::14",
+      "semantic_256::squad::Fresno,_California::4"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Harvard_University",
+      "squad::Huguenot",
+      "squad::Rhine",
+      "squad::Fresno,_California"
+    ],
+    "retrieved_titles": [
+      "Harvard_University",
+      "Huguenot",
+      "Rhine",
+      "Fresno,_California"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.1739130434782609,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  }
+]

@@ -23,6 +23,7 @@ EOF
 echo "Starting vLLM on $HOSTNAME_VALUE:$PORT for model $MODEL_NAME"
 python -m vllm.entrypoints.openai.api_server \
   --model "$MODEL_NAME" \
+  --tokenizer-mode mistral \
   --host 0.0.0.0 \
   --port "$PORT" \
   --dtype bfloat16 \

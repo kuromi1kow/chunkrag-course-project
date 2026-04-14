@@ -1,0 +1,224 @@
+[
+  {
+    "seed": 7,
+    "retriever": "dense",
+    "example_id": "572843304b864d190016484b",
+    "question": "Who disliked the affiliate program?",
+    "gold_answers": [
+      "passed",
+      "Several University of Chicago professors",
+      "Several University of Chicago professors"
+    ],
+    "prediction": "Several university of Chicago professors disliked the program.",
+    "chunker": "fixed_128",
+    "retrieved_chunk_ids": [
+      "fixed_128::squad::University_of_Chicago::2",
+      "fixed_128::squad::Pharmacy::2",
+      "fixed_128::squad::University_of_Chicago::4",
+      "fixed_128::squad::University_of_Chicago::0"
+    ],
+    "retrieved_doc_ids": [
+      "squad::University_of_Chicago",
+      "squad::Pharmacy",
+      "squad::University_of_Chicago",
+      "squad::University_of_Chicago"
+    ],
+    "retrieved_titles": [
+      "University_of_Chicago",
+      "Pharmacy",
+      "University_of_Chicago",
+      "University_of_Chicago"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.8333333333333333,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.75,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 7,
+    "retriever": "dense",
+    "example_id": "5705e3f252bb89140068966e",
+    "question": "How many people does the Greater Los Angeles Area have?",
+    "gold_answers": [
+      "17.5 million",
+      "over 17.5 million",
+      "17.5 million"
+    ],
+    "prediction": "Over 17.5 million people",
+    "chunker": "fixed_128",
+    "retrieved_chunk_ids": [
+      "fixed_128::squad::Southern_California::2",
+      "fixed_128::squad::Southern_California::1",
+      "fixed_128::squad::Southern_California::0",
+      "fixed_128::squad::Southern_California::3"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Southern_California",
+      "squad::Southern_California",
+      "squad::Southern_California",
+      "squad::Southern_California"
+    ],
+    "retrieved_titles": [
+      "Southern_California",
+      "Southern_California",
+      "Southern_California",
+      "Southern_California"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.8571428571428571,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 7,
+    "retriever": "dense",
+    "example_id": "573368044776f41900660a2a",
+    "question": "Where is a palm house with subtropic plants from all over the world on display?",
+    "gold_answers": [
+      "New Orangery",
+      "New Orangery",
+      "New Orangery"
+    ],
+    "prediction": "The palm house with subtropic plants from all over the world on display is in the city, specifically in the new orangery.",
+    "chunker": "fixed_128",
+    "retrieved_chunk_ids": [
+      "fixed_128::squad::Warsaw::0",
+      "fixed_128::squad::Warsaw::1",
+      "fixed_128::squad::University_of_Chicago::7",
+      "fixed_128::squad::Victoria_(Australia)::1"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Warsaw",
+      "squad::Warsaw",
+      "squad::University_of_Chicago",
+      "squad::Victoria_(Australia)"
+    ],
+    "retrieved_titles": [
+      "Warsaw",
+      "Warsaw",
+      "University_of_Chicago",
+      "Victoria_(Australia)"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.19999999999999998,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 7,
+    "retriever": "dense",
+    "example_id": "5726d9935951b619008f7fed",
+    "question": "What type of professionals are pharmacists?",
+    "gold_answers": [
+      "healthcare professionals",
+      "healthcare",
+      "healthcare professionals with specialised education"
+    ],
+    "prediction": "The provided context indicates that pharmacists are healthcare professionals.",
+    "chunker": "fixed_128",
+    "retrieved_chunk_ids": [
+      "fixed_128::squad::Pharmacy::0",
+      "fixed_128::squad::Pharmacy::2",
+      "fixed_128::squad::Pharmacy::1",
+      "fixed_128::squad::Pharmacy::3"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Pharmacy",
+      "squad::Pharmacy",
+      "squad::Pharmacy",
+      "squad::Pharmacy"
+    ],
+    "retrieved_titles": [
+      "Pharmacy",
+      "Pharmacy",
+      "Pharmacy",
+      "Pharmacy"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.4,
+    "recall_at_k": 1.0,
+    "precision_at_k": 1.0,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 7,
+    "retriever": "dense",
+    "example_id": "5727d4922ca10214002d977f",
+    "question": "From 2004 to 2005 Harvard reduced the number of students earning Latin honors from 90% to what?",
+    "gold_answers": [
+      "60%",
+      "60%",
+      "60%"
+    ],
+    "prediction": "60%",
+    "chunker": "fixed_128",
+    "retrieved_chunk_ids": [
+      "fixed_128::squad::Harvard_University::1",
+      "fixed_128::squad::Harvard_University::0",
+      "fixed_128::squad::University_of_Chicago::3",
+      "fixed_128::squad::Harvard_University::2"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Harvard_University",
+      "squad::Harvard_University",
+      "squad::University_of_Chicago",
+      "squad::Harvard_University"
+    ],
+    "retrieved_titles": [
+      "Harvard_University",
+      "Harvard_University",
+      "University_of_Chicago",
+      "Harvard_University"
+    ],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.75,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  },
+  {
+    "seed": 7,
+    "retriever": "dense",
+    "example_id": "570d4329fed7b91900d45dd9",
+    "question": "What did the finding of gold in Victoria cause?",
+    "gold_answers": [
+      "gold rush",
+      "gold rush",
+      "gold rushes"
+    ],
+    "prediction": "The finding of gold in Victoria caused one of the largest gold rushes the world has ever seen, leading to a rapid growth in both population and economic power of",
+    "chunker": "fixed_128",
+    "retrieved_chunk_ids": [
+      "fixed_128::squad::Victoria_(Australia)::0",
+      "fixed_128::squad::Victoria_(Australia)::1",
+      "fixed_128::squad::Pharmacy::3",
+      "fixed_128::squad::University_of_Chicago::5"
+    ],
+    "retrieved_doc_ids": [
+      "squad::Victoria_(Australia)",
+      "squad::Victoria_(Australia)",
+      "squad::Pharmacy",
+      "squad::University_of_Chicago"
+    ],
+    "retrieved_titles": [
+      "Victoria_(Australia)",
+      "Victoria_(Australia)",
+      "Pharmacy",
+      "University_of_Chicago"
+    ],
+    "exact_match": 0.0,
+    "f1": 0.14285714285714288,
+    "recall_at_k": 1.0,
+    "precision_at_k": 0.5,
+    "supporting_doc_coverage": 1.0,
+    "all_supporting_docs_found": 1.0
+  }
+]

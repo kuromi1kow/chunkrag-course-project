@@ -19,7 +19,7 @@ from chunkrag.evaluation import (
     bootstrap_confidence_interval,
     retrieval_metrics,
 )
-from chunkrag.generation import Generator, QAGenerator, resolve_device
+from chunkrag.generation import Generator, OpenAICompatibleGenerator, QAGenerator, resolve_device
 from chunkrag.retrieval import Retriever, RetrieverFactory, RetrieverFactoryContext
 from chunkrag.schemas import (
     AggregateMetricSummary,
@@ -109,14 +109,25 @@ class SharedExperimentResources:
     @classmethod
     def from_config(cls, config: dict[str, Any]) -> SharedExperimentResources:
         device = resolve_device(config.get("device", "auto"))
-        generator = QAGenerator(
-            model_name=config["generator_model"],
-            device=config.get("device", "auto"),
-            max_input_tokens=config.get("generation_max_input_tokens", 768),
-            max_new_tokens=config.get("max_new_tokens", 32),
-            torch_dtype=config.get("generator_torch_dtype"),
-            use_device_map=config.get("generator_use_device_map", False),
-        )
+        if config.get("generator_base_url"):
+            generator = OpenAICompatibleGenerator(
+                model_name=config["generator_model"],
+                base_url=config["generator_base_url"],
+                api_key=config.get("generator_api_key", "chunkrag-demo-key"),
+                tokenizer_name=config.get("generator_tokenizer_name"),
+                max_input_tokens=config.get("generation_max_input_tokens", 768),
+                max_new_tokens=config.get("max_new_tokens", 32),
+                temperature=float(config.get("generator_temperature", 0.0)),
+            )
+        else:
+            generator = QAGenerator(
+                model_name=config["generator_model"],
+                device=config.get("device", "auto"),
+                max_input_tokens=config.get("generation_max_input_tokens", 768),
+                max_new_tokens=config.get("max_new_tokens", 32),
+                torch_dtype=config.get("generator_torch_dtype"),
+                use_device_map=config.get("generator_use_device_map", False),
+            )
         retrieval_tokenizer = AutoTokenizer.from_pretrained(config["embedding_model"])
         retrieval_tokenizer.model_max_length = 1_000_000
         semantic_encoder = SentenceTransformer(config["embedding_model"], device=device)

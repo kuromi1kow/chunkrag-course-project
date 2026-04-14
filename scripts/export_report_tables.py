@@ -316,14 +316,14 @@ def main() -> None:
         latex_main_table(
             "squad_v2",
             squad_rows,
-            "Results on SQuAD v2. Semantic chunking gives the best end-to-end QA, even though the most precise top-4 retrieval comes from the smallest fixed window.",
+            "Results on SQuAD v2. Semantic chunking is the strongest end-to-end setting in the current run.",
             "tab:squad",
         ),
         "",
         latex_main_table(
             "hotpot_qa",
             hotpot_rows,
-            "Results on HotpotQA. The best systems tie at 44.7 F1, while doc-level Recall@4 shows that recovering all supporting documents remains incomplete.",
+            "Results on HotpotQA. Doc-level Recall@4 shows that recovering all supporting documents remains incomplete in the current run.",
             "tab:hotpot",
         ),
         "",

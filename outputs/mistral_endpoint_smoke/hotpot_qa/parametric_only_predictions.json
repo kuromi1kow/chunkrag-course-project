@@ -1,0 +1,82 @@
+[
+  {
+    "seed": 7,
+    "retriever": "parametric_only",
+    "example_id": "5ae2138c5542997283cd23b7",
+    "question": "Are Villa Paletti and Betrayal at House on the Hill both board games?",
+    "gold_answers": [
+      "yes"
+    ],
+    "prediction": "Yes, both Villa Paletti and Betrayal at House on the Hill are board games.",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.14285714285714288,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 7,
+    "retriever": "parametric_only",
+    "example_id": "5a77152355429966f1a36c2e",
+    "question": "What was the Roud Folk Song Index of the nursery rhyme inspiring What Are Little Girls Made Of?",
+    "gold_answers": [
+      "821"
+    ],
+    "prediction": "The Roud Folk Song Index does not list a direct nursery rhyme equivalent to \"What Are Little Girls Made Of.\" The song is a par",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 7,
+    "retriever": "parametric_only",
+    "example_id": "5ade99ad554299728e26c75d",
+    "question": "How many acts is the ballet Rita Sangalli premiered in, in the year 1876?",
+    "gold_answers": [
+      "two or three acts"
+    ],
+    "prediction": "The ballet Rita Sangalli was premiered in the year 1876, but there is no information provided about the number of acts",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0909090909090909,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 7,
+    "retriever": "parametric_only",
+    "example_id": "5ab81cff5542990e739ec827",
+    "question": "Which novelist was educated in London, C. S. Forester or Helen Zahavi?",
+    "gold_answers": [
+      "Helen Zahavi"
+    ],
+    "prediction": "Helen Zahavi was not educated in London. C. S. Forester was educated in London.",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.25,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  }
+]

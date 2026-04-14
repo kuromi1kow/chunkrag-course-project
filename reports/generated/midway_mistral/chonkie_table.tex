@@ -1,0 +1,16 @@
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{lrrrr}
+\toprule
+System & SQuAD EM & SQuAD F1 & HotpotQA F1 & Avg chunk tokens \\
+\midrule
+\texttt{recursive\_256} & 65.0 & 75.1 & \textbf{49.7} & 175.8 \\
+\texttt{chonkie\_recursive\_256} & 66.7 & 75.9 & \textbf{49.7} & 174.3 \\
+\texttt{semantic\_256} & \textbf{76.7} & \textbf{85.4} & 47.2 & 144.8 \\
+\texttt{chonkie\_semantic\_256} & 65.0 & 77.1 & \textbf{49.7} & 101.5 \\
+\bottomrule
+\end{tabular}
+\caption{Auxiliary Chonkie implementation comparison. Recursive chunking is stable across implementations, while semantic chunking is more sensitive to boundary heuristics.}
+\label{tab:chonkie}
+\end{table*}

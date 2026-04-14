@@ -1,0 +1,58 @@
+{
+  "seed": 7,
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "generator_model": "mistralai/Mistral-7B-Instruct-v0.3",
+  "generator_base_url": "http://127.0.0.1:8000/v1",
+  "generator_api_key": "chunkrag-demo-key",
+  "generator_tokenizer_name": "mistralai/Mistral-7B-Instruct-v0.3",
+  "generator_temperature": 0.0,
+  "device": "auto",
+  "retrieval_top_k": 4,
+  "max_new_tokens": 32,
+  "embedding_batch_size": 16,
+  "generation_max_input_tokens": 768,
+  "run_parametric_baseline": true,
+  "bootstrap_samples": 200,
+  "datasets": [
+    {
+      "name": "squad_v2",
+      "split": "validation",
+      "max_examples": 6,
+      "candidate_pool_size": 60,
+      "answerable_only": true
+    },
+    {
+      "name": "hotpot_qa",
+      "config": "distractor",
+      "split": "validation",
+      "max_examples": 4
+    }
+  ],
+  "chunkers": [
+    {
+      "name": "fixed_128",
+      "type": "fixed",
+      "chunk_size": 128,
+      "chunk_overlap": 19
+    },
+    {
+      "name": "recursive_256",
+      "type": "recursive",
+      "chunk_size": 256,
+      "chunk_overlap": 38
+    },
+    {
+      "name": "sentence_256",
+      "type": "sentence",
+      "chunk_size": 256,
+      "chunk_overlap": 0
+    },
+    {
+      "name": "semantic_256",
+      "type": "semantic",
+      "chunk_size": 256,
+      "chunk_overlap": 0,
+      "similarity_threshold": 0.72
+    }
+  ]
+}
