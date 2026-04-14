@@ -27,12 +27,16 @@ def retrieval_metrics(retrieved_chunks: list[Chunk], example: QAExample) -> dict
 
     top_k = len(retrieved_chunks)
     precision = sum(relevant_flags) / top_k if top_k else 0.0
-    recall = float(any(relevant_flags))
-
     retrieved_doc_ids = {chunk.doc_id for chunk in retrieved_chunks}
-    supporting_doc_hits = len(retrieved_doc_ids & relevant_doc_ids)
-    supporting_doc_coverage = supporting_doc_hits / len(relevant_doc_ids) if relevant_doc_ids else 0.0
-    all_supporting_docs_found = float(supporting_doc_hits == len(relevant_doc_ids)) if relevant_doc_ids else 0.0
+    if relevant_doc_ids:
+        supporting_doc_hits = len(retrieved_doc_ids & relevant_doc_ids)
+        recall = supporting_doc_hits / len(relevant_doc_ids)
+        supporting_doc_coverage = recall
+        all_supporting_docs_found = float(supporting_doc_hits == len(relevant_doc_ids))
+    else:
+        recall = float(any(relevant_flags))
+        supporting_doc_coverage = 0.0
+        all_supporting_docs_found = 0.0
     return {
         "precision_at_k": precision,
         "recall_at_k": recall,

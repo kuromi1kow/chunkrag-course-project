@@ -94,7 +94,7 @@ python scripts/plot_results.py --results outputs/rigorous_local/aggregate_result
 The SCC path uses BU's `qsub` scheduler and the `academic-ml/spring-2026` environment.
 
 ```bash
-bash scripts/submit_scc_rigorous.sh configs/scc_rigorous_qwen.json /projectnb/cs505am/projects/kuromiqo_chunkrag_project/outputs/scc_rigorous_qwen
+bash scripts/submit_scc_rigorous.sh configs/scc_rigorous_mistral.json /projectnb/cs505am/projects/kuromiqo_chunkrag_project/outputs/scc_rigorous_mistral
 ```
 
 Useful overrides:
@@ -136,7 +136,7 @@ Then in OpenWebUI add an OpenAI-compatible connection with:
 
 - URL: `http://127.0.0.1:8000/v1`
 - API key: `chunkrag-demo-key`
-- Model: `Qwen/Qwen2.5-7B-Instruct`
+- Model: `mistralai/Mistral-7B-Instruct-v0.3`
 
 ## Visual dashboard
 

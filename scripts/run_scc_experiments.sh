@@ -2,8 +2,8 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CONFIG_PATH="${1:-$REPO_ROOT/configs/scc_rigorous_qwen.json}"
-OUTPUT_DIR="${2:-$REPO_ROOT/outputs/scc_rigorous_qwen}"
+CONFIG_PATH="${1:-$REPO_ROOT/configs/scc_rigorous_mistral.json}"
+OUTPUT_DIR="${2:-$REPO_ROOT/outputs/scc_rigorous_mistral}"
 
 source "$REPO_ROOT/scripts/setup_scc_env.sh"
 

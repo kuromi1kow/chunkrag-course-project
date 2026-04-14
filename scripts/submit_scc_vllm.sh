@@ -25,5 +25,5 @@ qsub \
   -V \
   -pe omp "$THREADS" \
   -l "h_rt=$WALLTIME,mem_total=$MEMORY,gpus=$GPU_COUNT,gpu_type=$GPU_TYPE,gpu_memory=$GPU_MEMORY,gpu_c=$GPU_CAPABILITY" \
-  "$REPO_ROOT/scripts/qwen_vllm_scc.qsub" \
+  "$REPO_ROOT/scripts/vllm_scc.qsub" \
   "$OUTPUT_DIR"

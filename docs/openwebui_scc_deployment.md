@@ -20,7 +20,7 @@ This is better than trying to keep a full OpenWebUI site permanently hosted on S
 
 ### Option A: Recommended
 
-- `SCC`: `vLLM` + `Qwen/Qwen2.5-7B-Instruct`
+- `SCC`: `vLLM` + `mistralai/Mistral-7B-Instruct-v0.3`
 - `Local machine`: `OpenWebUI`
 - `Local machine`: visual dashboard for experiment browsing
 
@@ -47,7 +47,7 @@ This works for demos, but it is worse for:
 
 - [scripts/setup_scc_vllm_env.sh](/Users/assylkhan/Documents/NLP/scripts/setup_scc_vllm_env.sh)
 - [scripts/run_scc_vllm_server.sh](/Users/assylkhan/Documents/NLP/scripts/run_scc_vllm_server.sh)
-- [scripts/qwen_vllm_scc.qsub](/Users/assylkhan/Documents/NLP/scripts/qwen_vllm_scc.qsub)
+- [scripts/vllm_scc.qsub](/Users/assylkhan/Documents/NLP/scripts/vllm_scc.qsub)
 - [scripts/submit_scc_vllm.sh](/Users/assylkhan/Documents/NLP/scripts/submit_scc_vllm.sh)
 - [scripts/tunnel_scc_vllm.sh](/Users/assylkhan/Documents/NLP/scripts/tunnel_scc_vllm.sh)
 - [scripts/setup_openwebui_local.sh](/Users/assylkhan/Documents/NLP/scripts/setup_openwebui_local.sh)
@@ -62,7 +62,7 @@ flowchart LR
     U["User"] --> W["OpenWebUI"]
     W --> T["SSH Tunnel localhost:8000"]
     T --> V["vLLM on SCC GPU node"]
-    V --> M["Qwen2.5-7B-Instruct"]
+    V --> M["Mistral-7B-Instruct-v0.3"]
     U --> D["Streamlit Dashboard"]
     D --> R["Experiment Results + Predictions"]
 ```
@@ -73,7 +73,7 @@ Once the tunnel is active:
 
 - API URL: `http://127.0.0.1:8000/v1`
 - API Key: use the same key passed to the SCC `vLLM` job
-- Model ID: `Qwen/Qwen2.5-7B-Instruct`
+- Model ID: `mistralai/Mistral-7B-Instruct-v0.3`
 
 ## Next upgrade after deployment
 

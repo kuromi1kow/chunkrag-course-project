@@ -7,6 +7,7 @@ module load miniconda/25.3.1
 module load academic-ml/spring-2026
 
 source "$(conda info --base)/etc/profile.d/conda.sh"
+export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-}"
 conda activate spring-2026-pyt
 
 export HF_HOME="${HF_HOME:-$REPO_ROOT/.hf-cache}"

@@ -77,13 +77,13 @@ The chunking function is the only variable.
 
 We currently implement the four chunking families from the proposal:
 \begin{itemize}
-  \item \textbf{Fixed token chunking:} \texttt{fixed\_128}, \texttt{fixed\_256}, and \texttt{fixed\_512}, each with approximately 15\% overlap.
+  \item \textbf{Fixed token chunking:} \texttt{fixed\_128}, \texttt{fixed\_256}, and \texttt{fixed\_512}, with overlaps of 19, 38, and 76 tokens respectively.
   \item \textbf{Recursive chunking:} \texttt{recursive\_256}, implemented with LangChain's recursive splitter.
   \item \textbf{Sentence chunking:} \texttt{sentence\_256}, implemented with spaCy sentence segmentation and greedy packing to a token budget.
-  \item \textbf{Semantic chunking:} \texttt{semantic\_256}, implemented by embedding consecutive sentences and splitting when cosine similarity falls below a threshold, with a minimum-length guard. In practice, this is our dynamic chunker: chunk length varies with local semantic continuity rather than a fixed token budget.
+  \item \textbf{Semantic chunking:} \texttt{semantic\_256}, implemented by embedding consecutive sentences and splitting when cosine similarity falls below a threshold. In the reported run, the similarity threshold is 0.72; in the newer codebase, we also support a minimum-length guard to stabilize very short chunks. In practice, this is our dynamic chunker: chunk length varies with local semantic continuity rather than a fixed token budget.
 \end{itemize}
 
-We also implemented auxiliary \texttt{chonkie\_recursive\_256} and \texttt{chonkie\_semantic\_256} variants. These are useful because they let us compare not only chunking families, but also whether a result is robust across different library implementations of the same basic idea.
+We also implemented auxiliary \texttt{chonkie\_recursive\_256} and \texttt{chonkie\_semantic\_256} variants to check whether the same high-level chunking idea behaves similarly across implementations.
 
 \subsection{Models and Software}
 
@@ -93,10 +93,12 @@ For the midway milestone, the rest of the pipeline is fixed as follows:
   \item Retriever: FAISS inner-product search over normalized dense embeddings
   \item Generator: \texttt{google/flan-t5-base}
   \item Retrieval depth: top 4 chunks
+  \item Generation limits: 768 input tokens and 32 new tokens
+  \item Embedding batch size: 32
   \item Runtime: local Apple MPS
 \end{itemize}
 
-This is the main deviation from the original proposal. We initially planned to use a stronger 7B-class generator such as Mistral-7B or Llama-3-8B, but for the midway report we prioritized a fully reproducible comparison on local hardware. We treat stronger-model reruns on SCC as a final-stage validation step. Beyond the dense-retrieval table reported here, the broader codebase now also supports BM25, hybrid dense+sparse retrieval, reranking, supporting-document coverage, and bootstrap confidence intervals. Those components are implemented already, but the main midway analysis keeps the ablation focused on chunking.
+This is the main deviation from the original proposal. We initially planned to use a stronger 7B-class generator such as Mistral-7B or Llama-3-8B, but for the midway report we prioritized a fully reproducible local comparison. The current SCC rerun target is \texttt{mistralai/Mistral-7B-Instruct-v0.3}. The broader codebase also supports BM25, hybrid retrieval, reranking, supporting-document coverage, and bootstrap confidence intervals, but the midway analysis keeps the ablation focused on chunking. All chunking hyperparameters are fixed in JSON config files and reused across runs.
 
 \subsection{Baseline}
 
@@ -123,32 +125,21 @@ Our evaluation follows the proposal:
   \item \textbf{Efficiency:} average chunk size, number of indexed chunks, and latency-related statistics
 \end{itemize}
 
-We also began organizing failures into three categories:
-\begin{enumerate}
-  \item retrieval failure,
-  \item context fragmentation, and
-  \item generation failure.
-\end{enumerate}
+For SQuAD, Recall@4 reduces to single-document recall. For HotpotQA, it is the fraction of gold supporting documents recovered in the top 4 retrieved chunks, which is more informative than an ``any-hit'' definition for multi-hop questions.
 
 \section{Results}
 
 \input{generated/midway_tables.tex}
 
-The midway results already support the proposal's main hypothesis that chunking is a meaningful experimental variable.
+The midway results already support the proposal's main hypothesis that chunking matters. The parametric-only baseline is far below every retrieval-based system, so the task is genuinely retrieval-sensitive rather than solvable from parametric memory alone.
 
-First, the no-retrieval baseline is dramatically worse than every retrieval-based system on both datasets. This confirms that our setup is genuinely retrieval-sensitive rather than mostly driven by parametric memory.
+On SQuAD, \texttt{semantic\_256} is the strongest setting at 76.7 EM and 86.0 F1. Relative to the best non-semantic setting, \texttt{recursive\_256}, this is a gain of 8.4 EM and 8.0 F1; relative to the best fixed window, \texttt{fixed\_128}, it is a gain of 11.7 EM and 10.7 F1. \texttt{fixed\_128} still has the best retrieval precision at 77.1 and matches semantic chunking on Recall@4, but its answer quality is lower. This pattern suggests that local factoid questions benefit from semantically coherent boundaries, not just from retrieving a locally pure top-4 set.
 
-Second, the strongest chunker appears to depend on question type. On SQuAD, semantic chunking is clearly the strongest system, with recursive chunking as the best non-semantic baseline. This is consistent with the idea that local factoid questions benefit from compact but semantically coherent evidence. On HotpotQA, exact match is flat while token-level F1 improves under recursive and sentence chunking, suggesting that multi-hop questions benefit from chunk boundaries that preserve more local structure.
-
-Third, simple fixed windows are not reliably strong. Smaller fixed chunks outperform larger fixed chunks on SQuAD, which supports the claim that large windows can introduce distractor context. At the same time, the multi-hop setting does not reward extremely coarse or purely semantic splits in the same way.
-
-An auxiliary Chonkie comparison adds one more useful finding. Recursive chunking is fairly stable across implementations, but semantic chunking is more implementation-sensitive. That is important for the final report because it suggests that ``dynamic'' or ``semantic'' chunking should not be treated as a single method; the exact boundary heuristic can materially change the tradeoff between compactness and evidence preservation.
-
-Overall, we view these scores as good midway results rather than final claims. They are strong enough to justify the project's direction, but they still need validation on larger subsets and under stronger generation settings.
+HotpotQA is flatter and more diagnostic. \texttt{recursive\_256}, \texttt{sentence\_256}, and \texttt{semantic\_256} tie at 44.7 F1, improving over the weakest retrieval baseline by 7.6 F1 but not separating clearly from one another. The new doc-level Recall@4 tops out at 76.7 rather than saturating at 100.0, which gives a more realistic picture of multi-hop retrieval quality. Semantic chunking helps less uniformly here because success depends on recovering multiple support documents and giving the generator enough structure to compose them correctly. In short, these are strong midway numbers for a small local setup, especially on SQuAD, but they are still preliminary rather than final claims.
 
 \section{Discussion and Project Plan}
 
-The current failure profile matches the taxonomy laid out in the proposal. Some errors are clear retrieval failures, especially when no answer-bearing chunk appears in the top 4. Others are context-fragmentation failures, where evidence is partially retrieved but split in an unhelpful way. On HotpotQA in particular, many remaining errors appear to be generation failures: relevant evidence is retrieved, but the small generator does not compose the answer exactly.
+The current failure profile matches the taxonomy laid out in the proposal. Some errors are clear retrieval failures, especially when no answer-bearing chunk appears in the top 4. Others are context-fragmentation failures, where evidence is partially retrieved but split in an unhelpful way. On SQuAD, the strongest semantic results suggest that preserving local coherence is more important than maximizing top-4 purity alone. On HotpotQA, by contrast, the tie among recursive, sentence, and semantic chunking indicates that evidence composition and generator capacity are now the main bottlenecks once retrieval reaches roughly three quarters of the supporting documents.
 
 The remaining work is concrete:
 \begin{enumerate}

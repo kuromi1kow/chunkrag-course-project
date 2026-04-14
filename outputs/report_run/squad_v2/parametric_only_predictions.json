@@ -1,5 +1,117 @@
 [
   {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "572a058aaf94a219006aa753",
+    "question": "What is the nature of the relationship between T-cells and vitamin D?",
+    "gold_answers": [
+      "symbiotic relationship",
+      "symbiotic",
+      "symbiotic relationship"
+    ],
+    "prediction": "Vitamin D is a molecule of a chemical compound.",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "572fad30a23a5019007fc870",
+    "question": "When did Prime Minister Wilson commit to some form of devolved legislature?",
+    "gold_answers": [
+      "1974",
+      "1974",
+      "1974"
+    ],
+    "prediction": "1889",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "570d4030fed7b91900d45da1",
+    "question": "What entity owns V/Line?",
+    "gold_answers": [
+      "Victorian Government",
+      "the Victorian Government",
+      "Victorian Government"
+    ],
+    "prediction": "a private equity firm",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "5726f96ddd62a815002e9698",
+    "question": "Which provinces in Canada limit the rights of pharmacists in prescribing?",
+    "gold_answers": [
+      "Alberta and British Columbia",
+      "Alberta and British Columbia",
+      "Alberta and British Columbia"
+    ],
+    "prediction": "Ontario, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba,",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "56e1b355e3433e14004230b0",
+    "question": "What type of Turing machine can be characterized by checking multiple possibilities at the same time?",
+    "gold_answers": [
+      "non-deterministic",
+      "non-deterministic",
+      "non-deterministic Turing machine"
+    ],
+    "prediction": "a computer",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
     "example_id": "572659535951b619008f7040",
     "question": "Name a larger car that Toyota came up with as buyers lamented the small sized compacts?",
     "gold_answers": [
@@ -9,136 +121,20 @@
       "Corona Mark II"
     ],
     "prediction": "honda saab",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
-    "example_id": "5728455bff5b5019007da07b",
-    "question": "How much Saharan dust remains in the air over the Amazon each year?",
-    "gold_answers": [
-      "132 million tons",
-      "132 million tons",
-      "132 million tons"
-    ],
-    "prediction": "Approximately a million tons of dust are left in the air over the Amazon each year.",
-    "exact_match": 0.0,
-    "f1": 0.25
-  },
-  {
-    "example_id": "57264fe65951b619008f6fa3",
-    "question": "What is thought to have happened to the y. pestis that caused the black death?",
-    "gold_answers": [
-      "may no longer exist",
-      "may no longer exist",
-      "may no longer exist"
-    ],
-    "prediction": "The black death was caused by the y. pestis.",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "5728151b4b864d1900164429",
-    "question": "Brownlee argues disobedience can be justified toward what institutions?",
-    "gold_answers": [
-      "trade unions, banks, and private universities",
-      "non-governmental agencies",
-      "decisions of non-governmental agencies",
-      "non-governmental agencies",
-      "non-governmental agencies"
-    ],
-    "prediction": "government",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "56e1b355e3433e14004230b0",
-    "question": "What type of Turing machine can be characterized by checking multiple possibilities at the same time?",
-    "gold_answers": [
-      "non-deterministic",
-      "non-deterministic",
-      "non-deterministic Turing machine"
-    ],
-    "prediction": "a computer",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "572751b4708984140094dc1e",
-    "question": "Contracts must be designed to ensure what?",
-    "gold_answers": [
-      "that each side is capable of performing the obligations set out",
-      "that each side is capable of performing the obligations set out",
-      "each side is capable of performing the obligations set out"
-    ],
-    "prediction": "a fair deal",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "572646655951b619008f6ec0",
-    "question": "What do ctenophores have that no other animals have?",
-    "gold_answers": [
-      "colloblasts",
-      "colloblasts",
-      "colloblasts"
-    ],
-    "prediction": "a snout",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "5727f6723acd2414000df0e7",
-    "question": "What types of organizations are on a decline in the US which adversely effects economic mobility?",
-    "gold_answers": [
-      "unions",
-      "union membership",
-      "unions"
-    ],
-    "prediction": "corporations",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "5725c28a271a42140099d14f",
-    "question": "What are the three sources of European Union law?",
-    "gold_answers": [
-      "primary law, secondary law and supplementary law",
-      "primary law, secondary law and supplementary law",
-      "primary law, secondary law and supplementary law",
-      "primary law, secondary law and supplementary law"
-    ],
-    "prediction": "European Union law is a law that is based on the laws of the European Union.",
-    "exact_match": 0.0,
-    "f1": 0.2
-  },
-  {
-    "example_id": "5737804dc3c5551400e51f10",
-    "question": "What nuclear forces only act at short distances?",
-    "gold_answers": [
-      "strong and weak",
-      "strong and weak forces",
-      "strong and weak",
-      "strong and weak forces"
-    ],
-    "prediction": "nuclear",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "5733e5a14776f4190066145c",
-    "question": "Who was given land by British goovernment for development of Ohio Country?",
-    "gold_answers": [
-      "Ohio Company of Virginia",
-      "Ohio Company of Virginia",
-      "Ohio Company of Virginia",
-      "Ohio Company of Virginia",
-      "Ohio Company"
-    ],
-    "prediction": "john d. scott",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
+    "seed": 42,
+    "retriever": "parametric_only",
     "example_id": "5725f00938643c19005aceda",
     "question": "What was the name given to a section of Kearney Boulevard in efforts to change the areas image?",
     "gold_answers": [
@@ -147,134 +143,86 @@
       "Brookhaven"
     ],
     "prediction": "a sandbar",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
-    "example_id": "57267ebfdd62a815002e872f",
-    "question": "What does critically tapered mean? ",
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "5728455bff5b5019007da07b",
+    "question": "How much Saharan dust remains in the air over the Amazon each year?",
     "gold_answers": [
-      "all angles remain the same",
-      "all angles remain the same",
-      "all angles remain the same"
+      "132 million tons",
+      "132 million tons",
+      "132 million tons"
     ],
-    "prediction": "critically tapered",
+    "prediction": "Approximately a million tons of dust are left in the air over the Amazon each year.",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.25,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
-    "example_id": "5727cebc2ca10214002d96f2",
-    "question": "How many graduate students does Harvard have?",
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "572863363acd2414000df988",
+    "question": "In the fall quarter of 2014, how many students signed up for the university's  in total?",
     "gold_answers": [
-      "14,000",
-      "14,000",
-      "14,000"
+      "15,244",
+      "15,244",
+      "15,244"
     ],
-    "prediction": "58,020",
+    "prediction": "58,045",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
-    "example_id": "57106d2fb654c5140001f8f1",
-    "question": "France laid siege to Montpellier in what year?",
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "5705f13d52bb8914006896f4",
+    "question": "How many counties initially made up the definition of southern California?",
     "gold_answers": [
-      "1622",
-      "1622",
-      "1622"
+      "seven",
+      "seven",
+      "seven"
     ],
-    "prediction": "1812",
+    "prediction": "ten",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
-    "example_id": "572a058aaf94a219006aa753",
-    "question": "What is the nature of the relationship between T-cells and vitamin D?",
-    "gold_answers": [
-      "symbiotic relationship",
-      "symbiotic",
-      "symbiotic relationship"
-    ],
-    "prediction": "Vitamin D is a molecule of a chemical compound.",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "57308f6b8ab72b1400f9c580",
-    "question": "Orientalism refers to how the West developed a what of the East?",
-    "gold_answers": [
-      "an imaginative geography",
-      "imaginative geography",
-      "imaginative geography",
-      "imaginative geography",
-      "imaginative geography"
-    ],
-    "prediction": "a culture",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "572940973f37b319004781a7",
-    "question": "What was the source of the mistake?",
-    "gold_answers": [
-      "the WWF report",
-      "the IPCC from the WWF report",
-      "the WWF report"
-    ],
-    "prediction": "The sex of the child",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "573020f7b2c2fd14005688fa",
-    "question": "When did Hamas drive the PLO out of Gaza?",
-    "gold_answers": [
-      "2007",
-      "2007",
-      "2007"
-    ],
-    "prediction": "1967",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "5727cb4b2ca10214002d967a",
-    "question": "What historical figure was Jacksonville named after?",
-    "gold_answers": [
-      "Andrew Jackson",
-      "Andrew Jackson",
-      "Andrew Jackson"
-    ],
-    "prediction": "John F. Kennedy",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "56de3d594396321400ee26cb",
-    "question": "Who was Ralph in charge of being at war with?",
-    "gold_answers": [
-      "the Welsh",
-      "the Welsh",
-      "the Welsh"
-    ],
-    "prediction": "the United States",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "571c4132dd7acb1400e4c0b2",
-    "question": "In what year did Priestley publish the findings of his experiments?",
-    "gold_answers": [
-      "1775",
-      "1775",
-      "1775",
-      "1775",
-      "1775"
-    ],
-    "prediction": "1889",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
+    "seed": 42,
+    "retriever": "parametric_only",
     "example_id": "57264586f1498d1400e8dac9",
     "question": "Was the Use of the DATANET 1 name correct ",
     "gold_answers": [
@@ -283,22 +231,64 @@
       "Dutch PTT Telecom"
     ],
     "prediction": "no",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
-    "example_id": "5726f96ddd62a815002e9698",
-    "question": "Which provinces in Canada limit the rights of pharmacists in prescribing?",
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "572ffce5a23a5019007fcc16",
+    "question": "How many major ice ages have occurred? ",
     "gold_answers": [
-      "Alberta and British Columbia",
-      "Alberta and British Columbia",
-      "Alberta and British Columbia"
+      "six",
+      "six",
+      "six"
     ],
-    "prediction": "Ontario, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba, Manitoba,",
+    "prediction": "Two major ice ages have occurred.",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "5711623e50c2381900b54aba",
+    "question": "What is restrained with a lever in the top of a boiler?",
+    "gold_answers": [
+      "plug valve",
+      "plug valve",
+      "a plug valve"
+    ],
+    "prediction": "boiler",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
     "example_id": "57297a276aef051400154f89",
     "question": "Besides Leibniz, what other mathematician proved the validity of Fermat's little theorem?",
     "gold_answers": [
@@ -309,118 +299,110 @@
       "Euler"
     ],
     "prediction": "charles edward scott",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
-    "example_id": "5727515f708984140094dc11",
-    "question": "What South African law recognized two types of schools?",
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "57106d2fb654c5140001f8f1",
+    "question": "France laid siege to Montpellier in what year?",
     "gold_answers": [
-      "South African Schools Act",
-      "South African Schools Act",
-      "South African Schools Act"
+      "1622",
+      "1622",
+      "1622"
     ],
-    "prediction": "ANC law",
+    "prediction": "1812",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
-    "example_id": "572ffce5a23a5019007fcc16",
-    "question": "How many major ice ages have occurred? ",
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "57267ebfdd62a815002e872f",
+    "question": "What does critically tapered mean? ",
     "gold_answers": [
-      "six",
-      "six",
-      "six"
+      "all angles remain the same",
+      "all angles remain the same",
+      "all angles remain the same"
     ],
-    "prediction": "Two major ice ages have occurred.",
+    "prediction": "critically tapered",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
-    "example_id": "572fad30a23a5019007fc870",
-    "question": "When did Prime Minister Wilson commit to some form of devolved legislature?",
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "57308f6b8ab72b1400f9c580",
+    "question": "Orientalism refers to how the West developed a what of the East?",
     "gold_answers": [
-      "1974",
-      "1974",
-      "1974"
+      "an imaginative geography",
+      "imaginative geography",
+      "imaginative geography",
+      "imaginative geography",
+      "imaginative geography"
     ],
-    "prediction": "1889",
+    "prediction": "a culture",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
-    "example_id": "57092322efce8f15003a7db3",
-    "question": "What is the name of the holding company for BSkyB?",
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "5727cb4b2ca10214002d967a",
+    "question": "What historical figure was Jacksonville named after?",
     "gold_answers": [
-      "Sky plc",
-      "British Sky Broadcasting Group plc",
-      "British Sky Broadcasting Group plc"
+      "Andrew Jackson",
+      "Andrew Jackson",
+      "Andrew Jackson"
     ],
-    "prediction": "BSkyB",
+    "prediction": "John F. Kennedy",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
-    "example_id": "5705f13d52bb8914006896f4",
-    "question": "How many counties initially made up the definition of southern California?",
-    "gold_answers": [
-      "seven",
-      "seven",
-      "seven"
-    ],
-    "prediction": "ten",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "5711623e50c2381900b54aba",
-    "question": "What is restrained with a lever in the top of a boiler?",
-    "gold_answers": [
-      "plug valve",
-      "plug valve",
-      "a plug valve"
-    ],
-    "prediction": "boiler",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "572863363acd2414000df988",
-    "question": "In the fall quarter of 2014, how many students signed up for the university's  in total?",
-    "gold_answers": [
-      "15,244",
-      "15,244",
-      "15,244"
-    ],
-    "prediction": "58,045",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "570d4030fed7b91900d45da1",
-    "question": "What entity owns V/Line?",
-    "gold_answers": [
-      "Victorian Government",
-      "the Victorian Government",
-      "Victorian Government"
-    ],
-    "prediction": "a private equity firm",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "57335ddbd058e614000b5932",
-    "question": "Where can Aeolian sand with a number of dunes be found?",
-    "gold_answers": [
-      "plain Vistula terraces",
-      "highest terrace",
-      "highest terrace"
-    ],
-    "prediction": "Antarctica",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
+    "seed": 42,
+    "retriever": "parametric_only",
     "example_id": "57286bb84b864d19001649ca",
     "question": "Where did the Grand Canal start?",
     "gold_answers": [
@@ -429,10 +411,490 @@
       "southern China"
     ],
     "prediction": "the southwestern coast of the United States",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "573020f7b2c2fd14005688fa",
+    "question": "When did Hamas drive the PLO out of Gaza?",
+    "gold_answers": [
+      "2007",
+      "2007",
+      "2007"
+    ],
+    "prediction": "1967",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "5737804dc3c5551400e51f10",
+    "question": "What nuclear forces only act at short distances?",
+    "gold_answers": [
+      "strong and weak",
+      "strong and weak forces",
+      "strong and weak",
+      "strong and weak forces"
+    ],
+    "prediction": "nuclear",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "5727515f708984140094dc11",
+    "question": "What South African law recognized two types of schools?",
+    "gold_answers": [
+      "South African Schools Act",
+      "South African Schools Act",
+      "South African Schools Act"
+    ],
+    "prediction": "ANC law",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "5727f6723acd2414000df0e7",
+    "question": "What types of organizations are on a decline in the US which adversely effects economic mobility?",
+    "gold_answers": [
+      "unions",
+      "union membership",
+      "unions"
+    ],
+    "prediction": "corporations",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "572646655951b619008f6ec0",
+    "question": "What do ctenophores have that no other animals have?",
+    "gold_answers": [
+      "colloblasts",
+      "colloblasts",
+      "colloblasts"
+    ],
+    "prediction": "a snout",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "5727cebc2ca10214002d96f2",
+    "question": "How many graduate students does Harvard have?",
+    "gold_answers": [
+      "14,000",
+      "14,000",
+      "14,000"
+    ],
+    "prediction": "58,020",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "56de3d594396321400ee26cb",
+    "question": "Who was Ralph in charge of being at war with?",
+    "gold_answers": [
+      "the Welsh",
+      "the Welsh",
+      "the Welsh"
+    ],
+    "prediction": "the United States",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "571c4132dd7acb1400e4c0b2",
+    "question": "In what year did Priestley publish the findings of his experiments?",
+    "gold_answers": [
+      "1775",
+      "1775",
+      "1775",
+      "1775",
+      "1775"
+    ],
+    "prediction": "1889",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "57092322efce8f15003a7db3",
+    "question": "What is the name of the holding company for BSkyB?",
+    "gold_answers": [
+      "Sky plc",
+      "British Sky Broadcasting Group plc",
+      "British Sky Broadcasting Group plc"
+    ],
+    "prediction": "BSkyB",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "5728151b4b864d1900164429",
+    "question": "Brownlee argues disobedience can be justified toward what institutions?",
+    "gold_answers": [
+      "trade unions, banks, and private universities",
+      "non-governmental agencies",
+      "decisions of non-governmental agencies",
+      "non-governmental agencies",
+      "non-governmental agencies"
+    ],
+    "prediction": "government",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "572751b4708984140094dc1e",
+    "question": "Contracts must be designed to ensure what?",
+    "gold_answers": [
+      "that each side is capable of performing the obligations set out",
+      "that each side is capable of performing the obligations set out",
+      "each side is capable of performing the obligations set out"
+    ],
+    "prediction": "a fair deal",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "572940973f37b319004781a7",
+    "question": "What was the source of the mistake?",
+    "gold_answers": [
+      "the WWF report",
+      "the IPCC from the WWF report",
+      "the WWF report"
+    ],
+    "prediction": "The sex of the child",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "5733e5a14776f4190066145c",
+    "question": "Who was given land by British goovernment for development of Ohio Country?",
+    "gold_answers": [
+      "Ohio Company of Virginia",
+      "Ohio Company of Virginia",
+      "Ohio Company of Virginia",
+      "Ohio Company of Virginia",
+      "Ohio Company"
+    ],
+    "prediction": "john d. scott",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "57264fe65951b619008f6fa3",
+    "question": "What is thought to have happened to the y. pestis that caused the black death?",
+    "gold_answers": [
+      "may no longer exist",
+      "may no longer exist",
+      "may no longer exist"
+    ],
+    "prediction": "The black death was caused by the y. pestis.",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "57335ddbd058e614000b5932",
+    "question": "Where can Aeolian sand with a number of dunes be found?",
+    "gold_answers": [
+      "plain Vistula terraces",
+      "highest terrace",
+      "highest terrace"
+    ],
+    "prediction": "Antarctica",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "5725c28a271a42140099d14f",
+    "question": "What are the three sources of European Union law?",
+    "gold_answers": [
+      "primary law, secondary law and supplementary law",
+      "primary law, secondary law and supplementary law",
+      "primary law, secondary law and supplementary law",
+      "primary law, secondary law and supplementary law"
+    ],
+    "prediction": "European Union law is a law that is based on the laws of the European Union.",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.2,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "572a0a686aef0514001551ed",
+    "question": "Who was the main proponent of the cellular theory of immunity?",
+    "gold_answers": [
+      "Elie Metchnikoff",
+      "Elie Metchnikoff",
+      "Elie Metchnikoff"
+    ],
+    "prediction": "john d. edwards",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "572fd8efb2c2fd14005684fd",
+    "question": "Why do the island archipelagos comprise a smaller number of electors?",
+    "gold_answers": [
+      "dispersed population and distance",
+      "dispersed population and distance",
+      "their dispersed population and distance from the Scottish Parliament in Edinburgh"
+    ],
+    "prediction": "The islands are a part of the United States.",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "570d418dfed7b91900d45dc1",
+    "question": "Who is the current Governor of Victoria?",
+    "gold_answers": [
+      "Linda Dessau",
+      "Linda Dessau",
+      "Linda Dessau"
+    ],
+    "prediction": "Byron Bay",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "5726f635dd62a815002e9658",
+    "question": "What is the minimum distance between a patient's home and the nearest pharmacy that allows a physician to give out medication?",
+    "gold_answers": [
+      "1.6 kilometres",
+      "1.6 kilometres",
+      "1.6 kilometres"
+    ],
+    "prediction": "a mile",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "56e1a0dccd28a01900c67a2f",
+    "question": "If two integers are multiplied and output a value, what is this expression set called?",
+    "gold_answers": [
+      "set of triples",
+      "triple",
+      "the set of triples (a, b, c) such that the relation a × b = c holds"
+    ],
+    "prediction": "a multiplicative expression",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
     "example_id": "572649d8f1498d1400e8db38",
     "question": "When did the series of strikes happen?",
     "gold_answers": [
@@ -443,136 +905,20 @@
       "the winter of 1973–74"
     ],
     "prediction": "1939",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
-    "example_id": "5728455bff5b5019007da07c",
-    "question": "How much Saharan dust is blown and falls upon the Caribbean Sea each year?",
-    "gold_answers": [
-      "43 million tons",
-      "43 million tons",
-      "43 million tons"
-    ],
-    "prediction": "a million tons",
-    "exact_match": 0.0,
-    "f1": 0.8
-  },
-  {
-    "example_id": "5726534d708984140094c26e",
-    "question": "What was Norman Cantor's theory about the plague?",
-    "gold_answers": [
-      "a combination of anthrax and other pandemics",
-      "a combination of anthrax and other pandemics",
-      "a combination of anthrax and other pandemics"
-    ],
-    "prediction": "Cantor's theory was that the plague was caused by a bacterial infection.",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "5728e3c33acd2414000e0131",
-    "question": "When is the oldest recorded incident of civil disobedience?",
-    "gold_answers": [
-      "during the Roman Empire",
-      "during the Roman Empire",
-      "during the Roman Empire",
-      "during the Roman Empire",
-      "during the Roman Empire"
-    ],
-    "prediction": "1865",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "56e1a0dccd28a01900c67a2f",
-    "question": "If two integers are multiplied and output a value, what is this expression set called?",
-    "gold_answers": [
-      "set of triples",
-      "triple",
-      "the set of triples (a, b, c) such that the relation a × b = c holds"
-    ],
-    "prediction": "a multiplicative expression",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "572755b7708984140094dc51",
-    "question": "How many women were employed in construction in 2011?",
-    "gold_answers": [
-      "828,000",
-      "828,000 women",
-      "828,000"
-    ],
-    "prediction": "1,047",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "57265aaf5951b619008f706b",
-    "question": "What does the lobata have pair of?",
-    "gold_answers": [
-      "lobes",
-      "lobes",
-      "lobes"
-    ],
-    "prediction": "lobes",
-    "exact_match": 1.0,
-    "f1": 1.0
-  },
-  {
-    "example_id": "5729f60caf94a219006aa6f0",
-    "question": "Why does a lower level of economic growth occur due to high-end consumption?",
-    "gold_answers": [
-      "human capital is neglected",
-      "a lower level of economic utility in society",
-      "human capital is neglected"
-    ],
-    "prediction": "High-end consumption is a source of economic growth.",
-    "exact_match": 0.0,
-    "f1": 0.2857142857142857
-  },
-  {
-    "example_id": "5726a00cf1498d1400e8e551",
-    "question": "What are some of the accepted general principles of European Union law?",
-    "gold_answers": [
-      "fundamental rights (see human rights), proportionality, legal certainty, equality before the law and subsidiarity",
-      "fundamental rights (see human rights), proportionality, legal certainty, equality before the law and subsidiarity",
-      "fundamental rights (see human rights), proportionality, legal certainty, equality before the law and subsidiarity"
-    ],
-    "prediction": "European Union law is a law that is based on the principles of the European Union.",
-    "exact_match": 0.0,
-    "f1": 0.07692307692307693
-  },
-  {
-    "example_id": "57377c98c3c5551400e51efd",
-    "question": "What value does the seperating into fermions and bosons depend?",
-    "gold_answers": [
-      "spin",
-      "value of the spin",
-      "the value of the spin",
-      "the spin",
-      "value of the spin,"
-    ],
-    "prediction": "",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "5733f5f24776f419006615c1",
-    "question": "Who went to Fort Dusquesne in June 1755?",
-    "gold_answers": [
-      "Braddock (with George Washington as one of his aides) led about 1,500 army troops",
-      "Braddock",
-      "Braddock (with George Washington",
-      "Braddock",
-      "Braddock"
-    ],
-    "prediction": "charles iii",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
+    "seed": 42,
+    "retriever": "parametric_only",
     "example_id": "5725f5b1271a42140099d372",
     "question": "What month is the warmest in Fresno?",
     "gold_answers": [
@@ -581,134 +927,86 @@
       "July"
     ],
     "prediction": "February",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
-    "example_id": "572663a9f1498d1400e8ddf4",
-    "question": "Which timeline is further expanded in the fourth scale?",
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "5728455bff5b5019007da07c",
+    "question": "How much Saharan dust is blown and falls upon the Caribbean Sea each year?",
     "gold_answers": [
-      "Quaternary",
-      "Quaternary",
-      "Quaternary"
+      "43 million tons",
+      "43 million tons",
+      "43 million tons"
     ],
-    "prediction": "the fourth scale",
+    "prediction": "a million tons",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.8,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
-    "example_id": "5727c8863acd2414000dec4c",
-    "question": "How far from the Yard is the Quad located?",
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "57286bf84b864d19001649d2",
+    "question": "What alumni member also write the bestseller Before I Fall?",
     "gold_answers": [
-      "half a mile northwest of the Yard",
-      "half a mile",
-      "half a mile"
+      "Lauren Oliver",
+      "Lauren Oliver",
+      "Lauren Oliver"
     ],
-    "prediction": "a mile",
+    "prediction": "edward h. scott",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.6666666666666666
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
-    "example_id": "57108d69b654c5140001f984",
-    "question": "How many refugees emigrated to the Dutch Republic?",
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "5705ffde52bb891400689785",
+    "question": "What magnitude of earthquake can many faults produce?",
     "gold_answers": [
-      "an estimated total of 75,000 to 100,000 people",
-      "75,000 to 100,000",
-      "75,000 to 100,000"
+      "6.7",
+      "6.7+",
+      "6.7+"
     ],
-    "prediction": "0",
+    "prediction": "magnitude 6.5",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
-    "example_id": "572a0a686aef0514001551ed",
-    "question": "Who was the main proponent of the cellular theory of immunity?",
-    "gold_answers": [
-      "Elie Metchnikoff",
-      "Elie Metchnikoff",
-      "Elie Metchnikoff"
-    ],
-    "prediction": "john d. edwards",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "5730bc308ab72b1400f9c73d",
-    "question": "Who reigned over the Ottoman empire when it was at its most powerful.",
-    "gold_answers": [
-      "Suleiman the Magnificent",
-      "Suleiman the Magnificent",
-      "Suleiman the Magnificent",
-      "Suleiman the Magnificent",
-      "Suleiman the Magnificent,"
-    ],
-    "prediction": "Ottoman Empire",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "57293d6d1d046914007791b9",
-    "question": "How many contributing authors does an IPCC report chapter have?",
-    "gold_answers": [
-      "a somewhat larger number",
-      "a somewhat larger number of \"contributing authors\"",
-      "a somewhat larger number"
-    ],
-    "prediction": "ten",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "57300ec0947a6a140053d006",
-    "question": "What did the conflict galvanize Muslims around the world to do?",
-    "gold_answers": [
-      "send aid and sometimes to go themselves to fight for their faith",
-      "send aid and sometimes to go themselves to fight for their faith",
-      "send aid and sometimes to go themselves to fight for their faith"
-    ],
-    "prediction": "The conflict galvanized Muslims around the world to do something.",
-    "exact_match": 0.0,
-    "f1": 0.1
-  },
-  {
-    "example_id": "57280e1aff5b5019007d9bee",
-    "question": "What civilization did the pottery belong to?",
-    "gold_answers": [
-      "Timucua",
-      "Timucua people",
-      "Mocama"
-    ],
-    "prediction": "a Roman civilization",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
-    "example_id": "56de4b074396321400ee2793",
-    "question": "What architecture type came after Norman in England?",
-    "gold_answers": [
-      "Early Gothic",
-      "Early Gothic",
-      "Early Gothic"
-    ],
-    "prediction": "Gothic",
-    "exact_match": 0.0,
-    "f1": 0.6666666666666666
-  },
-  {
-    "example_id": "571c83f3dd7acb1400e4c0da",
-    "question": "What is a descriptive term for a low-to-high energy bond?",
-    "gold_answers": [
-      "Aufbau",
-      "Aufbau",
-      "Aufbau",
-      "Aufbau",
-      "Aufbau"
-    ],
-    "prediction": "a sulfide bond",
-    "exact_match": 0.0,
-    "f1": 0.0
-  },
-  {
+    "seed": 42,
+    "retriever": "parametric_only",
     "example_id": "57263b1638643c19005ad335",
     "question": "What supplanted Frame Relay and X.25 ",
     "gold_answers": [
@@ -717,22 +1015,65 @@
       "Internet Protocol"
     ],
     "prediction": "X.25",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
-    "example_id": "5726f635dd62a815002e9658",
-    "question": "What is the minimum distance between a patient's home and the nearest pharmacy that allows a physician to give out medication?",
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "572fe4a304bcaa1900d76e57",
+    "question": "What delimits the delta of the Rhine in the west?",
     "gold_answers": [
-      "1.6 kilometres",
-      "1.6 kilometres",
-      "1.6 kilometres"
+      "Alter Rhein",
+      "Alter Rhein",
+      "Alter Rhein",
+      "Alter Rhein"
     ],
-    "prediction": "a mile",
+    "prediction": "the Rhine River",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   },
   {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "57115dbe2419e314009555a7",
+    "question": "Where was the centrifugal governor first observed by Boulton?",
+    "gold_answers": [
+      "flour mill",
+      "flour mill",
+      "a flour mill"
+    ],
+    "prediction": "a sailor's hula hoops",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
     "example_id": "572995d46aef051400154fea",
     "question": "According to Wilson's theorem, what factorial must be divisible by p if some integer p > 1 is to be considered prime?",
     "gold_answers": [
@@ -743,7 +1084,261 @@
       "(p − 1)! + 1"
     ],
     "prediction": "prime number",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
     "exact_match": 0.0,
-    "f1": 0.0
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "57108d69b654c5140001f984",
+    "question": "How many refugees emigrated to the Dutch Republic?",
+    "gold_answers": [
+      "an estimated total of 75,000 to 100,000 people",
+      "75,000 to 100,000",
+      "75,000 to 100,000"
+    ],
+    "prediction": "0",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "572663a9f1498d1400e8ddf4",
+    "question": "Which timeline is further expanded in the fourth scale?",
+    "gold_answers": [
+      "Quaternary",
+      "Quaternary",
+      "Quaternary"
+    ],
+    "prediction": "the fourth scale",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "5730bc308ab72b1400f9c73d",
+    "question": "Who reigned over the Ottoman empire when it was at its most powerful.",
+    "gold_answers": [
+      "Suleiman the Magnificent",
+      "Suleiman the Magnificent",
+      "Suleiman the Magnificent",
+      "Suleiman the Magnificent",
+      "Suleiman the Magnificent,"
+    ],
+    "prediction": "Ottoman Empire",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "57280e1aff5b5019007d9bee",
+    "question": "What civilization did the pottery belong to?",
+    "gold_answers": [
+      "Timucua",
+      "Timucua people",
+      "Mocama"
+    ],
+    "prediction": "a Roman civilization",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "572881d34b864d1900164a5d",
+    "question": "What aspect of Western medicine did the Chinese dislike?",
+    "gold_answers": [
+      "its humoral system",
+      "its humoral system",
+      "humoral system"
+    ],
+    "prediction": "Medicinal herbs",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "57300ec0947a6a140053d006",
+    "question": "What did the conflict galvanize Muslims around the world to do?",
+    "gold_answers": [
+      "send aid and sometimes to go themselves to fight for their faith",
+      "send aid and sometimes to go themselves to fight for their faith",
+      "send aid and sometimes to go themselves to fight for their faith"
+    ],
+    "prediction": "The conflict galvanized Muslims around the world to do something.",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.1,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "57377c98c3c5551400e51efd",
+    "question": "What value does the seperating into fermions and bosons depend?",
+    "gold_answers": [
+      "spin",
+      "value of the spin",
+      "the value of the spin",
+      "the spin",
+      "value of the spin,"
+    ],
+    "prediction": "",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "572759665951b619008f8885",
+    "question": "In what year was Wisconsin v. Yoder decided at the Supreme Court?",
+    "gold_answers": [
+      "1972",
+      "1972",
+      "1972"
+    ],
+    "prediction": "1939",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "5729f60caf94a219006aa6f0",
+    "question": "Why does a lower level of economic growth occur due to high-end consumption?",
+    "gold_answers": [
+      "human capital is neglected",
+      "a lower level of economic utility in society",
+      "human capital is neglected"
+    ],
+    "prediction": "High-end consumption is a source of economic growth.",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.2857142857142857,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "57265aaf5951b619008f706b",
+    "question": "What does the lobata have pair of?",
+    "gold_answers": [
+      "lobes",
+      "lobes",
+      "lobes"
+    ],
+    "prediction": "lobes",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 1.0,
+    "f1": 1.0,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
+  },
+  {
+    "seed": 42,
+    "retriever": "parametric_only",
+    "example_id": "5727c8863acd2414000dec4c",
+    "question": "How far from the Yard is the Quad located?",
+    "gold_answers": [
+      "half a mile northwest of the Yard",
+      "half a mile",
+      "half a mile"
+    ],
+    "prediction": "a mile",
+    "chunker": null,
+    "retrieved_chunk_ids": [],
+    "retrieved_doc_ids": [],
+    "retrieved_titles": [],
+    "exact_match": 0.0,
+    "f1": 0.6666666666666666,
+    "recall_at_k": 0.0,
+    "precision_at_k": 0.0,
+    "supporting_doc_coverage": 0.0,
+    "all_supporting_docs_found": 0.0
   }
 ]

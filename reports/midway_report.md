@@ -65,7 +65,7 @@ The current milestone fixes the rest of the pipeline as follows:
 - Retrieval depth: top 4 chunks
 - Runtime: local Apple MPS
 
-This is the main deviation from the proposal. The proposal planned to use a stronger 7B-class generator such as Mistral-7B or Llama-3-8B. For the midway report, we kept the generator smaller so the full chunking comparison would remain reproducible on local hardware. Moving to SCC and rerunning with a stronger instruction-tuned model is part of the remaining project plan. Beyond the dense-retrieval table reported here, the broader codebase now also supports BM25, hybrid dense+sparse retrieval, reranking, supporting-document coverage, and bootstrap confidence intervals. Those components are already implemented, but the main midway analysis keeps the ablation focused on chunking.
+This is the main deviation from the proposal. The proposal planned to use a stronger 7B-class generator such as Mistral-7B or Llama-3-8B. For the midway report, we kept the generator smaller so the full chunking comparison would remain reproducible on local hardware. The current SCC rerun target is `mistralai/Mistral-7B-Instruct-v0.3`, which matches the promised model family better than the earlier Qwen-based deployment experiments. Beyond the dense-retrieval table reported here, the broader codebase now also supports BM25, hybrid dense+sparse retrieval, reranking, supporting-document coverage, and bootstrap confidence intervals. Those components are already implemented, but the main midway analysis keeps the ablation focused on chunking.
 
 ### 3.3 Baseline
 

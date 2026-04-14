@@ -9,7 +9,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--base-url", default="http://127.0.0.1:8000/v1")
     parser.add_argument("--api-key", default="chunkrag-demo-key")
-    parser.add_argument("--model", default="Qwen/Qwen2.5-7B-Instruct")
+    parser.add_argument("--model", default="mistralai/Mistral-7B-Instruct-v0.3")
     parser.add_argument("--prompt", default="Explain in two sentences what chunking does in RAG.")
     args = parser.parse_args()
 
