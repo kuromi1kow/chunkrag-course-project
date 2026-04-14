@@ -55,6 +55,64 @@ def build_chat_prompt(messages: list[dict[str, str]]) -> str:
     return "\n".join(lines)
 
 
+def build_openai_qa_messages(question: str, context: str | None) -> list[dict[str, str]]:
+    if context:
+        return [
+            {
+                "role": "system",
+                "content": (
+                    "You are an extractive question answering assistant. "
+                    "Use only the provided context. "
+                    "Return the shortest answer span supported by the context. "
+                    "Do not explain your reasoning. "
+                    "If the answer is not fully supported, reply with exactly 'unanswerable'."
+                ),
+            },
+            {
+                "role": "user",
+                "content": (
+                    "Answer the following question using only the context.\n\n"
+                    f"Question: {question}\n\n"
+                    "Context passages:\n"
+                    f"{context}\n\n"
+                    "Return only the answer text."
+                ),
+            },
+        ]
+    return [
+        {
+            "role": "system",
+            "content": (
+                "You are a concise question answering assistant. "
+                "Return only a short answer phrase with no explanation."
+            ),
+        },
+        {
+            "role": "user",
+            "content": (
+                f"Question: {question}\n\n"
+                "Return only the answer text."
+            ),
+        },
+    ]
+
+
+def normalize_qa_response(text: str) -> str:
+    cleaned = text.strip()
+    if not cleaned:
+        return cleaned
+
+    cleaned = cleaned.splitlines()[0].strip()
+    cleaned = re.sub(r"^\s*(answer|final answer)\s*:\s*", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"^\s*the answer is\s+", "", cleaned, flags=re.IGNORECASE)
+    cleaned = cleaned.strip().strip("\"'`")
+
+    lowered = cleaned.lower()
+    if "unanswerable" in lowered or "not answerable" in lowered or "not supported" in lowered:
+        return "unanswerable"
+    return cleaned
+
+
 def resolve_device(device: str) -> str:
     if device != "auto":
         return device
@@ -238,7 +296,8 @@ class OpenAICompatibleGenerator:
         self.temperature = temperature
 
     def answer(self, question: str, context: str | None = None) -> str:
-        prompt = build_qa_prompt(question, context)
+        messages = build_openai_qa_messages(question, context)
+        prompt = "\n\n".join(message["content"] for message in messages)
         input_ids = self.tokenizer.encode(
             prompt,
             add_special_tokens=False,
@@ -246,23 +305,16 @@ class OpenAICompatibleGenerator:
             max_length=self.max_input_tokens,
         )
         truncated_prompt = self.tokenizer.decode(input_ids, skip_special_tokens=True)
+        truncated_messages = [dict(message) for message in messages]
+        truncated_messages[-1]["content"] = truncated_prompt
         response = self.client.chat.completions.create(
             model=self.model_name,
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "You are a careful question answering assistant. "
-                        "Only answer with information supported by the provided context."
-                    ),
-                },
-                {"role": "user", "content": truncated_prompt},
-            ],
+            messages=truncated_messages,
             temperature=self.temperature,
             max_tokens=self.max_new_tokens,
         )
         message = response.choices[0].message
-        return (message.content or "").strip()
+        return normalize_qa_response(message.content or "")
 
     def chat(self, messages: list[dict[str, str]]) -> str:
         response = self.client.chat.completions.create(
