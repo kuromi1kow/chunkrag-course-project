@@ -1,182 +1,264 @@
 # Comparing Chunking Strategies for Retrieval-Augmented Question Answering
 
-This repository contains a reproducible NLP course project built from the proposal in `/Users/assylkhan/Downloads/proposal.pdf`.
+This repository contains our CS505 NLP course project on how chunking strategy affects retrieval-augmented question answering.
 
-The main study compares four chunking strategies in a retrieval-augmented QA pipeline:
+The project includes:
 
-- Fixed-size token chunking
-- Recursive chunking
-- Sentence-based chunking
-- Semantic chunking
+- chunking experiments on `SQuAD v2` and `HotpotQA`
+- dense, BM25, hybrid, and reranked retrieval
+- ACL-format midway and final reports
+- a Streamlit dashboard for visual inspection
+- a local OpenWebUI frontend
+- an SCC-hosted `Mistral-7B` backend served through `vLLM`
 
-An auxiliary comparison also evaluates Chonkie's recursive and semantic chunkers against the in-repo implementations.
+## Current project status
 
-The upgraded experiment runner now supports:
+The codebase supports two main usage modes:
 
-- Multi-seed sweeps with aggregated summaries
-- Dense, BM25, hybrid, and reranked retrieval
-- Bootstrap confidence intervals for headline metrics
-- Hotpot supporting-document coverage metrics
-- Figure generation from result JSONs
-- OpenWebUI + SCC deployment scripts
-- Streamlit demo dashboard for visual inspection
-- Live upload-and-test RAG playground with PDF, TXT, Markdown, CSV, TSV, and JSON ingestion
-- Side-by-side `Traditional`, `Advanced`, and `Multi-Agent` pipeline comparisons
-- Local Hugging Face, extractive fallback, or SCC-hosted OpenAI-compatible generation backends
+1. Local experimentation and report building
+2. Local UI + `SCC`-hosted `Mistral-7B-Instruct-v0.3` through an SSH tunnel
 
-The default experimental setup uses:
+The current midpoint narrative uses:
 
-- `sentence-transformers/all-MiniLM-L6-v2` for embeddings
-- `google/flan-t5-base` for generation
-- `squad_v2` and `hotpot_qa` from Hugging Face
-- FAISS for dense retrieval
+- embeddings: `sentence-transformers/all-MiniLM-L6-v2`
+- retriever: FAISS dense retrieval
+- generator: `mistralai/Mistral-7B-Instruct-v0.3` on `SCC`
+
+## Requirements
+
+- Python `3.11`
+- macOS or Linux shell with `bash`
+- `tectonic` if you want to rebuild the report PDFs
+- Boston University `SCC` access if you want the remote `Mistral` backend
 
 ## Quick start
 
-```bash
-python3.11 -m venv .venv
-source .venv/bin/activate
-pip install -U pip
-pip install -e .
-python scripts/run_experiments.py --config configs/quickstart.json
-```
-
-Outputs are written under `outputs/`.
-
-## Optional Chonkie comparison
+The easiest way to see available commands is:
 
 ```bash
-source .venv/bin/activate
-pip install -e .[chonkie]
-python scripts/run_experiments.py --config configs/chonkie_comparison.json
+make help
 ```
 
-## Rebuild report tables
+## Installation
 
-The midway report tables can be regenerated directly from the saved experiment artifacts:
+### Core experiment environment
 
 ```bash
-python scripts/export_report_tables.py
+make setup
 ```
 
-This writes:
+This creates `.venv` and installs the core project dependencies.
+
+### Streamlit demo environment
+
+```bash
+make setup-demo
+```
+
+This creates `.venv_demo` and installs the dashboard dependencies.
+
+### OpenWebUI environment
+
+```bash
+make setup-openwebui
+```
+
+This creates `.venv_openwebui` and installs `OpenWebUI`.
+
+## Running the project locally
+
+### 1. Streamlit dashboard
+
+```bash
+make dashboard
+```
+
+Default URL:
+
+- [http://localhost:8501](http://localhost:8501)
+
+The dashboard reads:
+
+- results from `outputs/rigorous_smoke/aggregate_results.json`
+- figures and artifacts from `outputs/rigorous_smoke`
+
+You can override these when needed:
+
+```bash
+RESULTS_PATH=/absolute/path/to/aggregate_results.json OUTPUT_DIR=/absolute/path/to/output_dir make dashboard
+```
+
+### 2. OpenWebUI with no SCC backend
+
+```bash
+make openwebui
+```
+
+Default URL:
+
+- [http://127.0.0.1:8080](http://127.0.0.1:8080)
+
+This starts the local `OpenWebUI` instance only. If you want it connected to the remote `Mistral` model on `SCC`, use the SCC flow below instead.
+
+## Running OpenWebUI with Mistral on SCC
+
+Recommended architecture:
+
+- `SCC` runs `vLLM`
+- your laptop runs `OpenWebUI`
+- an SSH tunnel connects `localhost:8000` to the live `SCC` model server
+
+### Step 1. Submit the SCC vLLM job
+
+Run this from an `SCC` login shell inside the project directory:
+
+```bash
+make scc-vllm
+```
+
+This submits a `Mistral-7B-Instruct-v0.3` `vLLM` server job using the default SCC settings.
+
+Useful overrides:
+
+```bash
+SCC_QUEUE=l40s SCC_GPU_TYPE=L40S SCC_GPU_MEMORY=48G make scc-vllm
+SCC_QUEUE=a100 SCC_GPU_TYPE=A100 SCC_GPU_MEMORY=80G make scc-vllm
+SCC_QUEUE=h200 SCC_GPU_TYPE=H200 SCC_GPU_MEMORY=80G make scc-vllm
+```
+
+You can check job state on `SCC` with:
+
+```bash
+qstat -u <your_scc_username>
+```
+
+### Step 2. Open the SSH tunnel locally
+
+Run this on your local machine after the SCC job is `running`:
+
+```bash
+make scc-tunnel
+```
+
+By default it reads runtime information from:
+
+- `/projectnb/cs505am/projects/kuromiqo_chunkrag_project/outputs/openwebui_vllm/runtime.env`
+
+You can override the remote root if needed:
+
+```bash
+REMOTE_ROOT=/projectnb/cs505am/projects/kuromiqo_chunkrag_project make scc-tunnel
+```
+
+When the tunnel is up, this should work locally:
+
+```bash
+curl http://127.0.0.1:8000/v1/models -H "Authorization: Bearer chunkrag-demo-key"
+```
+
+### Step 3. Start OpenWebUI already pointed at the SCC model
+
+```bash
+make openwebui-scc
+```
+
+This starts `OpenWebUI` with:
+
+- base URL: `http://127.0.0.1:8000/v1`
+- API key: `chunkrag-demo-key`
+
+Then open:
+
+- [http://127.0.0.1:8080](http://127.0.0.1:8080)
+
+If the model list looks stale, refresh the page once after the tunnel is live.
+
+## Experiments
+
+### Local quickstart experiment
+
+```bash
+make quickstart
+```
+
+### Local rigorous run
+
+```bash
+make rigorous-local
+make plot-rigorous
+```
+
+### Optional Chonkie comparison
+
+```bash
+make chonkie
+```
+
+### SCC rigorous experiment sweep
+
+Run from an `SCC` login shell:
+
+```bash
+make scc-rigorous
+```
+
+Default config:
+
+- `configs/scc_rigorous_mistral.json`
+
+Default output directory:
+
+- `/projectnb/cs505am/projects/kuromiqo_chunkrag_project/outputs/scc_rigorous_mistral`
+
+## Reports
+
+### Regenerate tables and rebuild both PDFs
+
+```bash
+make reports
+```
+
+### Midway report only
+
+```bash
+make reports-midway
+```
+
+### Final report only
+
+```bash
+make reports-final
+```
+
+Generated report tables are written to:
 
 - `reports/generated/midway_tables.tex`
 - `reports/generated/chonkie_table.tex`
 - `reports/generated/midway_tables.md`
 
-Both ACL reports pull their experiment tables from `reports/generated/midway_tables.tex`, and the final report also uses `reports/generated/chonkie_table.tex`.
+## Validation
 
-## Build report PDFs
-
-Rebuild generated tables and compile both ACL PDFs:
+Run code compilation plus unit tests:
 
 ```bash
-bash scripts/build_reports.sh
+make test
 ```
 
-Optional modes:
+## Main files and directories
 
-- `bash scripts/build_reports.sh midway`
-- `bash scripts/build_reports.sh final`
-
-## Rigorous local sweep
-
-```bash
-source .venv/bin/activate
-pip install -e .
-python scripts/run_experiments.py --config configs/rigorous_local.json --output-dir outputs/rigorous_local
-python scripts/plot_results.py --results outputs/rigorous_local/aggregate_results.json --output-dir outputs/rigorous_local/figures
-```
-
-## SCC sweep
-
-The SCC path uses BU's `qsub` scheduler and the `academic-ml/spring-2026` environment.
-
-```bash
-bash scripts/submit_scc_rigorous.sh configs/scc_rigorous_mistral.json /projectnb/cs505am/projects/kuromiqo_chunkrag_project/outputs/scc_rigorous_mistral
-```
-
-Useful overrides:
-
-- `SCC_QUEUE=academic-gpu`
-- `SCC_GPU_TYPE=A100`
-- `SCC_GPU_MEMORY=80G`
-- `SCC_WALLTIME=24:00:00`
-- `SCC_THREADS=8`
-
-## OpenWebUI + SCC model serving
-
-Recommended deployment:
-
-- `SCC` hosts the model through `vLLM`
-- `OpenWebUI` runs locally
-- an SSH tunnel connects the UI to the SCC model server
-
-### 1. Start the SCC model server
-
-```bash
-bash scripts/submit_scc_vllm.sh /projectnb/cs505am/projects/kuromiqo_chunkrag_project/outputs/openwebui_vllm
-```
-
-### 2. Open the tunnel locally
-
-```bash
-bash scripts/tunnel_scc_vllm.sh /projectnb/cs505am/projects/kuromiqo_chunkrag_project
-```
-
-### 3. Set up and run OpenWebUI locally
-
-```bash
-bash scripts/setup_openwebui_local.sh
-bash scripts/run_openwebui_local.sh
-```
-
-Then in OpenWebUI add an OpenAI-compatible connection with:
-
-- URL: `http://127.0.0.1:8000/v1`
-- API key: `chunkrag-demo-key`
-- Model: `mistralai/Mistral-7B-Instruct-v0.3`
-
-## Visual dashboard
-
-```bash
-bash scripts/setup_demo_dashboard.sh
-bash scripts/run_demo_dashboard.sh
-```
-
-This launches a Streamlit dashboard that shows:
-
-- architecture choices
-- aggregate metrics
-- example-level predictions
-- generated figures
-- a live playground for uploaded corpora
-- evidence traces, citations, query rewrites, and grounding estimates
-
-### Live playground workflow
-
-The `Playground` tab now supports:
-
-- uploading files or pasting a custom mini knowledge base
-- mixing in built-in project docs for demos
-- switching chunkers and retrievers without changing code
-- comparing `Traditional`, `Advanced`, and `Multi-Agent` flows on the same question
-- evaluating a live answer against an optional reference answer
-
-For the fastest smoke test, build the playground with the built-in docs and use the `Extractive fallback` generator. For a real end-to-end demo, point the `OpenAI-compatible endpoint` backend at the SCC `vLLM` tunnel.
+- experiment code: `src/chunkrag`
+- configs: `configs`
+- scripts: `scripts`
+- saved outputs: `outputs`
+- ACL reports: `reports`
+- Streamlit app: `apps/rag_demo_dashboard.py`
 
 ## Project deliverables
 
-- Final report: [`reports/final_report.md`](/Users/assylkhan/Documents/NLP/reports/final_report.md)
-- Final report PDF: [`reports/final_report.pdf`](/Users/assylkhan/Documents/NLP/reports/final_report.pdf)
-- Final ACL report source: [`reports/final_report_acl.tex`](/Users/assylkhan/Documents/NLP/reports/final_report_acl.tex)
-- Midway report: [`reports/midway_report.md`](/Users/assylkhan/Documents/NLP/reports/midway_report.md)
-- Midway report PDF: [`reports/midway_report.pdf`](/Users/assylkhan/Documents/NLP/reports/midway_report.pdf)
-- Midway ACL report source: [`reports/midway_report_acl.tex`](/Users/assylkhan/Documents/NLP/reports/midway_report_acl.tex)
-- Reference list: [`reports/references.bib`](/Users/assylkhan/Documents/NLP/reports/references.bib)
-- OpenWebUI deployment guide: [`docs/openwebui_scc_deployment.md`](/Users/assylkhan/Documents/NLP/docs/openwebui_scc_deployment.md)
-- RAG upgrade roadmap: [`docs/rag_roadmap.md`](/Users/assylkhan/Documents/NLP/docs/rag_roadmap.md)
-- Final experiment run used in the report: [`outputs/report_run/all_results.json`](/Users/assylkhan/Documents/NLP/outputs/report_run/all_results.json)
-- Auxiliary Chonkie comparison: [`outputs/chonkie_report_run/all_results.json`](/Users/assylkhan/Documents/NLP/outputs/chonkie_report_run/all_results.json)
-- Rigorous smoke verification run: [`outputs/rigorous_smoke/aggregate_results.json`](/Users/assylkhan/Documents/NLP/outputs/rigorous_smoke/aggregate_results.json)
+- midway report PDF: [`reports/midway_report.pdf`](/Users/assylkhan/Documents/NLP/reports/midway_report.pdf)
+- final report PDF: [`reports/final_report.pdf`](/Users/assylkhan/Documents/NLP/reports/final_report.pdf)
+- midway ACL source: [`reports/midway_report_acl.tex`](/Users/assylkhan/Documents/NLP/reports/midway_report_acl.tex)
+- final ACL source: [`reports/final_report_acl.tex`](/Users/assylkhan/Documents/NLP/reports/final_report_acl.tex)
+- bibliography: [`reports/references.bib`](/Users/assylkhan/Documents/NLP/reports/references.bib)
+- SCC/OpenWebUI deployment notes: [`docs/openwebui_scc_deployment.md`](/Users/assylkhan/Documents/NLP/docs/openwebui_scc_deployment.md)
+- roadmap: [`docs/rag_roadmap.md`](/Users/assylkhan/Documents/NLP/docs/rag_roadmap.md)
