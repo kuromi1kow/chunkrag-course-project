@@ -79,7 +79,7 @@ Default URL:
 
 Example screen:
 
-![Streamlit dashboard](docs/assets/streamlit-dashboard.png)
+![Streamlit playground](docs/assets/streamlit-playground.png)
 
 The dashboard reads:
 
@@ -92,12 +92,13 @@ You can override these when needed:
 RESULTS_PATH=/absolute/path/to/aggregate_results.json OUTPUT_DIR=/absolute/path/to/output_dir make dashboard
 ```
 
-Example workflow in Streamlit:
+Example workflow in Streamlit Playground:
 
-1. Open the `Architecture` tab to explain the project setup.
-2. Open the `Results` tab to inspect aggregate metrics.
-3. Open the `Predictions` tab to review individual QA examples.
-4. Open the `Playground` tab to upload files and compare `Traditional`, `Advanced`, and `Multi-Agent` RAG flows.
+1. Open the `Playground` tab.
+2. Upload PDFs, Markdown, CSV, JSON, or text files.
+3. Choose a chunker and retriever.
+4. Build the index.
+5. Compare `Traditional`, `Advanced`, and `Multi-Agent` RAG flows on the same question.
 
 Good first demo prompt for the Playground:
 
@@ -114,10 +115,6 @@ make openwebui
 Default URL:
 
 - [http://127.0.0.1:8080](http://127.0.0.1:8080)
-
-Example screen:
-
-![OpenWebUI sign-in screen](docs/assets/openwebui-home.png)
 
 This starts the local `OpenWebUI` instance only. If you want it connected to the remote `Mistral` model on `SCC`, use the SCC flow below instead.
 
@@ -193,6 +190,16 @@ Then open:
 - [http://127.0.0.1:8080](http://127.0.0.1:8080)
 
 If the model list looks stale, refresh the page once after the tunnel is live.
+
+Example screen with a live SCC-backed model response:
+
+![OpenWebUI with Mistral response](docs/assets/openwebui-mistral-response.png)
+
+In this screenshot, `OpenWebUI` is connected to `mistralai/Mistral-7B-Instruct-v0.3` through the local `SCC` tunnel, and the model answers the question:
+
+```text
+What is retrieval-augmented generation in one sentence?
+```
 
 Example workflow in OpenWebUI:
 
