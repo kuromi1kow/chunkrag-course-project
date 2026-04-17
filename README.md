@@ -77,6 +77,10 @@ Default URL:
 
 - [http://localhost:8501](http://localhost:8501)
 
+Example screen:
+
+![Streamlit dashboard](docs/assets/streamlit-dashboard.png)
+
 The dashboard reads:
 
 - results from `outputs/rigorous_smoke/aggregate_results.json`
@@ -88,6 +92,19 @@ You can override these when needed:
 RESULTS_PATH=/absolute/path/to/aggregate_results.json OUTPUT_DIR=/absolute/path/to/output_dir make dashboard
 ```
 
+Example workflow in Streamlit:
+
+1. Open the `Architecture` tab to explain the project setup.
+2. Open the `Results` tab to inspect aggregate metrics.
+3. Open the `Predictions` tab to review individual QA examples.
+4. Open the `Playground` tab to upload files and compare `Traditional`, `Advanced`, and `Multi-Agent` RAG flows.
+
+Good first demo prompt for the Playground:
+
+```text
+Upload a few PDFs or text files, build the index, and ask one question that requires evidence from more than one passage.
+```
+
 ### 2. OpenWebUI with no SCC backend
 
 ```bash
@@ -97,6 +114,10 @@ make openwebui
 Default URL:
 
 - [http://127.0.0.1:8080](http://127.0.0.1:8080)
+
+Example screen:
+
+![OpenWebUI sign-in screen](docs/assets/openwebui-home.png)
 
 This starts the local `OpenWebUI` instance only. If you want it connected to the remote `Mistral` model on `SCC`, use the SCC flow below instead.
 
@@ -172,6 +193,28 @@ Then open:
 - [http://127.0.0.1:8080](http://127.0.0.1:8080)
 
 If the model list looks stale, refresh the page once after the tunnel is live.
+
+Example workflow in OpenWebUI:
+
+1. Sign in to the local `OpenWebUI` instance.
+2. Open the model selector and choose `mistralai/Mistral-7B-Instruct-v0.3`.
+3. Send a simple smoke-test prompt first, for example:
+
+```text
+Reply with one sentence explaining what retrieval-augmented generation is.
+```
+
+4. Then try a project-specific prompt, for example:
+
+```text
+Compare fixed chunking and semantic chunking for retrieval-augmented question answering in 3 short bullet points.
+```
+
+If the model selector is empty:
+
+- make sure the SCC `vLLM` job is running
+- make sure the SSH tunnel on `localhost:8000` is active
+- refresh the `OpenWebUI` page once
 
 ## Experiments
 
