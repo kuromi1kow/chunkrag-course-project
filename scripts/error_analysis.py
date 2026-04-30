@@ -1,5 +1,24 @@
 #!/usr/bin/env python3.11
-"""Bucket Mistral v2 EM=0 predictions into failure categories and emit report artifacts."""
+"""Bucket Mistral v2 EM=0 predictions into failure categories and emit report artifacts.
+
+Two bucketings are computed in parallel:
+
+* The *fine* 7-category split exposes whether a failure is a false refusal,
+  verbose extraction, terse extraction, paraphrase, partial answer, or wrong
+  answer. This drives Phase 2 prioritization (different buckets need different
+  fixes).
+* The *coarse* 3-category roll-up groups failures into ``retrieval_failure``,
+  ``format_or_refusal`` (anything fixable by prompt/post-processing), and
+  ``model_error`` (genuinely wrong content). This is what the report appendix
+  table reports, since the headline question is "how much of the EM gap is
+  formatting vs. genuine error?".
+
+Why F1>=0.6 alone (the previous bucketing) under-counts formatting:
+when the gold answer is short ("lobes", "colloblasts"), even a perfect
+extraction wrapped in a sentence drops F1 below 0.5 because the long
+prediction kills precision. Token-set containment catches these cases
+correctly.
+"""
 
 from __future__ import annotations
 
@@ -16,33 +35,81 @@ sys.path.insert(0, str(_REPO_ROOT / "src"))
 from chunkrag.text_utils import normalize_answer  # noqa: E402
 
 DATASETS = ["squad_v2", "hotpot_qa"]
-BUCKET_ORDER = ["retrieval_failure", "formatting_mismatch", "partial_overlap", "content_error"]
-# Best chunker per dataset (by F1 in the v2 aggregate_results.json).
+
+FINE_ORDER = [
+    "retrieval_failure",
+    "false_refusal",
+    "format_verbose",
+    "format_terse",
+    "paraphrase",
+    "partial_answer",
+    "wrong_answer",
+]
+FINE_TO_COARSE = {
+    "retrieval_failure": "retrieval_failure",
+    "false_refusal": "format_or_refusal",
+    "format_verbose": "format_or_refusal",
+    "format_terse": "format_or_refusal",
+    "paraphrase": "format_or_refusal",
+    "partial_answer": "model_error",
+    "wrong_answer": "model_error",
+}
+COARSE_ORDER = ["retrieval_failure", "format_or_refusal", "model_error"]
+
 BEST_CHUNKER: dict[str, str] = {"squad_v2": "recursive_256", "hotpot_qa": "recursive_256"}
-FORMATTING_F1_THRESHOLD = 0.6  # primary threshold used for bucketing and the report table
+PARAPHRASE_F1_THRESHOLD = 0.6  # used only when token-set containment doesn't trigger
 
 
-def bucket(record: dict) -> str:
-    """Assign one error category to a single EM=0 prediction record."""
+def _token_set(text: str) -> set[str]:
+    return set(normalize_answer(text).split())
+
+
+def fine_bucket(record: dict) -> str:
+    """Assign one fine-grained error category to a single EM=0 prediction record."""
     if record["supporting_doc_coverage"] == 0.0:
         return "retrieval_failure"
+
+    pred_norm = normalize_answer(record["prediction"])
+    if pred_norm in ("", "unanswerable"):
+        return "false_refusal"
+
+    pred_tokens = set(pred_norm.split())
+    for gold in record.get("gold_answers", []):
+        gold_tokens = _token_set(gold)
+        if not gold_tokens:
+            continue
+        # Verbose: model produced everything in gold plus extras.
+        if gold_tokens.issubset(pred_tokens) and gold_tokens != pred_tokens:
+            return "format_verbose"
+        # Terse: model produced a strict subset of gold tokens.
+        if pred_tokens.issubset(gold_tokens) and gold_tokens != pred_tokens:
+            return "format_terse"
+
     f1 = record["f1"]
-    if f1 >= FORMATTING_F1_THRESHOLD:
-        return "formatting_mismatch"
+    if f1 >= PARAPHRASE_F1_THRESHOLD:
+        return "paraphrase"
     if f1 > 0.0:
-        return "partial_overlap"
-    return "content_error"
+        return "partial_answer"
+    return "wrong_answer"
+
+
+def coarse_bucket(record: dict) -> str:
+    return FINE_TO_COARSE[fine_bucket(record)]
 
 
 def threshold_sensitivity(em0_records: list[dict], thresholds=(0.5, 0.6, 0.7)) -> dict:
+    """For diagnostic purposes only: how many retrieved-and-failed cases have F1>=t?"""
     retrieved = [r for r in em0_records if r["supporting_doc_coverage"] > 0.0]
     n = len(retrieved)
     out: dict[float, dict] = {}
     for t in thresholds:
-        fmt = sum(1 for r in retrieved if r["f1"] >= t)
-        rest = n - fmt
-        out[t] = {"formatting_mismatch": fmt, "other": rest, "total_retrieved": n,
-                  "formatting_pct": round(100 * fmt / n, 1) if n else 0.0}
+        hi = sum(1 for r in retrieved if r["f1"] >= t)
+        out[t] = {
+            "above": hi,
+            "below": n - hi,
+            "total_retrieved": n,
+            "above_pct": round(100 * hi / n, 1) if n else 0.0,
+        }
     return out
 
 
@@ -68,31 +135,40 @@ def compute_summary(all_preds: dict[str, dict[str, list[dict]]]) -> list[dict]:
             total = len(records)
             em1 = sum(1 for r in records if r["exact_match"] == 1.0)
             em0 = [r for r in records if r["exact_match"] == 0.0]
-            buckets: dict[str, int] = {b: 0 for b in BUCKET_ORDER}
+            fine: dict[str, int] = {b: 0 for b in FINE_ORDER}
+            coarse: dict[str, int] = {b: 0 for b in COARSE_ORDER}
             for r in em0:
-                buckets[bucket(r)] += 1
-            sensitivity = threshold_sensitivity(em0)
+                fb = fine_bucket(r)
+                fine[fb] += 1
+                coarse[FINE_TO_COARSE[fb]] += 1
             row = {
-                "dataset": dataset, "chunker": chunker, "total": total,
-                "em_correct": em1, "em_zero": len(em0),
+                "dataset": dataset,
+                "chunker": chunker,
+                "total": total,
+                "em_correct": em1,
+                "em_zero": len(em0),
             }
-            for b in BUCKET_ORDER:
-                row[b] = buckets[b]
-                row[f"{b}_pct"] = round(100 * buckets[b] / len(em0), 1) if em0 else 0.0
-            row["threshold_sensitivity"] = sensitivity
+            for b in FINE_ORDER:
+                row[b] = fine[b]
+                row[f"{b}_pct"] = round(100 * fine[b] / len(em0), 1) if em0 else 0.0
+            for b in COARSE_ORDER:
+                row[f"coarse_{b}"] = coarse[b]
+                row[f"coarse_{b}_pct"] = round(100 * coarse[b] / len(em0), 1) if em0 else 0.0
+            row["threshold_sensitivity"] = threshold_sensitivity(em0)
             rows.append(row)
     return rows
 
 
 def build_appendix_table(summary_rows: list[dict]) -> str:
-    """LaTeX table for the best chunker on each dataset, suitable for \input{}."""
-    bucket_labels = {
+    """LaTeX table for the best chunker on each dataset, suitable for \\input{}.
+
+    Uses the coarse 3-bucket roll-up (retrieval / format-or-refusal / model error).
+    """
+    coarse_labels = {
         "retrieval_failure": r"Retrieval failure",
-        "formatting_mismatch": r"Formatting mismatch",
-        "partial_overlap": r"Partial overlap",
-        "content_error": r"Content error",
+        "format_or_refusal": r"Format or refusal (fixable)",
+        "model_error": r"Model error (partial or wrong)",
     }
-    # Pull rows for best chunkers.
     sq = next((r for r in summary_rows if r["dataset"] == "squad_v2"
                and r["chunker"] == BEST_CHUNKER["squad_v2"]), None)
     hp = next((r for r in summary_rows if r["dataset"] == "hotpot_qa"
@@ -101,22 +177,27 @@ def build_appendix_table(summary_rows: list[dict]) -> str:
     header = (
         r"\begin{table}[h]" "\n"
         r"\centering" "\n"
-        r"\caption{Failure-type distribution for EM\,=\,0 predictions, best chunker per dataset "
-        r"(\texttt{" + BEST_CHUNKER["squad_v2"] + r"}).}" "\n"
+        r"\caption{Failure-type distribution for EM\,=\,0 predictions on the best "
+        r"chunker per dataset (\texttt{" + BEST_CHUNKER["squad_v2"] + r"}). "
+        r"`Format or refusal' aggregates verbose extraction, terse extraction, "
+        r"close paraphrases, and false `unanswerable' refusals: cases where the "
+        r"model produced the right content but the surface form did not match "
+        r"the gold answer exactly. `Model error' aggregates partial answers and "
+        r"wrong answers.}" "\n"
         r"\label{tab:error-analysis}" "\n"
         r"\begin{tabular}{lrrrr}" "\n"
         r"\toprule" "\n"
-        r"Error type & \multicolumn{2}{c}{SQuAD} & \multicolumn{2}{c}{HotpotQA} \\" "\n"
+        r"Failure type & \multicolumn{2}{c}{SQuAD} & \multicolumn{2}{c}{HotpotQA} \\" "\n"
         r" & $n$ & \% & $n$ & \% \\" "\n"
         r"\midrule" "\n"
     )
     body = ""
-    for b in BUCKET_ORDER:
-        sq_n = sq[b] if sq else 0
-        sq_pct = sq[f"{b}_pct"] if sq else 0.0
-        hp_n = hp[b] if hp else 0
-        hp_pct = hp[f"{b}_pct"] if hp else 0.0
-        body += f"{bucket_labels[b]} & {sq_n} & {sq_pct:.1f} & {hp_n} & {hp_pct:.1f} \\\\\n"
+    for b in COARSE_ORDER:
+        sq_n = sq[f"coarse_{b}"] if sq else 0
+        sq_pct = sq[f"coarse_{b}_pct"] if sq else 0.0
+        hp_n = hp[f"coarse_{b}"] if hp else 0
+        hp_pct = hp[f"coarse_{b}_pct"] if hp else 0.0
+        body += f"{coarse_labels[b]} & {sq_n} & {sq_pct:.1f} & {hp_n} & {hp_pct:.1f} \\\\\n"
     sq_total = sq["em_zero"] if sq else 0
     hp_total = hp["em_zero"] if hp else 0
     footer = (
@@ -129,13 +210,54 @@ def build_appendix_table(summary_rows: list[dict]) -> str:
     return header + body + footer
 
 
+def build_fine_table(summary_rows: list[dict]) -> str:
+    """A second LaTeX table with the fine-grained 7-bucket breakdown, for the appendix."""
+    fine_labels = {
+        "retrieval_failure": r"Retrieval failure",
+        "false_refusal": r"False ``unanswerable''",
+        "format_verbose": r"Verbose extraction",
+        "format_terse": r"Terse extraction",
+        "paraphrase": r"Close paraphrase",
+        "partial_answer": r"Partial answer",
+        "wrong_answer": r"Wrong answer",
+    }
+    sq = next((r for r in summary_rows if r["dataset"] == "squad_v2"
+               and r["chunker"] == BEST_CHUNKER["squad_v2"]), None)
+    hp = next((r for r in summary_rows if r["dataset"] == "hotpot_qa"
+               and r["chunker"] == BEST_CHUNKER["hotpot_qa"]), None)
+    header = (
+        r"\begin{table}[h]" "\n"
+        r"\centering" "\n"
+        r"\caption{Fine-grained breakdown of the same EM\,=\,0 cases.}" "\n"
+        r"\label{tab:error-analysis-fine}" "\n"
+        r"\begin{tabular}{lrrrr}" "\n"
+        r"\toprule" "\n"
+        r"Failure type & \multicolumn{2}{c}{SQuAD} & \multicolumn{2}{c}{HotpotQA} \\" "\n"
+        r" & $n$ & \% & $n$ & \% \\" "\n"
+        r"\midrule" "\n"
+    )
+    body = ""
+    for b in FINE_ORDER:
+        sq_n = sq[b] if sq else 0
+        sq_pct = sq[f"{b}_pct"] if sq else 0.0
+        hp_n = hp[b] if hp else 0
+        hp_pct = hp[f"{b}_pct"] if hp else 0.0
+        body += f"{fine_labels[b]} & {sq_n} & {sq_pct:.1f} & {hp_n} & {hp_pct:.1f} \\\\\n"
+    footer = (
+        r"\bottomrule" "\n"
+        r"\end{tabular}" "\n"
+        r"\end{table}" "\n"
+    )
+    return header + body + footer
+
+
 def pick_examples(records: list[dict], target_bucket: str, n: int = 3) -> list[dict]:
-    em0 = [r for r in records if r["exact_match"] == 0.0 and bucket(r) == target_bucket]
-    if target_bucket == "formatting_mismatch":
+    em0 = [r for r in records if r["exact_match"] == 0.0 and fine_bucket(r) == target_bucket]
+    if target_bucket in ("paraphrase", "format_verbose"):
         em0.sort(key=lambda r: r["f1"], reverse=True)
-    elif target_bucket == "partial_overlap":
+    elif target_bucket == "partial_answer":
         em0.sort(key=lambda r: abs(r["f1"] - 0.35))
-    elif target_bucket == "content_error":
+    elif target_bucket in ("wrong_answer", "false_refusal"):
         em0.sort(key=lambda r: r["supporting_doc_coverage"], reverse=True)
     return em0[:n]
 
@@ -143,24 +265,25 @@ def pick_examples(records: list[dict], target_bucket: str, n: int = 3) -> list[d
 def format_example(r: dict) -> str:
     titles = ", ".join(r.get("retrieved_titles", []))
     golds = " | ".join(r.get("gold_answers", []))
+    recall = r.get("recall_at_k", 0.0)
     return (
         f"- **Q:** {r['question']}\n"
         f"  **Gold:** {golds}\n"
         f"  **Pred:** {r['prediction']}\n"
         f"  **Retrieved titles:** {titles}\n"
-        f"  **F1:** {r['f1']:.3f}  **Recall@4:** {r.get('recall_at_k', '?'):.3f}\n"
+        f"  **F1:** {r['f1']:.3f}  **Recall@4:** {recall:.3f}\n"
     )
 
 
 def build_examples_md(all_preds: dict[str, dict[str, list[dict]]]) -> str:
-    lines = ["# Error analysis examples (v2 predictions)\n"]
+    lines = ["# Error analysis examples (Mistral v2 predictions, fine-grained buckets)\n"]
     for dataset in DATASETS:
         best = BEST_CHUNKER[dataset]
         records = all_preds[dataset].get(best, [])
         if not records:
             continue
         lines.append(f"## Dataset: {dataset}  Chunker: {best}\n")
-        for b in BUCKET_ORDER:
+        for b in FINE_ORDER:
             examples = pick_examples(records, b, n=3)
             label = b.replace("_", " ").title()
             lines.append(f"### {label} ({len(examples)} examples shown)\n")
@@ -174,28 +297,29 @@ def build_examples_md(all_preds: dict[str, dict[str, list[dict]]]) -> str:
 
 
 def print_report(summary_rows: list[dict]) -> None:
-    print("\n=== Failure bucket summary (all chunkers) ===")
+    print("\n=== Coarse 3-bucket summary (all chunkers) ===")
+    print(f"  {'dataset':12s}  {'chunker':18s}  {'EM=0':>4s}  "
+          f"{'retr':>10s}  {'fmt/ref':>10s}  {'modelErr':>10s}")
     for row in summary_rows:
         if row["chunker"] == "parametric_only":
             continue
         print(
-            f"  {row['dataset']:12s}  {row['chunker']:20s}  "
-            f"total={row['total']:3d}  EM=0={row['em_zero']:3d}  "
-            + "  ".join(f"{b[:4]}={row[b]:2d}({row[f'{b}_pct']:4.1f}%)"
-                        for b in BUCKET_ORDER)
+            f"  {row['dataset']:12s}  {row['chunker']:18s}  {row['em_zero']:>4d}  "
+            f"{row['coarse_retrieval_failure']:>3d}({row['coarse_retrieval_failure_pct']:>4.1f}%)  "
+            f"{row['coarse_format_or_refusal']:>3d}({row['coarse_format_or_refusal_pct']:>4.1f}%)  "
+            f"{row['coarse_model_error']:>3d}({row['coarse_model_error_pct']:>4.1f}%)"
         )
-    print("\n=== Threshold sensitivity (retrieved-only, best chunkers) ===")
+
+    print("\n=== Fine 7-bucket summary (best chunker per dataset) ===")
     for dataset in DATASETS:
         best = BEST_CHUNKER[dataset]
         row = next((r for r in summary_rows if r["dataset"] == dataset
                     and r["chunker"] == best), None)
         if not row:
             continue
-        print(f"\n  {dataset} / {best}:")
-        for t, counts in row["threshold_sensitivity"].items():
-            print(f"    threshold={t}: formatting_mismatch={counts['formatting_mismatch']}"
-                  f" ({counts['formatting_pct']:.1f}%)  other={counts['other']}"
-                  f"  total_retrieved={counts['total_retrieved']}")
+        print(f"\n  {dataset} / {best}  (EM=0 total: {row['em_zero']}):")
+        for b in FINE_ORDER:
+            print(f"    {b:18s}  n={row[b]:>3d}  ({row[f'{b}_pct']:>4.1f}%)")
 
 
 def main() -> None:
@@ -216,29 +340,26 @@ def main() -> None:
 
     summary_rows = compute_summary(all_preds)
 
-    # Drop threshold_sensitivity from JSON (it's nested, keep CSV/terminal clean).
     json_rows = [{k: v for k, v in r.items() if k != "threshold_sensitivity"}
                  for r in summary_rows]
     (out_dir / "summary.json").write_text(json.dumps(json_rows, indent=2))
 
-    csv_path = out_dir / "summary.csv"
     if json_rows:
         fieldnames = list(json_rows[0].keys())
-        with csv_path.open("w", newline="") as f:
+        with (out_dir / "summary.csv").open("w", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(json_rows)
 
-    appendix_tex = build_appendix_table(summary_rows)
-    (out_dir / "appendix_table.tex").write_text(appendix_tex)
-
-    examples_md = build_examples_md(all_preds)
-    (out_dir / "examples.md").write_text(examples_md)
+    (out_dir / "appendix_table.tex").write_text(build_appendix_table(summary_rows))
+    (out_dir / "appendix_table_fine.tex").write_text(build_fine_table(summary_rows))
+    (out_dir / "examples.md").write_text(build_examples_md(all_preds))
 
     print_report(summary_rows)
 
     print(f"\nOutputs written to {out_dir}/")
-    print("  summary.json, summary.csv, appendix_table.tex, examples.md")
+    print("  summary.json, summary.csv, appendix_table.tex, "
+          "appendix_table_fine.tex, examples.md")
 
 
 if __name__ == "__main__":

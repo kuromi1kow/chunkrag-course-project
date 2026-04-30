@@ -1,0 +1,19 @@
+\begin{table}[h]
+\centering
+\caption{Fine-grained breakdown of the same EM\,=\,0 cases.}
+\label{tab:error-analysis-fine}
+\begin{tabular}{lrrrr}
+\toprule
+Failure type & \multicolumn{2}{c}{SQuAD} & \multicolumn{2}{c}{HotpotQA} \\
+ & $n$ & \% & $n$ & \% \\
+\midrule
+Retrieval failure & 5 & 14.3 & 0 & 0.0 \\
+False ``unanswerable'' & 4 & 11.4 & 9 & 40.9 \\
+Verbose extraction & 14 & 40.0 & 5 & 22.7 \\
+Terse extraction & 2 & 5.7 & 2 & 9.1 \\
+Close paraphrase & 3 & 8.6 & 0 & 0.0 \\
+Partial answer & 4 & 11.4 & 1 & 4.5 \\
+Wrong answer & 3 & 8.6 & 5 & 22.7 \\
+\bottomrule
+\end{tabular}
+\end{table}
