@@ -1,0 +1,18 @@
+\begin{table}[h]
+\centering
+\caption{Failure-type distribution for EM\,=\,0 predictions, best chunker per dataset (\texttt{recursive_256}).}
+\label{tab:error-analysis}
+\begin{tabular}{lrrrr}
+\toprule
+Error type & \multicolumn{2}{c}{SQuAD} & \multicolumn{2}{c}{HotpotQA} \\
+ & $n$ & \% & $n$ & \% \\
+\midrule
+Retrieval failure & 5 & 14.3 & 0 & 0.0 \\
+Formatting mismatch & 5 & 14.3 & 6 & 27.3 \\
+Partial overlap & 18 & 51.4 & 2 & 9.1 \\
+Content error & 7 & 20.0 & 14 & 63.6 \\
+\midrule
+Total EM\,=\,0 & 35 & 100.0 & 22 & 100.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
