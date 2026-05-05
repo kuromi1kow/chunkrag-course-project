@@ -64,10 +64,10 @@ For each chunking strategy, the pipeline chunks each document, embeds every chun
 
 We implement four families:
 \begin{itemize}
-  \item \textbf{Fixed token chunking:} \texttt{fixed\_128}, \texttt{fixed\_256}, \texttt{fixed\_512}, with $\sim$15\% overlap.
-  \item \textbf{Recursive chunking:} \texttt{recursive\_256}, using LangChain's recursive splitter.
-  \item \textbf{Sentence chunking:} \texttt{sentence\_256}, using spaCy segmentation with greedy packing to a token budget.
-  \item \textbf{Semantic chunking:} \texttt{semantic\_256}, splitting when inter-sentence cosine similarity drops below 0.72, with a minimum-length guard. Chunk length varies with local semantic continuity.
+  \item \textbf{Fixed token chunking:} \texttt{fixed\_128}, \texttt{fixed\_256}, \texttt{fixed\_512}, with $\sim$15\% overlap. This is the simplest baseline. Text is cut into fixed-length windows without regard for sentence or paragraph boundaries. Overlap helps preserve facts near boundaries, but coherent passages can still be split awkwardly.
+  \item \textbf{Recursive chunking:} \texttt{recursive\_256}, using LangChain's recursive splitter. This method tries to preserve natural discourse units by applying an ordered list of separators, typically paragraph breaks first, then line breaks, then sentence-like punctuation, and only finally character-level cuts if needed. In effect, it keeps larger structures intact whenever they fit inside the token budget and backs off to finer splits only when necessary. 
+  \item \textbf{Sentence chunking:} \texttt{sentence\_256}, using spaCy segmentation with greedy packing to a token budget. Here, documents are first segmented into sentences and then consecutive sentences are packed together until adding another one would exceed the budget. This respects sentence boundaries, but can still split related evidence across groups.
+  \item \textbf{Semantic chunking:} \texttt{semantic\_256}, splitting when inter-sentence cosine similarity drops below 0.72, with a minimum-length guard. Unlike fixed or purely structural methods, this approach uses embedding similarity between adjacent sentences to detect topical shifts. Chunk length follows local semantic continuity, with boundaries at sharp topic changes.
 \end{itemize}
 
 We also implemented auxiliary \texttt{chonkie\_recursive\_256} and \texttt{chonkie\_semantic\_256} variants to check whether results are robust across different library implementations of the same chunking idea.
