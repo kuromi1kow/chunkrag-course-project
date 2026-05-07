@@ -13,4 +13,3 @@ reports/*.bbl
 reports/*.blg
 reports/*.log
 reports/*.out
-reports/*_acl.pdf
