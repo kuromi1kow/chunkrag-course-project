@@ -9,7 +9,7 @@ OUTPUT_DIR ?= $(ROOT_DIR)/outputs/rigorous_smoke
 OPENAI_TUNNEL_URL ?= http://127.0.0.1:8000/v1
 OPENAI_TUNNEL_KEY ?= chunkrag-demo-key
 
-.PHONY: help setup setup-demo setup-openwebui dashboard openwebui openwebui-scc quickstart rigorous-local plot-rigorous chonkie reports reports-midway reports-final test scc-vllm scc-rigorous scc-tunnel
+.PHONY: help setup setup-demo setup-openwebui dashboard openwebui openwebui-scc quickstart rigorous-local plot-rigorous chonkie reports reports-midway reports-final paper-figures test scc-vllm scc-rigorous scc-tunnel
 
 help:
 	@echo "Available targets:"
@@ -23,9 +23,10 @@ help:
 	@echo "  make rigorous-local    - run rigorous local experiment"
 	@echo "  make plot-rigorous     - generate plots for rigorous local experiment"
 	@echo "  make chonkie           - run optional Chonkie comparison"
-	@echo "  make reports           - rebuild midway and final PDFs"
+	@echo "  make reports           - rebuild midway and final PDFs (regenerates figures + tables)"
 	@echo "  make reports-midway    - rebuild midway PDF only"
 	@echo "  make reports-final     - rebuild final PDF only"
+	@echo "  make paper-figures     - rebuild reports/figures/*.pdf used by the final report"
 	@echo "  make test              - compile code and run unit tests"
 	@echo "  make scc-vllm          - submit SCC vLLM job (run from SCC shell)"
 	@echo "  make scc-rigorous      - submit SCC rigorous run (run from SCC shell)"
@@ -74,6 +75,11 @@ reports-midway:
 
 reports-final:
 	bash scripts/build_reports.sh final
+
+paper-figures:
+	if [ -x .venv/bin/python ]; then .venv/bin/python scripts/build_paper_figures.py; \
+	elif [ -x .venv_figs/bin/python ]; then .venv_figs/bin/python scripts/build_paper_figures.py; \
+	else $(PYTHON) scripts/build_paper_figures.py; fi
 
 test:
 	$(PYTHON) -m compileall src scripts tests

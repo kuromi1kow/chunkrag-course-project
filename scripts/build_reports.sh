@@ -16,6 +16,17 @@ build_one() {
 
 python3 "$ROOT_DIR/scripts/export_report_tables.py"
 
+# Regenerate paper figures (used by reports/final_report_acl.tex).
+# Prefer the project venv if available, otherwise fall back to system python.
+if [[ -x "$ROOT_DIR/.venv/bin/python" ]]; then
+  PY_FIGURES="$ROOT_DIR/.venv/bin/python"
+elif [[ -x "$ROOT_DIR/.venv_figs/bin/python" ]]; then
+  PY_FIGURES="$ROOT_DIR/.venv_figs/bin/python"
+else
+  PY_FIGURES="python3"
+fi
+"$PY_FIGURES" "$ROOT_DIR/scripts/build_paper_figures.py"
+
 case "$MODE" in
   all)
     build_one "midway_report"

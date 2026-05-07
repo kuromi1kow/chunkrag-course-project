@@ -15,7 +15,7 @@ System & EM & F1 & Recall@4 & Precision@4 & Avg chunk tokens & \# chunks \\
 \texttt{semantic\_256} & \textbf{76.7} & \textbf{86.0} & \textbf{95.0} & 74.6 & 144.8 & 467 \\
 \bottomrule
 \end{tabular}
-\caption{Results on SQuAD v2. Semantic chunking gives the best end-to-end QA, even though the most precise top-4 retrieval comes from the smallest fixed window.}
+\caption{Results on SQuAD v2. Semantic 256 is the strongest end-to-end setting in the current run.}
 \label{tab:squad}
 \end{table*}
 
@@ -35,7 +35,7 @@ System & EM & F1 & Recall@4 & Precision@4 & Avg chunk tokens & \# chunks \\
 \texttt{semantic\_256} & \textbf{33.3} & \textbf{44.7} & \textbf{76.7} & \textbf{42.5} & 97.2 & 363 \\
 \bottomrule
 \end{tabular}
-\caption{Results on HotpotQA. The best systems tie at 44.7 F1, while doc-level Recall@4 shows that recovering all supporting documents remains incomplete.}
+\caption{Results on HotpotQA. Doc-level Recall@4 shows that recovering all supporting documents remains incomplete in the current run.}
 \label{tab:hotpot}
 \end{table*}
 
