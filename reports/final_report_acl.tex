@@ -10,6 +10,8 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{url}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, calc, fit, backgrounds}
 
 \title{Comparing Chunking Strategies for Retrieval-Augmented Question Answering}
 
@@ -73,7 +75,57 @@ Retrieval quality and answer quality do not always move together: a system may r
 locally relevant text yet still fail if the evidence is incomplete or badly fragmented.
 We therefore evaluate chunking with both end-to-end QA metrics and a post-hoc error
 analysis that attributes each failure to retrieval, generation format, or genuine model
-error.
+error. Figure~\ref{fig:architecture} summarises the full pipeline.
+
+\begin{figure*}[!t]
+\centering
+\begin{tikzpicture}[
+  font=\footnotesize,
+  every node/.style={align=center, inner sep=3pt, text width=37mm,
+                     minimum height=11mm},
+  box/.style={draw, rounded corners=2pt, line width=0.5pt},
+  data/.style={box, fill=blue!7},
+  proc/.style={box, fill=orange!18},
+  model/.style={box, fill=green!16, font=\footnotesize\bfseries},
+  eval/.style={box, fill=violet!12},
+  arr/.style={-{Latex[length=2mm, width=1.6mm]}, line width=0.55pt},
+  lbl/.style={font=\scriptsize, fill=white, inner sep=1pt, text width=},
+]
+\node[data] (corpus)
+  {\textbf{Corpus}\\SQuAD v2 (60q / 35 docs)\\HotpotQA (30q / 300 docs)};
+\node[proc, right=3mm of corpus] (chunker)
+  {\textbf{Chunker} $c(D){\to}\{d_i\}$\\\texttt{fixed\_\{128,256,512\}}\\recursive\,$|$\,sentence\,$|$\,semantic};
+\node[proc, right=3mm of chunker] (index)
+  {\textbf{Embed + Index}\\MiniLM-L6-v2\\FAISS (IP) / BM25};
+\node[proc, right=3mm of index] (retr)
+  {\textbf{Retriever} (top-$k{=}4$)\\dense\,$|$\,BM25\,$|$\,hybrid\\+ cross-encoder rerank};
+
+\node[data, below=10mm of corpus] (q) {\textbf{Question}\\$q$};
+\node[proc, below=10mm of chunker] (prompt)
+  {\textbf{Prompt builder}\\extractive QA prompt\\+ top-4 chunks};
+\node[model, below=10mm of index] (gen)
+  {\textbf{Generator}\\Mistral-7B-Instruct-v0.3\\vLLM on SCC (SSH tunnel)};
+\node[eval, below=10mm of retr] (eval)
+  {\textbf{Evaluation}\\EM / F1 / R@4 / P@4\\\emph{+ error analysis}\\7 fine / 3 coarse buckets};
+
+\draw[arr] (corpus) -- (chunker);
+\draw[arr] (chunker) -- (index);
+\draw[arr] (index) -- (retr);
+
+\draw[arr] (q) -- node[lbl] {$q$} (prompt);
+\draw[arr] (prompt) -- (gen);
+\draw[arr] (gen) -- node[lbl] {$\hat{a}$} (eval);
+
+\draw[arr] (retr.south) -- node[lbl, pos=0.5] {top-4 chunks} (prompt.north);
+\end{tikzpicture}
+\caption{System architecture. The chunker is the only variable; embedding model,
+index, retriever (top-$k{=}4$), prompt template, generator (Mistral-7B-Instruct-v0.3
+served via vLLM on SCC over an SSH tunnel), and evaluation are held fixed across all
+runs. Recall@4/Precision@4 are computed at the document level; the error analyser
+assigns each EM\,=\,0 prediction to one of seven fine buckets that collapse into three
+coarse buckets (retrieval / format-or-refusal / model).}
+\label{fig:architecture}
+\end{figure*}
 
 \section{Related Work}
 
@@ -107,26 +159,19 @@ variable.
 
 We implement four families:
 \begin{itemize}
-  \item \textbf{Fixed token chunking:} \texttt{fixed\_128}, \texttt{fixed\_256},
-    \texttt{fixed\_512}, with $\sim$15\% overlap. Text is cut into fixed-length windows
-    without regard for sentence or paragraph boundaries. Overlap helps preserve facts
-    near boundaries, but coherent passages can still be split awkwardly.
-  \item \textbf{Recursive chunking:} \texttt{recursive\_256}, using LangChain's
-    recursive splitter. This method preserves natural discourse units by applying an
-    ordered list of separators: paragraph breaks first, then line breaks, then
-    sentence-like punctuation, and only finally character-level cuts if needed. It
-    keeps larger structures intact whenever they fit inside the token budget and backs
-    off to finer splits only when necessary.
-  \item \textbf{Sentence chunking:} \texttt{sentence\_256}, using spaCy segmentation
-    with greedy packing to a token budget. Documents are first segmented into sentences,
-    then consecutive sentences are packed together until adding another would exceed the
-    budget. This respects sentence boundaries but can still split related evidence
-    across groups.
-  \item \textbf{Semantic chunking:} \texttt{semantic\_256}, splitting when
-    inter-sentence cosine similarity drops below 0.72, with a minimum-length guard.
-    Unlike fixed or structural methods, this approach uses embedding similarity to
-    detect topical shifts, so chunk boundaries follow content structure rather than
-    token counts.
+  \item \textbf{Fixed token chunking}\,(\texttt{fixed\_128/256/512}, $\sim$15\% overlap):
+    fixed-length windows ignoring sentence or paragraph boundaries. Overlap mitigates
+    boundary loss but coherent passages can still be split awkwardly.
+  \item \textbf{Recursive chunking}\,(\texttt{recursive\_256}, LangChain): an ordered
+    cascade of separators (paragraph $\rightarrow$ line break $\rightarrow$ sentence
+    punctuation $\rightarrow$ character) that keeps larger discourse units intact
+    whenever they fit the token budget.
+  \item \textbf{Sentence chunking}\,(\texttt{sentence\_256}, spaCy): segments first into
+    sentences and greedily packs consecutive sentences up to the budget, respecting
+    sentence boundaries but still able to split related evidence.
+  \item \textbf{Semantic chunking}\,(\texttt{semantic\_256}): splits when inter-sentence
+    cosine similarity drops below 0.72 (with a minimum-length guard), so boundaries
+    follow embedding-detected topical shifts rather than token counts.
 \end{itemize}
 
 \subsection{Models and Configuration}
@@ -334,27 +379,23 @@ that the headline EM scores understate true system quality: the majority of fail
 are prompt artifacts addressable without changing the retriever or model.
 
 \textbf{Chunking matters, and the best strategy depends on question type.} On SQuAD,
-chunkers that preserve moderately large coherent spans (recursive, semantic) outperform
-both very small fixed windows and sentence-level segmentation. The F1 drop at \texttt{fixed\_512} (despite a slight EM increase) confirms that overly
-broad chunks dilute token-level evidence with distractors, while \texttt{fixed\_128}'s
-strong retrieval precision but weaker F1 suggests that very small chunks fragment
-evidence that should stay together. On
-HotpotQA, exact match is flatter across systems but F1 still varies, and the fact that
-fine-grained fixed chunks do not help multi-hop questions (despite their high
-individual-fact recall), suggesting that those questions require chunks large enough to
-preserve the local structure linking related facts. These patterns confirm that local
-factoid QA and multi-hop QA reward different chunking behaviors.
+chunkers preserving moderately large coherent spans (recursive, semantic) outperform
+both very small fixed windows and sentence-level segmentation: the F1 drop at
+\texttt{fixed\_512} (despite a slight EM uptick) shows broad chunks dilute token-level
+evidence with distractors, while \texttt{fixed\_128}'s strong retrieval precision but
+weaker F1 indicates very small chunks fragment evidence that should stay together. On
+HotpotQA, EM is flatter but F1 still varies, and fine-grained fixed chunks fail to help
+multi-hop questions despite high individual-fact recall, suggesting those questions need
+chunks large enough to preserve the local structure linking related facts.
 
-\textbf{Most failures are fixable, and the dominant mode differs by dataset.} On SQuAD,
-verbose extraction is the single largest failure category (40\% of EM\,=\,0): the model
-extracts the correct span but surrounds it with extra words, a systematic artifact of
-the current prompt's lack of explicit length constraints. On HotpotQA, false refusals
-dominate (41\% of failures): Mistral outputs \textit{unanswerable} even when all
-supporting evidence is present in the prompt. This is plausibly linked to multi-hop
-question complexity: synthesizing facts from two retrieved passages creates greater
-model uncertainty, and the current prompt's ``say unanswerable if unsure'' instruction
-provides an easy exit. Both failure modes are addressable through targeted prompt
-changes, without requiring better retrieval or a stronger model.
+\textbf{Most failures are fixable, and the dominant mode differs by dataset.} On SQuAD
+the largest failure category is verbose extraction (40\% of EM\,=\,0): the correct span
+appears inside the prediction surrounded by extra words, a systematic artifact of the
+prompt's lack of length constraints. On HotpotQA false refusals dominate (41\%):
+Mistral outputs \textit{unanswerable} even when all supporting evidence is in the
+prompt, plausibly because synthesising facts across passages raises uncertainty and the
+``say unanswerable if unsure'' instruction provides an easy exit. Both modes are
+addressable by targeted prompt changes alone.
 
 \section{Conclusion}
 
@@ -373,38 +414,53 @@ prompt improvements are the highest-leverage next step, and that once prompt iss
 resolved, the chunking comparison can be extended cleanly to BM25, hybrid, and reranked
 retrieval settings already implemented in the codebase.
 
+\section*{Progress Since Midway Report}
+
+Since the midway report we completed the controlled evaluation across both SQuAD~v2
+and HotpotQA, added the parametric-only baseline, finalised all six chunking
+configurations, and extended the metric set beyond EM/F1 to document-level Recall@4
+and Precision@4. We also incorporated the midway feedback by tightening the
+experimental framing so that the chunking function is the only controlled variable,
+and by adding the post-hoc error analysis that separates retrieval failures from
+generation-format and model-reasoning failures. This shifted the project's final
+reading: rather than treating low EM as primarily a retrieval problem, we show that a
+majority of failures are prompt- or formatting-related and therefore fixable without
+changing the retriever or the generator weights.
+
 \section*{Author Contributions}
 
-\textbf{Assylkhan Geniyat} led the SCC \texttt{vLLM} deployment (\texttt{Mistral-7B} +
-endpoint tunneling) and the SCC rigorous experiment sweep, and contributed to the
-report writing. \textbf{Pablo Bello} built the chunking, retrieval, and evaluation
-pipeline (\texttt{src/chunkrag}), the error-analysis script and figures, and the
-ACL report draft. \textbf{Jaime Bernal} implemented the Streamlit demo dashboard
-and the local OpenWebUI integration, and ran the parametric-only and quickstart
-baselines. \textbf{Batyrkhan Baimukhanov} contributed the Chonkie auxiliary
-comparison, dataset preprocessing utilities, and the qualitative failure-example
-annotations in Appendix~\ref{app:examples}. All authors participated in
-discussions of methodology and reviewed the final manuscript.
+\textbf{Assylkhan Geniyat} led the engineering effort and authored the bulk of the
+codebase: the chunking, retrieval, and generation modules in \texttt{src/chunkrag};
+the BM25, hybrid, and cross-encoder rerank baselines; the SCC \texttt{vLLM} Mistral
+deployment together with the SSH-tunnel toolkit; the OpenWebUI integration and the
+Streamlit RAG playground; the unit-test suite; the iterative prompt tuning that closed
+most of the early-stage gap on SQuAD; the \texttt{Makefile} one-command build; and the
+ACL report scaffold.
+\textbf{Jaime Bernal} designed and implemented the post-hoc error-analysis pipeline
+(the 7-fine / 3-coarse failure taxonomy and the EDA report that underpins the
+error-analysis results), authored the Discussion, Limitations, and Remaining Work
+sections of the midway report, and shaped the failure-mode framing carried into the
+final manuscript.
+\textbf{Batyrkhan Baimukhanov} contributed the Mistral and Qwen Colab experiment
+notebooks, the chunking-strategy descriptions, and the failure-analysis write-up
+integrated into the final report.
+\textbf{Pablo Bello} built the publication-figure pipeline used for Figures~2--4 and
+integrated them into the manuscript, and reviewed the architecture diagram and
+final-report layout for technical and editorial consistency.
+All authors discussed methodology and reviewed the final manuscript.
 
 \section{Limitations}
 
-\textbf{Strict metrics and answer-format mismatch.} EM and F1 penalize surface-form
-mismatches even when semantic content is correct. The error analysis quantifies the
-impact: 40\% of SQuAD EM\,=\,0 cases are verbose extractions where the gold span is
-present inside the prediction, making metric mismatch the single largest source of the
-SQuAD score gap.
-
-\textbf{Uniform prompting across datasets.} The system uses a single extractive QA
-prompt for both datasets. HotpotQA's multi-hop reasoning would benefit from a
-dataset-specific prompt that softens the unanswerable instruction and includes document
-titles so the model can track which passage each fact comes from.
-
-\textbf{Limited post-processing.} The existing answer normalizer handles common
-formatting issues but does not cover all observed mismatch patterns such as determiners,
-parenthetical clarifications, and unit formatting.
-
-\textbf{Small evaluation subsets.} The subsets (60 and 30 questions) are sufficient to
-reveal broad trends, but the ranking among chunkers could shift with larger samples.
+\textbf{Strict metrics.} EM/F1 penalise surface-form mismatches even when semantic
+content is correct; the error analysis quantifies this (40\% of SQuAD EM\,=\,0 cases
+are verbose extractions with the gold span inside the prediction).
+\textbf{Uniform prompting.} A single extractive QA prompt is used for both datasets;
+HotpotQA would benefit from a dataset-specific prompt that softens the unanswerable
+instruction and surfaces document titles.
+\textbf{Limited post-processing.} The answer normaliser does not cover all observed
+mismatch patterns (determiners, parentheticals, units).
+\textbf{Small evaluation subsets.} 60 and 30 questions reveal broad trends but the
+ranking among chunkers could shift with larger samples.
 
 \bibliography{references}
 
@@ -420,41 +476,35 @@ the coarse breakdown of Table~\ref{tab:error-analysis}: \emph{retrieval failure}
 Predictions are verbatim.
 
 \paragraph{Retrieval failure (SQuAD)}
-\textit{Q:} What entity owns V/Line?\\
+\textit{Q:} What entity owns V/Line?
 \textit{Gold:} Victorian Government \quad
-\textit{Pred:} \textit{unanswerable}\\
-\textit{F1:} 0.00 \quad \textit{Recall@4:} 0.00\\[2pt]
-The retriever returned documents about unrelated topics; the gold article was never in
-the prompt. This failure is unrecoverable by prompt changes alone; it requires better
-retrieval.
+\textit{Pred:} \textit{unanswerable} \quad
+\textit{F1:} 0.00, \textit{R@4:} 0.00.\\
+The retriever missed the gold article entirely; unrecoverable by prompt changes alone.
 
 \paragraph{False refusal (HotpotQA)}
-\textit{Q:} Robert Earl Holding owned an oil company that was originally founded
-by who?\\
+\textit{Q:} Robert Earl Holding owned an oil company originally founded by whom?
 \textit{Gold:} Harry F.\ Sinclair \quad
-\textit{Pred:} \textit{unanswerable}\\
-\textit{F1:} 0.00 \quad \textit{Recall@4:} 1.00\\[2pt]
-All four supporting documents were present in the prompt. The model declined to answer
-despite having the evidence, a pure prompt-tone failure fixable by softening the
-unanswerable instruction.
+\textit{Pred:} \textit{unanswerable} \quad
+\textit{F1:} 0.00, \textit{R@4:} 1.00.\\
+All four supporting documents were in the prompt; the model declined despite having the
+evidence---fixable by softening the unanswerable instruction.
 
 \paragraph{Verbose extraction (SQuAD)}
 \textit{Q:} What is thought to have happened to the \textit{Y.\,pestis} that caused
-the Black Death?\\
+the Black Death?
 \textit{Gold:} may no longer exist \quad
-\textit{Pred:} Y.\,pestis may no longer exist\\
-\textit{F1:} 0.80 \quad \textit{Recall@4:} 1.00\\[2pt]
-The gold span is present verbatim inside the prediction, preceded by the question
-subject. EM fails entirely; F1 is penalised by the extra tokens. Tightening the prompt
-to suppress subject echoing would recover this case.
+\textit{Pred:} Y.\,pestis may no longer exist \quad
+\textit{F1:} 0.80, \textit{R@4:} 1.00.\\
+Gold span is present verbatim inside the prediction; EM fails, F1 is penalised by
+extra tokens. Suppressing subject echoing recovers this case.
 
 \paragraph{Wrong answer (HotpotQA)}
-\textit{Q:} Which mountain is taller, Gasherbrum II or Langtang Ri?\\
+\textit{Q:} Which mountain is taller, Gasherbrum II or Langtang Ri?
 \textit{Gold:} Gasherbrum II \quad
-\textit{Pred:} taller than Langtang Ri\\
-\textit{F1:} 0.00 \quad \textit{Recall@4:} 1.00\\[2pt]
-Both supporting articles were retrieved. The model named the wrong mountain with zero
-token overlap against the gold. This represents a genuine reasoning failure that cannot
-be attributed to format or retrieval.
+\textit{Pred:} taller than Langtang Ri \quad
+\textit{F1:} 0.00, \textit{R@4:} 1.00.\\
+Both articles retrieved; the model named the wrong mountain. Genuine reasoning failure
+not attributable to format or retrieval.
 
 \end{document}

@@ -7,6 +7,9 @@ Figures produced (numbered to match the discussion in the report):
     fig4_retrieval_vs_answer   Scatter of answer F1 vs Recall@4 per chunker per dataset.
     fig5_fixed_size_curve      F1 (and EM) vs fixed chunk size for the fixed_* family on SQuAD.
 
+Note: the system architecture diagram (Figure 1 in the final report) is rendered
+with TikZ inline in `reports/final_report_acl.tex`, not by this script.
+
 Inputs:
     outputs/midway_mistral_endpoint_v2/aggregate_results.json
     outputs/error_analysis_v2/summary.json
