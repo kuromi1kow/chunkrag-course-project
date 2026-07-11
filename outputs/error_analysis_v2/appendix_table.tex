@@ -1,0 +1,17 @@
+\begin{table}[h]
+\centering
+\caption{Failure-type distribution for EM\,=\,0 predictions on the best chunker per dataset (\texttt{recursive_256}). `Format or refusal' aggregates verbose extraction, terse extraction, close paraphrases, and false `unanswerable' refusals: cases where the model produced the right content but the surface form did not match the gold answer exactly. `Model error' aggregates partial answers and wrong answers.}
+\label{tab:error-analysis}
+\begin{tabular}{lrrrr}
+\toprule
+Failure type & \multicolumn{2}{c}{SQuAD} & \multicolumn{2}{c}{HotpotQA} \\
+ & $n$ & \% & $n$ & \% \\
+\midrule
+Retrieval failure & 5 & 14.3 & 0 & 0.0 \\
+Format or refusal (fixable) & 23 & 65.7 & 16 & 72.7 \\
+Model error (partial or wrong) & 7 & 20.0 & 6 & 27.3 \\
+\midrule
+Total EM\,=\,0 & 35 & 100.0 & 22 & 100.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
