@@ -14,8 +14,9 @@ def load_squad_documents_and_examples(
     candidate_pool_size: int,
     seed: int = 42,
     answerable_only: bool = True,
+    revision: str | None = None,
 ) -> tuple[list[Document], list[QAExample]]:
-    raw = load_dataset("squad_v2", split=split)
+    raw = load_dataset("squad_v2", split=split, revision=revision)
     if answerable_only:
         raw = raw.filter(lambda row: len(row["answers"]["text"]) > 0)
 
@@ -83,8 +84,9 @@ def load_hotpot_documents_and_examples(
     max_examples: int,
     config_name: str = "distractor",
     seed: int = 42,
+    revision: str | None = None,
 ) -> tuple[list[Document], list[QAExample]]:
-    raw = load_dataset("hotpot_qa", config_name, split=split)
+    raw = load_dataset("hotpot_qa", config_name, split=split, revision=revision)
     raw = raw.shuffle(seed=seed).select(range(min(len(raw), max_examples)))
 
     documents: dict[str, Document] = {}
@@ -114,6 +116,71 @@ def load_hotpot_documents_and_examples(
                 answers=[row["answer"]],
                 relevant_doc_ids=[f"hotpot::{title}" for title in supporting_titles],
                 metadata={"candidate_doc_ids": doc_ids, "supporting_titles": sorted(supporting_titles)},
+            )
+        )
+    return list(documents.values()), examples
+
+
+def load_techqa_documents_and_examples(
+    split: str,
+    max_examples: int,
+    seed: int = 42,
+    revision: str | None = None,
+) -> tuple[list[Document], list[QAExample]]:
+    """Load answerable NVIDIA TechQA-RAG-Eval rows as a shared retrieval corpus."""
+    raw = load_dataset(
+        "nvidia/TechQA-RAG-Eval",
+        split=split,
+        revision=revision,
+    )
+    raw = raw.filter(
+        lambda row: (
+            not bool(row["is_impossible"])
+            and bool(str(row["answer"]).strip())
+            and len(row["contexts"]) > 0
+        )
+    )
+    documents: dict[str, Document] = {}
+    for row in raw:
+        for context in row["contexts"]:
+            filename = str(context["filename"])
+            doc_id = f"techqa::{filename}"
+            text = str(context["text"]).strip()
+            first_line = text.splitlines()[0].strip() if text else filename
+            title = first_line.removeprefix("Title:").strip() or filename
+            existing = documents.get(doc_id)
+            if existing is not None and existing.text != text:
+                raise ValueError(f"Conflicting TechQA text for {filename}")
+            documents.setdefault(
+                doc_id,
+                Document(
+                    doc_id=doc_id,
+                    title=title,
+                    text=text,
+                    dataset="techqa",
+                ),
+            )
+
+    sampled = raw.shuffle(seed=seed).select(range(min(len(raw), max_examples)))
+    examples: list[QAExample] = []
+    for row in sampled:
+        relevant_doc_ids: list[str] = []
+        for context in row["contexts"]:
+            filename = str(context["filename"])
+            doc_id = f"techqa::{filename}"
+            relevant_doc_ids.append(doc_id)
+
+        examples.append(
+            QAExample(
+                example_id=str(row["id"]),
+                dataset="techqa",
+                question=str(row["question"]).strip(),
+                answers=[str(row["answer"]).strip()],
+                relevant_doc_ids=list(dict.fromkeys(relevant_doc_ids)),
+                metadata={
+                    "source": "nvidia/TechQA-RAG-Eval",
+                    "context_filenames": [str(context["filename"]) for context in row["contexts"]],
+                },
             )
         )
     return list(documents.values()), examples

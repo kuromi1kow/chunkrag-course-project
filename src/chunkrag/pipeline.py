@@ -1,6 +1,11 @@
 from __future__ import annotations
 
 import json
+import hashlib
+import importlib.metadata
+import platform
+import subprocess
+import sys
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -12,7 +17,11 @@ from tqdm import tqdm
 from transformers import AutoTokenizer, PreTrainedTokenizerBase
 
 from chunkrag.chunking import ChunkingContext, build_document_chunks
-from chunkrag.data import load_hotpot_documents_and_examples, load_squad_documents_and_examples
+from chunkrag.data import (
+    load_hotpot_documents_and_examples,
+    load_squad_documents_and_examples,
+    load_techqa_documents_and_examples,
+)
 from chunkrag.evaluation import (
     Timer,
     answer_metrics,
@@ -44,6 +53,83 @@ def get_seed_values(config: dict[str, Any]) -> list[int]:
     return [int(config.get("seed", 42))]
 
 
+def canonical_config_hash(config: dict[str, Any]) -> str:
+    payload = json.dumps(config, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def source_tree_hash() -> str:
+    root = Path(__file__).resolve().parents[2]
+    digest = hashlib.sha256()
+    paths = sorted((root / "src").rglob("*.py")) + [root / "scripts" / "run_experiments.py"]
+    for path in paths:
+        digest.update(str(path.relative_to(root)).encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
+def runtime_manifest(
+    config: dict[str, Any],
+    device: str,
+    num_summaries: int,
+    source_sha256: str,
+    generator_dtype: str | None,
+) -> dict[str, Any]:
+    root = Path(__file__).resolve().parents[2]
+    try:
+        git_commit = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=root,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+        git_dirty = bool(
+            subprocess.run(
+                ["git", "status", "--porcelain"],
+                cwd=root,
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
+        )
+    except (OSError, subprocess.CalledProcessError):
+        git_commit = None
+        git_dirty = None
+
+    packages = {}
+    for package in (
+        "datasets",
+        "faiss-cpu",
+        "langchain-text-splitters",
+        "numpy",
+        "rank-bm25",
+        "sentence-transformers",
+        "spacy",
+        "torch",
+        "transformers",
+    ):
+        try:
+            packages[package] = importlib.metadata.version(package)
+        except importlib.metadata.PackageNotFoundError:
+            packages[package] = None
+    return {
+        "status": "complete",
+        "config_sha256": canonical_config_hash(config),
+        "source_tree_sha256": source_sha256,
+        "git_commit": git_commit,
+        "git_worktree_dirty_at_run": git_dirty,
+        "python": sys.version.split()[0],
+        "platform": platform.platform(),
+        "device": device,
+        "generator_dtype": generator_dtype,
+        "packages": packages,
+        "num_summary_rows": num_summaries,
+    }
+
+
 def load_dataset_bundle(spec: dict[str, Any], seed: int) -> tuple[list[Document], list[QAExample]]:
     name = spec["name"]
     if name == "squad_v2":
@@ -53,6 +139,7 @@ def load_dataset_bundle(spec: dict[str, Any], seed: int) -> tuple[list[Document]
             candidate_pool_size=spec.get("candidate_pool_size", spec["max_examples"] * 5),
             seed=seed,
             answerable_only=spec.get("answerable_only", True),
+            revision=spec.get("revision"),
         )
     if name == "hotpot_qa":
         return load_hotpot_documents_and_examples(
@@ -60,6 +147,14 @@ def load_dataset_bundle(spec: dict[str, Any], seed: int) -> tuple[list[Document]
             max_examples=spec["max_examples"],
             config_name=spec.get("config", "distractor"),
             seed=seed,
+            revision=spec.get("revision"),
+        )
+    if name == "techqa":
+        return load_techqa_documents_and_examples(
+            split=spec.get("split", "train"),
+            max_examples=spec["max_examples"],
+            seed=seed,
+            revision=spec.get("revision"),
         )
     raise ValueError(f"Unsupported dataset: {name}")
 
@@ -100,7 +195,7 @@ class ArtifactWriter:
 @dataclass(slots=True)
 class SharedExperimentResources:
     device: str
-    generator: Generator
+    generator: Generator | None
     retrieval_tokenizer: PreTrainedTokenizerBase
     semantic_encoder: SentenceTransformer
     embedding_model: str
@@ -109,28 +204,43 @@ class SharedExperimentResources:
     @classmethod
     def from_config(cls, config: dict[str, Any]) -> SharedExperimentResources:
         device = resolve_device(config.get("device", "auto"))
-        if config.get("generator_base_url"):
-            generator = OpenAICompatibleGenerator(
-                model_name=config["generator_model"],
-                base_url=config["generator_base_url"],
-                api_key=config.get("generator_api_key", "chunkrag-demo-key"),
-                tokenizer_name=config.get("generator_tokenizer_name"),
-                max_input_tokens=config.get("generation_max_input_tokens", 768),
-                max_new_tokens=config.get("max_new_tokens", 32),
-                temperature=float(config.get("generator_temperature", 0.0)),
-            )
-        else:
-            generator = QAGenerator(
-                model_name=config["generator_model"],
-                device=config.get("device", "auto"),
-                max_input_tokens=config.get("generation_max_input_tokens", 768),
-                max_new_tokens=config.get("max_new_tokens", 32),
-                torch_dtype=config.get("generator_torch_dtype"),
-                use_device_map=config.get("generator_use_device_map", False),
-            )
-        retrieval_tokenizer = AutoTokenizer.from_pretrained(config["embedding_model"])
+        generator: Generator | None = None
+        if config.get("run_generation", True):
+            if config.get("generator_base_url"):
+                generator = OpenAICompatibleGenerator(
+                    model_name=config["generator_model"],
+                    base_url=config["generator_base_url"],
+                    api_key=config.get("generator_api_key", "chunkrag-demo-key"),
+                    tokenizer_name=config.get("generator_tokenizer_name"),
+                    max_input_tokens=config.get("generation_max_input_tokens", 768),
+                    max_new_tokens=config.get("max_new_tokens", 32),
+                    temperature=float(config.get("generator_temperature", 0.0)),
+                )
+            else:
+                generator = QAGenerator(
+                    model_name=config["generator_model"],
+                    revision=config.get("generator_model_revision"),
+                    device=config.get("device", "auto"),
+                    max_input_tokens=config.get("generation_max_input_tokens", 768),
+                    max_new_tokens=config.get("max_new_tokens", 32),
+                    torch_dtype=config.get("generator_torch_dtype"),
+                    use_device_map=config.get("generator_use_device_map", False),
+                )
+        embedding_revision = config.get("embedding_model_revision")
+        chunking_tokenizer = config.get("chunking_tokenizer", config["embedding_model"])
+        chunking_tokenizer_revision = config.get(
+            "chunking_tokenizer_revision",
+            embedding_revision if chunking_tokenizer == config["embedding_model"] else None,
+        )
+        retrieval_tokenizer = AutoTokenizer.from_pretrained(
+            chunking_tokenizer,
+            revision=chunking_tokenizer_revision,
+        )
         retrieval_tokenizer.model_max_length = 1_000_000
-        semantic_encoder = SentenceTransformer(config["embedding_model"], device=device)
+        encoder_kwargs = {"device": device}
+        if embedding_revision is not None:
+            encoder_kwargs["revision"] = embedding_revision
+        semantic_encoder = SentenceTransformer(config["embedding_model"], **encoder_kwargs)
         retrieval_cache_dir = Path(config.get("retrieval_cache_dir", ".cache/chunkrag/retrieval"))
         return cls(
             device=device,
@@ -157,9 +267,11 @@ class SystemRunner:
     retriever_name: str
     chunker_name: str | None
     retriever: Retriever
-    generator: Generator
+    generator: Generator | None
     examples: list[QAExample]
     retrieval_top_k: int
+    answer_style: str = "extractive"
+    max_new_tokens: int | None = None
 
     def _format_context(self, retrieved_chunks: list[Chunk]) -> str:
         parts: list[str] = []
@@ -182,11 +294,32 @@ class SystemRunner:
                 retrieved = self.retriever.retrieve(example.question, self.retrieval_top_k)
             retrieved_chunks = [chunk for chunk, _ in retrieved]
             context = self._format_context(retrieved_chunks)
-            with Timer() as generation_timer:
-                prediction = self.generator.answer(example.question, context=context)
+            if self.generator is None:
+                prediction = ""
+                generation_elapsed = 0.0
+                generation_trace: dict[str, object] = {}
+            else:
+                with Timer() as generation_timer:
+                    answer_with_style = getattr(self.generator, "answer_with_style", None)
+                    if answer_with_style is None:
+                        if self.answer_style != "extractive":
+                            raise TypeError(
+                                f"{type(self.generator).__name__} does not support "
+                                f"answer_style={self.answer_style!r}"
+                            )
+                        prediction = self.generator.answer(example.question, context=context)
+                    else:
+                        prediction = answer_with_style(
+                            example.question,
+                            context=context,
+                            answer_style=self.answer_style,
+                            max_new_tokens=self.max_new_tokens,
+                        )
+                generation_elapsed = generation_timer.elapsed
+                generation_trace = dict(getattr(self.generator, "last_trace", {}))
 
             retrieval_times.append(retrieval_timer.elapsed)
-            generation_times.append(generation_timer.elapsed)
+            generation_times.append(generation_elapsed)
             answer_scores = answer_metrics(prediction, example.answers)
             retrieval_scores = retrieval_metrics(retrieved_chunks, example)
             predictions.append(
@@ -207,6 +340,15 @@ class SystemRunner:
                     precision_at_k=retrieval_scores["precision_at_k"],
                     supporting_doc_coverage=retrieval_scores["supporting_doc_coverage"],
                     all_supporting_docs_found=retrieval_scores["all_supporting_docs_found"],
+                    answer_string_visible_at_k=retrieval_scores["answer_string_visible_at_k"],
+                    raw_prediction=generation_trace.get("raw_prediction"),
+                    full_prompt_tokens=generation_trace.get("full_prompt_tokens"),
+                    used_prompt_tokens=generation_trace.get("used_prompt_tokens"),
+                    context_truncated=generation_trace.get("context_truncated"),
+                    refinement_applied=generation_trace.get("refinement_applied"),
+                    generated_tokens=generation_trace.get("generated_tokens"),
+                    generation_max_new_tokens=generation_trace.get("generation_max_new_tokens"),
+                    generation_length_capped=generation_trace.get("generation_length_capped"),
                 )
             )
 
@@ -273,6 +415,7 @@ def _summarize_prediction_rows(
         "precision_at_k",
         "supporting_doc_coverage",
         "all_supporting_docs_found",
+        "answer_string_visible_at_k",
     ):
         values = [float(getattr(row, metric_name)) for row in rows]
         metrics[metric_name] = _metric_summary(
@@ -351,7 +494,7 @@ class DatasetExperimentRunner:
         retrieval_top_k = int(self.config.get("retrieval_top_k", 4))
 
         summaries: list[SummaryRow] = []
-        if self.config.get("run_parametric_baseline", True):
+        if self.config.get("run_parametric_baseline", True) and self.resources.generator is not None:
             summaries.append(
                 self._run_parametric_baseline(
                     dataset_name=dataset_name,
@@ -359,6 +502,8 @@ class DatasetExperimentRunner:
                     examples=examples,
                     bootstrap_samples=bootstrap_samples,
                     confidence=confidence,
+                    answer_style=str(self.dataset_spec.get("answer_style", "extractive")),
+                    max_new_tokens=self.dataset_spec.get("max_new_tokens"),
                 )
             )
 
@@ -374,12 +519,17 @@ class DatasetExperimentRunner:
                 chunks,
                 RetrieverFactoryContext(
                     encoder=self.resources.semantic_encoder,
-                    encoder_identifier=self.resources.embedding_model,
+                    encoder_identifier=(
+                        f"{self.resources.embedding_model}@{self.config['embedding_model_revision']}"
+                        if self.config.get("embedding_model_revision")
+                        else self.resources.embedding_model
+                    ),
                     device=self.resources.device,
                     embedding_batch_size=int(self.config.get("embedding_batch_size", 32)),
                     retrieval_top_k=retrieval_top_k,
                     cache_dir=self.resources.retrieval_cache_dir,
                     cache_namespace=f"{dataset_name}/{chunker_name}",
+                    query_prefix=str(self.config.get("retrieval_query_prefix", "")),
                 ),
             )
 
@@ -397,6 +547,8 @@ class DatasetExperimentRunner:
                     generator=self.resources.generator,
                     examples=examples,
                     retrieval_top_k=retrieval_top_k,
+                    answer_style=str(self.dataset_spec.get("answer_style", "extractive")),
+                    max_new_tokens=self.dataset_spec.get("max_new_tokens"),
                 ).run()
 
                 summary = _summarize_prediction_rows(
@@ -429,10 +581,29 @@ class DatasetExperimentRunner:
         examples: list[QAExample],
         bootstrap_samples: int,
         confidence: float,
+        answer_style: str,
+        max_new_tokens: int | None,
     ) -> SummaryRow:
+        if self.resources.generator is None:
+            raise RuntimeError("Parametric baseline requires generation to be enabled")
         baseline_predictions: list[PredictionRecord] = []
         for example in tqdm(examples, desc=f"baseline::{dataset_name}::seed_{self.seed}"):
-            prediction = self.resources.generator.answer(example.question, context=None)
+            answer_with_style = getattr(self.resources.generator, "answer_with_style", None)
+            if answer_with_style is None:
+                if answer_style != "extractive":
+                    raise TypeError(
+                        f"{type(self.resources.generator).__name__} does not support "
+                        f"answer_style={answer_style!r}"
+                    )
+                prediction = self.resources.generator.answer(example.question, context=None)
+            else:
+                prediction = answer_with_style(
+                    example.question,
+                    context=None,
+                    answer_style=answer_style,
+                    max_new_tokens=max_new_tokens,
+                )
+            generation_trace = dict(getattr(self.resources.generator, "last_trace", {}))
             answer_scores = answer_metrics(prediction, example.answers)
             baseline_predictions.append(
                 PredictionRecord(
@@ -445,6 +616,14 @@ class DatasetExperimentRunner:
                     prediction=prediction,
                     exact_match=answer_scores["exact_match"],
                     f1=answer_scores["f1"],
+                    raw_prediction=generation_trace.get("raw_prediction"),
+                    full_prompt_tokens=generation_trace.get("full_prompt_tokens"),
+                    used_prompt_tokens=generation_trace.get("used_prompt_tokens"),
+                    context_truncated=generation_trace.get("context_truncated"),
+                    refinement_applied=generation_trace.get("refinement_applied"),
+                    generated_tokens=generation_trace.get("generated_tokens"),
+                    generation_max_new_tokens=generation_trace.get("generation_max_new_tokens"),
+                    generation_length_capped=generation_trace.get("generation_length_capped"),
                 )
             )
 
@@ -468,7 +647,12 @@ class ExperimentRunner:
         self.config = config
         self.output_dir = output_dir
         self.writer = ArtifactWriter()
+        self.source_tree_sha256 = source_tree_hash()
         self.resources = SharedExperimentResources.from_config(config)
+        if isinstance(self.resources.generator, QAGenerator):
+            self.generator_dtype = str(next(self.resources.generator.model.parameters()).dtype)
+        else:
+            self.generator_dtype = None
 
     def run(self) -> list[SummaryRow]:
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -492,6 +676,16 @@ class ExperimentRunner:
         self.writer.write_json(self.output_dir / "experiment_config.json", self.config)
         self.writer.write_json(self.output_dir / "all_results.json", all_summaries)
         self.writer.write_json(self.output_dir / "aggregate_results.json", _aggregate_seed_summaries(all_summaries))
+        self.writer.write_json(
+            self.output_dir / "run_manifest.json",
+            runtime_manifest(
+                self.config,
+                self.resources.device,
+                len(all_summaries),
+                self.source_tree_sha256,
+                self.generator_dtype,
+            ),
+        )
         return all_summaries
 
 
