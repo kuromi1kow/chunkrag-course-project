@@ -38,6 +38,7 @@ class DenseRetriever:
         encoder_identifier: str | None = None,
         cache_dir: str | Path | None = None,
         cache_namespace: str | None = None,
+        query_prefix: str = "",
     ) -> None:
         if encoder is None:
             if model_name is None:
@@ -50,6 +51,7 @@ class DenseRetriever:
         self.encoder_identifier = encoder_identifier or model_name or type(encoder).__name__
         self.cache_dir = Path(cache_dir) if cache_dir is not None else None
         self.cache_namespace = cache_namespace
+        self.query_prefix = query_prefix
 
     def _cache_prefix(self, chunks: list[Chunk]) -> Path | None:
         if self.cache_dir is None:
@@ -120,7 +122,7 @@ class DenseRetriever:
         if self.index is None:
             raise RuntimeError("The dense retriever index has not been built yet.")
         query_embedding = self.encoder.encode(
-            [query],
+            [f"{self.query_prefix}{query}"],
             convert_to_numpy=True,
             normalize_embeddings=True,
             show_progress_bar=False,
@@ -247,6 +249,7 @@ class RetrieverFactoryContext:
     retrieval_top_k: int = 4
     cache_dir: Path | None = None
     cache_namespace: str | None = None
+    query_prefix: str = ""
 
 
 RetrieverBuilder = Callable[[dict[str, Any], "RetrieverFactory"], Retriever]
@@ -267,6 +270,7 @@ class RetrieverFactory:
                 batch_size=self.context.embedding_batch_size,
                 cache_dir=self.context.cache_dir,
                 cache_namespace=self.context.cache_namespace,
+                query_prefix=self.context.query_prefix,
             )
             dense.build(self.chunks)
             self._shared_retrievers["dense"] = dense

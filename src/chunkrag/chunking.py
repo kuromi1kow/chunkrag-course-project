@@ -50,6 +50,39 @@ def sentence_split(text: str) -> list[str]:
     return [sent.text.strip() for sent in doc.sents if sent.text.strip()]
 
 
+def _decode_prefix_with_token_limit(
+    tokenizer: PreTrainedTokenizerBase,
+    token_ids: list[int],
+    max_tokens: int,
+) -> tuple[str, int]:
+    """Decode the longest prefix whose round-trip token count fits the limit."""
+    for consumed in range(min(len(token_ids), max_tokens), 0, -1):
+        text = tokenizer.decode(token_ids[:consumed], skip_special_tokens=True).strip()
+        if text and count_tokens(tokenizer, text) <= max_tokens:
+            return text, consumed
+    raise ValueError("Could not decode a non-empty token-bounded fragment")
+
+
+def _split_text_to_token_limit(
+    tokenizer: PreTrainedTokenizerBase,
+    text: str,
+    max_tokens: int,
+) -> list[str]:
+    """Split text with a post-decode token-count guarantee."""
+    token_ids = tokenizer.encode(text, add_special_tokens=False)
+    fragments: list[str] = []
+    start = 0
+    while start < len(token_ids):
+        fragment, consumed = _decode_prefix_with_token_limit(
+            tokenizer,
+            token_ids[start : start + max_tokens],
+            max_tokens,
+        )
+        fragments.append(fragment)
+        start += consumed
+    return fragments
+
+
 def _chunk_from_texts(
     document: Document,
     texts: Iterable[str],
@@ -80,17 +113,31 @@ def fixed_token_chunks(
     chunk_size: int,
     chunk_overlap: int,
     chunker_name: str,
+    enforce_token_limit: bool = False,
 ) -> list[Chunk]:
     token_ids = tokenizer.encode(document.text, add_special_tokens=False)
-    stride = max(1, chunk_size - chunk_overlap)
     texts: list[str] = []
-    for start in range(0, len(token_ids), stride):
-        window = token_ids[start : start + chunk_size]
-        if not window:
-            continue
-        texts.append(tokenizer.decode(window, skip_special_tokens=True))
-        if start + chunk_size >= len(token_ids):
-            break
+    if enforce_token_limit:
+        start = 0
+        while start < len(token_ids):
+            text, consumed = _decode_prefix_with_token_limit(
+                tokenizer,
+                token_ids[start : start + chunk_size],
+                chunk_size,
+            )
+            texts.append(text)
+            if start + consumed >= len(token_ids):
+                break
+            start += max(1, consumed - min(chunk_overlap, consumed - 1))
+    else:
+        stride = max(1, chunk_size - chunk_overlap)
+        for start in range(0, len(token_ids), stride):
+            window = token_ids[start : start + chunk_size]
+            if not window:
+                continue
+            texts.append(tokenizer.decode(window, skip_special_tokens=True))
+            if start + chunk_size >= len(token_ids):
+                break
     return _chunk_from_texts(document, texts, tokenizer, chunker_name)
 
 
@@ -100,6 +147,7 @@ def recursive_chunks(
     chunk_size: int,
     chunk_overlap: int,
     chunker_name: str,
+    enforce_token_limit: bool = False,
 ) -> list[Chunk]:
     splitter = RecursiveCharacterTextSplitter.from_huggingface_tokenizer(
         tokenizer,
@@ -107,7 +155,14 @@ def recursive_chunks(
         chunk_overlap=chunk_overlap,
         separators=["\n\n", "\n", ". ", " ", ""],
     )
-    return _chunk_from_texts(document, splitter.split_text(document.text), tokenizer, chunker_name)
+    texts = splitter.split_text(document.text)
+    if enforce_token_limit:
+        texts = [
+            fragment
+            for text in texts
+            for fragment in _split_text_to_token_limit(tokenizer, text, chunk_size)
+        ]
+    return _chunk_from_texts(document, texts, tokenizer, chunker_name)
 
 
 def sentence_chunks(
@@ -115,10 +170,17 @@ def sentence_chunks(
     tokenizer: PreTrainedTokenizerBase,
     chunk_size: int,
     chunker_name: str,
+    enforce_token_limit: bool = False,
 ) -> list[Chunk]:
     texts: list[str] = []
     current: list[str] = []
     for sentence in sentence_split(document.text):
+        if enforce_token_limit and count_tokens(tokenizer, sentence) > chunk_size:
+            if current:
+                texts.append(" ".join(current))
+                current = []
+            texts.extend(_split_text_to_token_limit(tokenizer, sentence, chunk_size))
+            continue
         candidate = " ".join(current + [sentence])
         if current and count_tokens(tokenizer, candidate) > chunk_size:
             texts.append(" ".join(current))
@@ -265,6 +327,7 @@ def _build_fixed_chunks(document: Document, spec: dict[str, Any], context: Chunk
         chunk_size=spec["chunk_size"],
         chunk_overlap=spec.get("chunk_overlap", 0),
         chunker_name=spec["name"],
+        enforce_token_limit=spec.get("enforce_token_limit", False),
     )
 
 
@@ -275,6 +338,7 @@ def _build_recursive_chunks(document: Document, spec: dict[str, Any], context: C
         chunk_size=spec["chunk_size"],
         chunk_overlap=spec.get("chunk_overlap", 0),
         chunker_name=spec["name"],
+        enforce_token_limit=spec.get("enforce_token_limit", False),
     )
 
 
@@ -284,6 +348,7 @@ def _build_sentence_chunks(document: Document, spec: dict[str, Any], context: Ch
         context.tokenizer,
         chunk_size=spec["chunk_size"],
         chunker_name=spec["name"],
+        enforce_token_limit=spec.get("enforce_token_limit", False),
     )
 
 

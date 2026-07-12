@@ -1,0 +1,429 @@
+{
+  "taxonomy_note": "No category is asserted to be fixable. SQuAD evidence visibility is checked in the reconstructed post-truncation context; HotpotQA requires both supporting documents.",
+  "datasets": {
+    "squad_v2": {
+      "fixed_128": {
+        "total_predictions": 60,
+        "em_zero": 37,
+        "fine": {
+          "answer_string_not_visible": 10,
+          "no_support_retrieved": 0,
+          "partial_support_retrieved": 0,
+          "refusal_after_full_retrieval": 4,
+          "gold_contained_with_extras": 10,
+          "prediction_contained_in_gold": 0,
+          "high_lexical_overlap": 0,
+          "partial_lexical_overlap": 7,
+          "zero_lexical_overlap": 6
+        },
+        "coarse": {
+          "evidence_limited": {
+            "count": 10,
+            "percentage": 27.027027027027028,
+            "wilson_ci_low": 0.15397461511049093,
+            "wilson_ci_high": 0.4297816832471427
+          },
+          "response_form_candidate": {
+            "count": 14,
+            "percentage": 37.83783783783784,
+            "wilson_ci_low": 0.24063999175798265,
+            "wilson_ci_high": 0.5389956956078235
+          },
+          "answer_content_error": {
+            "count": 13,
+            "percentage": 35.13513513513514,
+            "wilson_ci_low": 0.2182560713392713,
+            "wilson_ci_high": 0.5124097687744917
+          }
+        }
+      },
+      "fixed_256": {
+        "total_predictions": 60,
+        "em_zero": 37,
+        "fine": {
+          "answer_string_not_visible": 15,
+          "no_support_retrieved": 1,
+          "partial_support_retrieved": 0,
+          "refusal_after_full_retrieval": 2,
+          "gold_contained_with_extras": 11,
+          "prediction_contained_in_gold": 0,
+          "high_lexical_overlap": 1,
+          "partial_lexical_overlap": 4,
+          "zero_lexical_overlap": 3
+        },
+        "coarse": {
+          "evidence_limited": {
+            "count": 16,
+            "percentage": 43.24324324324324,
+            "wilson_ci_low": 0.28671719277157315,
+            "wilson_ci_high": 0.5908581890983192
+          },
+          "response_form_candidate": {
+            "count": 13,
+            "percentage": 35.13513513513514,
+            "wilson_ci_low": 0.2182560713392713,
+            "wilson_ci_high": 0.5124097687744917
+          },
+          "answer_content_error": {
+            "count": 8,
+            "percentage": 21.62162162162162,
+            "wilson_ci_low": 0.11386511993385592,
+            "wilson_ci_high": 0.3719514839196916
+          }
+        }
+      },
+      "fixed_512": {
+        "total_predictions": 60,
+        "em_zero": 36,
+        "fine": {
+          "answer_string_not_visible": 13,
+          "no_support_retrieved": 2,
+          "partial_support_retrieved": 0,
+          "refusal_after_full_retrieval": 2,
+          "gold_contained_with_extras": 11,
+          "prediction_contained_in_gold": 0,
+          "high_lexical_overlap": 1,
+          "partial_lexical_overlap": 4,
+          "zero_lexical_overlap": 3
+        },
+        "coarse": {
+          "evidence_limited": {
+            "count": 15,
+            "percentage": 41.666666666666664,
+            "wilson_ci_low": 0.2714056205144606,
+            "wilson_ci_high": 0.5779974842512834
+          },
+          "response_form_candidate": {
+            "count": 13,
+            "percentage": 36.111111111111114,
+            "wilson_ci_low": 0.22475592946515371,
+            "wilson_ci_high": 0.5242492451444196
+          },
+          "answer_content_error": {
+            "count": 8,
+            "percentage": 22.22222222222222,
+            "wilson_ci_low": 0.11716331975796462,
+            "wilson_ci_high": 0.3808470294611818
+          }
+        }
+      },
+      "recursive_256": {
+        "total_predictions": 60,
+        "em_zero": 35,
+        "fine": {
+          "answer_string_not_visible": 8,
+          "no_support_retrieved": 0,
+          "partial_support_retrieved": 0,
+          "refusal_after_full_retrieval": 3,
+          "gold_contained_with_extras": 14,
+          "prediction_contained_in_gold": 2,
+          "high_lexical_overlap": 3,
+          "partial_lexical_overlap": 3,
+          "zero_lexical_overlap": 2
+        },
+        "coarse": {
+          "evidence_limited": {
+            "count": 8,
+            "percentage": 22.857142857142858,
+            "wilson_ci_low": 0.12065879834191687,
+            "wilson_ci_high": 0.3901731689199025
+          },
+          "response_form_candidate": {
+            "count": 19,
+            "percentage": 54.285714285714285,
+            "wilson_ci_low": 0.3818972506848375,
+            "wilson_ci_high": 0.6953398071159278
+          },
+          "answer_content_error": {
+            "count": 8,
+            "percentage": 22.857142857142858,
+            "wilson_ci_low": 0.12065879834191687,
+            "wilson_ci_high": 0.3901731689199025
+          }
+        }
+      },
+      "sentence_256": {
+        "total_predictions": 60,
+        "em_zero": 39,
+        "fine": {
+          "answer_string_not_visible": 12,
+          "no_support_retrieved": 0,
+          "partial_support_retrieved": 0,
+          "refusal_after_full_retrieval": 3,
+          "gold_contained_with_extras": 14,
+          "prediction_contained_in_gold": 1,
+          "high_lexical_overlap": 1,
+          "partial_lexical_overlap": 2,
+          "zero_lexical_overlap": 6
+        },
+        "coarse": {
+          "evidence_limited": {
+            "count": 12,
+            "percentage": 30.76923076923077,
+            "wilson_ci_low": 0.18565932306911137,
+            "wilson_ci_high": 0.4642125437414931
+          },
+          "response_form_candidate": {
+            "count": 18,
+            "percentage": 46.15384615384615,
+            "wilson_ci_low": 0.31566885606727846,
+            "wilson_ci_high": 0.6143055172948425
+          },
+          "answer_content_error": {
+            "count": 9,
+            "percentage": 23.076923076923077,
+            "wilson_ci_low": 0.1264580412514285,
+            "wilson_ci_high": 0.3833625722834177
+          }
+        }
+      },
+      "semantic_256": {
+        "total_predictions": 60,
+        "em_zero": 35,
+        "fine": {
+          "answer_string_not_visible": 6,
+          "no_support_retrieved": 0,
+          "partial_support_retrieved": 0,
+          "refusal_after_full_retrieval": 8,
+          "gold_contained_with_extras": 14,
+          "prediction_contained_in_gold": 0,
+          "high_lexical_overlap": 2,
+          "partial_lexical_overlap": 2,
+          "zero_lexical_overlap": 3
+        },
+        "coarse": {
+          "evidence_limited": {
+            "count": 6,
+            "percentage": 17.142857142857142,
+            "wilson_ci_low": 0.08102640053701589,
+            "wilson_ci_high": 0.3268228229904496
+          },
+          "response_form_candidate": {
+            "count": 22,
+            "percentage": 62.857142857142854,
+            "wilson_ci_low": 0.4633693684359532,
+            "wilson_ci_high": 0.7683418049663429
+          },
+          "answer_content_error": {
+            "count": 7,
+            "percentage": 20.0,
+            "wilson_ci_low": 0.10042446473798625,
+            "wilson_ci_high": 0.3589161306566562
+          }
+        }
+      }
+    },
+    "hotpot_qa": {
+      "fixed_128": {
+        "total_predictions": 30,
+        "em_zero": 24,
+        "fine": {
+          "answer_string_not_visible": 0,
+          "no_support_retrieved": 0,
+          "partial_support_retrieved": 13,
+          "refusal_after_full_retrieval": 3,
+          "gold_contained_with_extras": 4,
+          "prediction_contained_in_gold": 0,
+          "high_lexical_overlap": 0,
+          "partial_lexical_overlap": 3,
+          "zero_lexical_overlap": 1
+        },
+        "coarse": {
+          "evidence_limited": {
+            "count": 13,
+            "percentage": 54.166666666666664,
+            "wilson_ci_low": 0.3507486535891948,
+            "wilson_ci_high": 0.72108666268789
+          },
+          "response_form_candidate": {
+            "count": 7,
+            "percentage": 29.166666666666668,
+            "wilson_ci_low": 0.14914648196960875,
+            "wilson_ci_high": 0.49167693664496637
+          },
+          "answer_content_error": {
+            "count": 4,
+            "percentage": 16.666666666666668,
+            "wilson_ci_low": 0.06678676328632951,
+            "wilson_ci_high": 0.3585307064969906
+          }
+        }
+      },
+      "fixed_256": {
+        "total_predictions": 30,
+        "em_zero": 24,
+        "fine": {
+          "answer_string_not_visible": 0,
+          "no_support_retrieved": 0,
+          "partial_support_retrieved": 13,
+          "refusal_after_full_retrieval": 4,
+          "gold_contained_with_extras": 3,
+          "prediction_contained_in_gold": 0,
+          "high_lexical_overlap": 1,
+          "partial_lexical_overlap": 1,
+          "zero_lexical_overlap": 2
+        },
+        "coarse": {
+          "evidence_limited": {
+            "count": 13,
+            "percentage": 54.166666666666664,
+            "wilson_ci_low": 0.3507486535891948,
+            "wilson_ci_high": 0.72108666268789
+          },
+          "response_form_candidate": {
+            "count": 7,
+            "percentage": 29.166666666666668,
+            "wilson_ci_low": 0.14914648196960875,
+            "wilson_ci_high": 0.49167693664496637
+          },
+          "answer_content_error": {
+            "count": 4,
+            "percentage": 16.666666666666668,
+            "wilson_ci_low": 0.06678676328632951,
+            "wilson_ci_high": 0.3585307064969906
+          }
+        }
+      },
+      "fixed_512": {
+        "total_predictions": 30,
+        "em_zero": 24,
+        "fine": {
+          "answer_string_not_visible": 0,
+          "no_support_retrieved": 0,
+          "partial_support_retrieved": 12,
+          "refusal_after_full_retrieval": 4,
+          "gold_contained_with_extras": 4,
+          "prediction_contained_in_gold": 0,
+          "high_lexical_overlap": 1,
+          "partial_lexical_overlap": 1,
+          "zero_lexical_overlap": 2
+        },
+        "coarse": {
+          "evidence_limited": {
+            "count": 12,
+            "percentage": 50.0,
+            "wilson_ci_low": 0.3142742581957335,
+            "wilson_ci_high": 0.6857257418042665
+          },
+          "response_form_candidate": {
+            "count": 8,
+            "percentage": 33.333333333333336,
+            "wilson_ci_low": 0.1797219032729775,
+            "wilson_ci_high": 0.5329368316186824
+          },
+          "answer_content_error": {
+            "count": 4,
+            "percentage": 16.666666666666668,
+            "wilson_ci_low": 0.06678676328632951,
+            "wilson_ci_high": 0.3585307064969906
+          }
+        }
+      },
+      "recursive_256": {
+        "total_predictions": 30,
+        "em_zero": 22,
+        "fine": {
+          "answer_string_not_visible": 0,
+          "no_support_retrieved": 0,
+          "partial_support_retrieved": 13,
+          "refusal_after_full_retrieval": 4,
+          "gold_contained_with_extras": 2,
+          "prediction_contained_in_gold": 0,
+          "high_lexical_overlap": 0,
+          "partial_lexical_overlap": 1,
+          "zero_lexical_overlap": 2
+        },
+        "coarse": {
+          "evidence_limited": {
+            "count": 13,
+            "percentage": 59.09090909090909,
+            "wilson_ci_low": 0.3873481847631513,
+            "wilson_ci_high": 0.7674418380352814
+          },
+          "response_form_candidate": {
+            "count": 6,
+            "percentage": 27.272727272727273,
+            "wilson_ci_low": 0.13150760287989469,
+            "wilson_ci_high": 0.4815173401240238
+          },
+          "answer_content_error": {
+            "count": 3,
+            "percentage": 13.636363636363637,
+            "wilson_ci_low": 0.04749003714055253,
+            "wilson_ci_high": 0.33334987166571717
+          }
+        }
+      },
+      "sentence_256": {
+        "total_predictions": 30,
+        "em_zero": 23,
+        "fine": {
+          "answer_string_not_visible": 0,
+          "no_support_retrieved": 0,
+          "partial_support_retrieved": 13,
+          "refusal_after_full_retrieval": 4,
+          "gold_contained_with_extras": 2,
+          "prediction_contained_in_gold": 0,
+          "high_lexical_overlap": 0,
+          "partial_lexical_overlap": 1,
+          "zero_lexical_overlap": 3
+        },
+        "coarse": {
+          "evidence_limited": {
+            "count": 13,
+            "percentage": 56.52173913043478,
+            "wilson_ci_low": 0.3681137508501646,
+            "wilson_ci_high": 0.743653646743258
+          },
+          "response_form_candidate": {
+            "count": 6,
+            "percentage": 26.08695652173913,
+            "wilson_ci_low": 0.12548616044986347,
+            "wilson_ci_high": 0.4647000483742537
+          },
+          "answer_content_error": {
+            "count": 4,
+            "percentage": 17.391304347826086,
+            "wilson_ci_low": 0.06978653563062565,
+            "wilson_ci_high": 0.3713764764022614
+          }
+        }
+      },
+      "semantic_256": {
+        "total_predictions": 30,
+        "em_zero": 23,
+        "fine": {
+          "answer_string_not_visible": 0,
+          "no_support_retrieved": 0,
+          "partial_support_retrieved": 13,
+          "refusal_after_full_retrieval": 4,
+          "gold_contained_with_extras": 4,
+          "prediction_contained_in_gold": 0,
+          "high_lexical_overlap": 0,
+          "partial_lexical_overlap": 1,
+          "zero_lexical_overlap": 1
+        },
+        "coarse": {
+          "evidence_limited": {
+            "count": 13,
+            "percentage": 56.52173913043478,
+            "wilson_ci_low": 0.3681137508501646,
+            "wilson_ci_high": 0.743653646743258
+          },
+          "response_form_candidate": {
+            "count": 8,
+            "percentage": 34.78260869565217,
+            "wilson_ci_low": 0.1881127593879773,
+            "wilson_ci_high": 0.55109664622737
+          },
+          "answer_content_error": {
+            "count": 2,
+            "percentage": 8.695652173913043,
+            "wilson_ci_low": 0.024180004484220363,
+            "wilson_ci_high": 0.26795981075743663
+          }
+        }
+      }
+    }
+  }
+}

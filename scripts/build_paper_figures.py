@@ -12,7 +12,7 @@ with TikZ inline in `reports/final_report_acl.tex`, not by this script.
 
 Inputs:
     outputs/midway_mistral_endpoint_v2/aggregate_results.json
-    outputs/error_analysis_v2/summary.json
+    outputs/revision_audit/failure_reanalysis.json
 
 The aggregate file above is the one whose numbers match the tables in
 `reports/final_report_acl.tex`.
@@ -65,9 +65,9 @@ PALETTE = {
 }
 
 ERROR_PALETTE = {
-    "Retrieval failure": "#d62728",
-    "Format or refusal (fixable)": "#1f77b4",
-    "Model error": "#7f7f7f",
+    "Evidence limited": "#d62728",
+    "Form/refusal candidate": "#1f77b4",
+    "Content mismatch": "#7f7f7f",
 }
 
 
@@ -111,7 +111,21 @@ def load_aggregate(path: Path) -> pd.DataFrame:
 
 def load_error_summary(path: Path) -> pd.DataFrame:
     with path.open("r", encoding="utf-8") as handle:
-        rows = json.load(handle)
+        payload = json.load(handle)
+    rows = []
+    for dataset, systems in payload["datasets"].items():
+        for chunker, values in systems.items():
+            coarse = values["coarse"]
+            rows.append(
+                {
+                    "dataset": dataset,
+                    "chunker": chunker,
+                    "em_zero": values["em_zero"],
+                    "evidence_limited_pct": coarse["evidence_limited"]["percentage"],
+                    "response_form_candidate_pct": coarse["response_form_candidate"]["percentage"],
+                    "answer_content_error_pct": coarse["answer_content_error"]["percentage"],
+                }
+            )
     return pd.DataFrame(rows)
 
 
@@ -210,15 +224,15 @@ def fig2_error_breakdown(err: pd.DataFrame, out_dir: Path) -> None:
         chunkers = sub["chunker"].astype(str).tolist()
         x = np.arange(len(chunkers))
 
-        retrieval = sub["coarse_retrieval_failure_pct"].to_numpy()
-        fixable = sub["coarse_format_or_refusal_pct"].to_numpy()
-        model_err = sub["coarse_model_error_pct"].to_numpy()
+        retrieval = sub["evidence_limited_pct"].to_numpy()
+        form_candidates = sub["response_form_candidate_pct"].to_numpy()
+        model_err = sub["answer_content_error_pct"].to_numpy()
 
         bottom = np.zeros(len(chunkers))
         for label, values in [
-            ("Retrieval failure", retrieval),
-            ("Format or refusal (fixable)", fixable),
-            ("Model error", model_err),
+            ("Evidence limited", retrieval),
+            ("Form/refusal candidate", form_candidates),
+            ("Content mismatch", model_err),
         ]:
             bars = ax.bar(
                 x,
@@ -239,7 +253,7 @@ def fig2_error_breakdown(err: pd.DataFrame, out_dir: Path) -> None:
                         ha="center",
                         va="center",
                         fontsize=8,
-                        color="white" if label != "Format or refusal (fixable)" or val < 25 else "white",
+                        color="white",
                     )
             bottom = bottom + values
 
@@ -256,7 +270,7 @@ def fig2_error_breakdown(err: pd.DataFrame, out_dir: Path) -> None:
     fig.legend(
         handles, labels, loc="upper center", ncol=3, bbox_to_anchor=(0.5, 1.02), frameon=False
     )
-    fig.suptitle("Coarse error breakdown of EM=0 predictions", y=1.08, fontsize=12)
+    fig.suptitle("Automatic diagnostic breakdown of EM=0 predictions", y=1.08, fontsize=12)
     fig.tight_layout()
     save_figure(fig, out_dir, "fig2_error_breakdown")
 
@@ -424,8 +438,8 @@ def main() -> None:
     parser.add_argument(
         "--errors",
         type=Path,
-        default=Path("outputs/error_analysis_v2/summary.json"),
-        help="Error analysis summary JSON.",
+        default=Path("outputs/revision_audit/failure_reanalysis.json"),
+        help="Corrected failure-analysis JSON.",
     )
     parser.add_argument(
         "--out-dir",

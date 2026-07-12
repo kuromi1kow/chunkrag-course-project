@@ -1,314 +1,49 @@
-# Comparing Chunking Strategies for Retrieval-Augmented Question Answering
-
-This repository contains our CS505 NLP course project on how chunking strategy affects retrieval-augmented question answering.
-
-The project includes:
-
-- chunking experiments on `SQuAD v2` and `HotpotQA`
-- dense, BM25, hybrid, and reranked retrieval
-- ACL-format midway and final reports
-- a Streamlit dashboard for visual inspection
-- a local OpenWebUI frontend
-- an SCC-hosted `Mistral-7B` backend served through `vLLM`
-
-## Current project status
-
-The codebase supports two main usage modes:
-
-1. Local experimentation and report building
-2. Local UI + `SCC`-hosted `Mistral-7B-Instruct-v0.3` through an SSH tunnel
-
-The current midpoint narrative uses:
-
-- embeddings: `sentence-transformers/all-MiniLM-L6-v2`
-- retriever: FAISS dense retrieval
-- generator: `mistralai/Mistral-7B-Instruct-v0.3` on `SCC`
-
-## Requirements
-
-- Python `3.11`
-- macOS or Linux shell with `bash`
-- `tectonic` if you want to rebuild the report PDFs
-- Boston University `SCC` access if you want the remote `Mistral` backend
-
-## Quick start
-
-The easiest way to see available commands is:
-
-```bash
-make help
-```
-
-## Installation
-
-### Core experiment environment
-
-```bash
-make setup
-```
-
-This creates `.venv` and installs the core project dependencies.
-
-### Streamlit demo environment
-
-```bash
-make setup-demo
-```
-
-This creates `.venv_demo` and installs the dashboard dependencies.
-
-### OpenWebUI environment
-
-```bash
-make setup-openwebui
-```
-
-This creates `.venv_openwebui` and installs `OpenWebUI`.
-
-## Running the project locally
-
-### 1. Streamlit dashboard
-
-```bash
-make dashboard
-```
-
-Default URL:
-
-- [http://localhost:8501](http://localhost:8501)
-
-Example screen:
-
-![Streamlit playground](docs/assets/streamlit-playground.png)
-
-The dashboard reads:
-
-- results from `outputs/rigorous_smoke/aggregate_results.json`
-- figures and artifacts from `outputs/rigorous_smoke`
-
-You can override these when needed:
-
-```bash
-RESULTS_PATH=/absolute/path/to/aggregate_results.json OUTPUT_DIR=/absolute/path/to/output_dir make dashboard
-```
-
-Example workflow in Streamlit Playground:
-
-1. Open the `Playground` tab.
-2. Upload PDFs, Markdown, CSV, JSON, or text files.
-3. Choose a chunker and retriever.
-4. Build the index.
-5. Compare `Traditional`, `Advanced`, and `Multi-Agent` RAG flows on the same question.
-
-Good first demo prompt for the Playground:
-
-```text
-Upload a few PDFs or text files, build the index, and ask one question that requires evidence from more than one passage.
-```
-
-### 2. OpenWebUI with no SCC backend
-
-```bash
-make openwebui
-```
-
-Default URL:
-
-- [http://127.0.0.1:8080](http://127.0.0.1:8080)
-
-This starts the local `OpenWebUI` instance only. If you want it connected to the remote `Mistral` model on `SCC`, use the SCC flow below instead.
-
-## Running OpenWebUI with Mistral on SCC
-
-Recommended architecture:
-
-- `SCC` runs `vLLM`
-- your laptop runs `OpenWebUI`
-- an SSH tunnel connects `localhost:8000` to the live `SCC` model server
-
-### Step 1. Submit the SCC vLLM job
-
-Run this from an `SCC` login shell inside the project directory:
-
-```bash
-make scc-vllm
-```
-
-This submits a `Mistral-7B-Instruct-v0.3` `vLLM` server job using the default SCC settings.
-
-Useful overrides:
-
-```bash
-SCC_QUEUE=l40s SCC_GPU_TYPE=L40S SCC_GPU_MEMORY=48G make scc-vllm
-SCC_QUEUE=a100 SCC_GPU_TYPE=A100 SCC_GPU_MEMORY=80G make scc-vllm
-SCC_QUEUE=h200 SCC_GPU_TYPE=H200 SCC_GPU_MEMORY=80G make scc-vllm
-```
-
-You can check job state on `SCC` with:
-
-```bash
-qstat -u <your_scc_username>
-```
-
-### Step 2. Open the SSH tunnel locally
-
-Run this on your local machine after the SCC job is `running`:
-
-```bash
-make scc-tunnel
-```
-
-By default it reads runtime information from:
-
-- `/projectnb/cs505am/projects/kuromiqo_chunkrag_project/outputs/openwebui_vllm/runtime.env`
-
-You can override the remote root if needed:
-
-```bash
-REMOTE_ROOT=/projectnb/cs505am/projects/kuromiqo_chunkrag_project make scc-tunnel
-```
-
-When the tunnel is up, this should work locally:
-
-```bash
-curl http://127.0.0.1:8000/v1/models -H "Authorization: Bearer chunkrag-demo-key"
-```
-
-### Step 3. Start OpenWebUI already pointed at the SCC model
-
-```bash
-make openwebui-scc
-```
-
-This starts `OpenWebUI` with:
-
-- base URL: `http://127.0.0.1:8000/v1`
-- API key: `chunkrag-demo-key`
-
-Then open:
-
-- [http://127.0.0.1:8080](http://127.0.0.1:8080)
-
-If the model list looks stale, refresh the page once after the tunnel is live.
-
-Example screen with a live SCC-backed model response:
-
-![OpenWebUI with Mistral response](docs/assets/openwebui-mistral-response.png)
-
-In this screenshot, `OpenWebUI` is connected to `mistralai/Mistral-7B-Instruct-v0.3` through the local `SCC` tunnel, and the model answers the question:
-
-```text
-What is retrieval-augmented generation in one sentence?
-```
-
-Example workflow in OpenWebUI:
-
-1. Sign in to the local `OpenWebUI` instance.
-2. Open the model selector and choose `mistralai/Mistral-7B-Instruct-v0.3`.
-3. Send a simple smoke-test prompt first, for example:
-
-```text
-Reply with one sentence explaining what retrieval-augmented generation is.
-```
-
-4. Then try a project-specific prompt, for example:
-
-```text
-Compare fixed chunking and semantic chunking for retrieval-augmented question answering in 3 short bullet points.
-```
-
-If the model selector is empty:
-
-- make sure the SCC `vLLM` job is running
-- make sure the SSH tunnel on `localhost:8000` is active
-- refresh the `OpenWebUI` page once
-
-## Experiments
-
-### Local quickstart experiment
-
-```bash
-make quickstart
-```
-
-### Local rigorous run
-
-```bash
-make rigorous-local
-make plot-rigorous
-```
-
-### Optional Chonkie comparison
-
-```bash
-make chonkie
-```
-
-### SCC rigorous experiment sweep
-
-Run from an `SCC` login shell:
-
-```bash
-make scc-rigorous
-```
-
-Default config:
-
-- `configs/scc_rigorous_mistral.json`
-
-Default output directory:
-
-- `/projectnb/cs505am/projects/kuromiqo_chunkrag_project/outputs/scc_rigorous_mistral`
-
-## Reports
-
-### Regenerate tables and rebuild both PDFs
-
-```bash
-make reports
-```
-
-### Midway report only
-
-```bash
-make reports-midway
-```
-
-### Final report only
-
-```bash
-make reports-final
-```
-
-Generated report tables are written to:
-
-- `reports/generated/midway_tables.tex`
-- `reports/generated/chonkie_table.tex`
-- `reports/generated/midway_tables.md`
-
-## Validation
-
-Run code compilation plus unit tests:
-
-```bash
-make test
-```
-
-## Main files and directories
-
-- experiment code: `src/chunkrag`
-- configs: `configs`
-- scripts: `scripts`
-- saved outputs: `outputs`
-- ACL reports: `reports`
-- Streamlit app: `apps/rag_demo_dashboard.py`
-
-## Project deliverables
-
-- midway report PDF: [`reports/midway_report.pdf`](/Users/assylkhan/Documents/NLP/reports/midway_report.pdf)
-- final report PDF: [`reports/final_report.pdf`](/Users/assylkhan/Documents/NLP/reports/final_report.pdf)
-- midway ACL source: [`reports/midway_report_acl.tex`](/Users/assylkhan/Documents/NLP/reports/midway_report_acl.tex)
-- final ACL source: [`reports/final_report_acl.tex`](/Users/assylkhan/Documents/NLP/reports/final_report_acl.tex)
-- bibliography: [`reports/references.bib`](/Users/assylkhan/Documents/NLP/reports/references.bib)
-- SCC/OpenWebUI deployment notes: [`docs/openwebui_scc_deployment.md`](/Users/assylkhan/Documents/NLP/docs/openwebui_scc_deployment.md)
-- roadmap: [`docs/rag_roadmap.md`](/Users/assylkhan/Documents/NLP/docs/rag_roadmap.md)
+# Anonymous paper and reproducibility bundle
+
+This directory contains the anonymous ACL paper, build inputs, reviewer-response
+matrix, summary-level run artifacts, audits, exact experiment configurations,
+and the code/tests needed to reproduce the reported pipeline. Run
+`tectonic paper.tex` in this directory to rebuild the paper.
+
+## Included and intentionally omitted
+
+- `paper.pdf`, `paper.tex`, `references.bib`, ACL styles, `generated/`, and
+  `figures/` are the self-contained paper build.
+- `artifacts/` contains final aggregate/summary results and reviewer-driven audits.
+  Run manifests omit Git commit and worktree fields to preserve anonymity while
+  retaining configuration hashes, source-tree hashes, package versions, and devices.
+- `configs/`, `src/`, `scripts/`, `tests/`, `pyproject.toml`, and the exact pinned
+  requirements support reproduction.
+- Raw `*_predictions.json` files are intentionally excluded because they reproduce
+  retrieved benchmark passages. Model weights, downloaded datasets, caches, smoke
+  runs, cluster deployment files, historical midway reports, and build auxiliaries
+  are also excluded. Audit JSON may retain question text and answer strings needed
+  to substantiate the reported diagnostic analysis.
+
+## Dataset provenance and licenses
+
+No dataset is claimed as an original contribution of this project.
+
+- SQuAD 2.0 (`3ffb306f725f7d2ce8394bc1873b24868140c412`): Stanford Question Answering Dataset;
+  its dataset metadata lists CC BY-SA 4.0.
+  <https://huggingface.co/datasets/rajpurkar/squad_v2>
+- HotpotQA distractor (`1908d6afbbead072334abe2965f91bd2709910ab`): multi-hop Wikipedia QA;
+  its dataset metadata lists CC BY-SA 4.0.
+  <https://huggingface.co/datasets/hotpotqa/hotpot_qa>
+- NVIDIA TechQA-RAG-Eval (`0b5bbc84b7f07d6d09d063130e90b716d8d4a32a`): a RAG-oriented distribution
+  derived from IBM TechQA; its dataset card lists Apache-2.0.
+  <https://huggingface.co/datasets/nvidia/TechQA-RAG-Eval>
+
+The bundle does not redistribute model weights. Model identifiers and immutable
+revisions are recorded in `configs/`; downstream users must follow each model card's
+license and access terms. The source repository did not declare a project-code license
+at bundle-build time, so inclusion for anonymous review does not itself grant broader
+reuse rights.
+
+## Integrity and anonymity
+
+`MANIFEST.sha256` records every other bundled file. The builder rejects incomplete
+runs, inconsistent source/configuration hashes, non-anonymous TeX, identity strings,
+absolute local paths, high-confidence secret patterns, raw predictions, model weights,
+cache/build metadata, and unsanitized run manifests. ZIP entries use fixed timestamps,
+permissions, ordering, and compression settings for deterministic output.

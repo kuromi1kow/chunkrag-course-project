@@ -4,7 +4,7 @@ import unittest
 
 import numpy as np
 
-from chunkrag.chunking import build_document_chunks, semantic_chunks
+from chunkrag.chunking import build_document_chunks, semantic_chunks, sentence_chunks
 from chunkrag.chunking import ChunkingContext
 from chunkrag.schemas import Document
 
@@ -28,6 +28,13 @@ class WhitespaceTokenizer:
 
     def decode(self, token_ids: list[int], skip_special_tokens: bool = True) -> str:
         return " ".join(self.inverse_vocab[token_id] for token_id in token_ids)
+
+
+class BoundarySensitiveTokenizer(WhitespaceTokenizer):
+    """Mimic a decode/re-encode expansion around punctuation boundaries."""
+
+    def decode(self, token_ids: list[int], skip_special_tokens: bool = True) -> str:
+        return super().decode(token_ids, skip_special_tokens).replace("alpha-beta", "alpha - beta")
 
 
 class StubSentenceEncoder:
@@ -90,6 +97,53 @@ class ChunkingTests(unittest.TestCase):
         )
 
         self.assertEqual([chunk.text for chunk in chunks], ["Alpha one. Alpha two.", "Beta three."])
+
+    def test_sentence_chunks_split_a_single_oversize_sentence(self) -> None:
+        tokenizer = WhitespaceTokenizer()
+        document = Document(
+            doc_id="doc-3",
+            title="Doc",
+            text="one two three four five six seven eight nine.",
+            dataset="unit",
+        )
+
+        chunks = sentence_chunks(
+            document,
+            tokenizer,
+            chunk_size=4,
+            chunker_name="sentence_4",
+            enforce_token_limit=True,
+        )
+
+        self.assertEqual([chunk.token_count for chunk in chunks], [4, 4, 1])
+        self.assertEqual(
+            " ".join(chunk.text for chunk in chunks),
+            "one two three four five six seven eight nine.",
+        )
+
+    def test_strict_fixed_chunks_enforce_limit_after_decode_round_trip(self) -> None:
+        tokenizer = BoundarySensitiveTokenizer()
+        document = Document(
+            doc_id="doc-4",
+            title="Doc",
+            text="alpha-beta gamma delta epsilon zeta eta",
+            dataset="unit",
+        )
+
+        chunks = build_document_chunks(
+            document,
+            {
+                "name": "fixed_4",
+                "type": "fixed",
+                "chunk_size": 4,
+                "chunk_overlap": 0,
+                "enforce_token_limit": True,
+            },
+            ChunkingContext(tokenizer=tokenizer),
+        )
+
+        self.assertGreater(len(chunks), 1)
+        self.assertTrue(all(chunk.token_count <= 4 for chunk in chunks))
 
 
 if __name__ == "__main__":

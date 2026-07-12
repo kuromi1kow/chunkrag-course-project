@@ -97,22 +97,76 @@ def build_openai_qa_messages(question: str, context: str | None) -> list[dict[st
     ]
 
 
-def normalize_qa_response(text: str) -> str:
+def build_local_qa_messages(
+    question: str,
+    context: str | None,
+    answer_style: str,
+) -> list[dict[str, str]]:
+    if answer_style == "extractive":
+        return build_openai_qa_messages(question, context)
+    if answer_style != "complete":
+        raise ValueError(f"Unsupported answer style: {answer_style}")
+    if context:
+        return [
+            {
+                "role": "system",
+                "content": (
+                    "You are a grounded question answering assistant. "
+                    "Use only the provided context. Give a concise but complete answer "
+                    "containing the information needed to resolve the question. "
+                    "Do not explain your reasoning or add citations. If the answer is not "
+                    "fully supported, reply with exactly 'unanswerable'."
+                ),
+            },
+            {
+                "role": "user",
+                "content": (
+                    "Answer the following question using only the context.\n\n"
+                    f"Question: {question}\n\n"
+                    "Context passages:\n"
+                    f"{context}\n\n"
+                    "Return only the final answer."
+                ),
+            },
+        ]
+    return [
+        {
+            "role": "system",
+            "content": (
+                "You are a concise question answering assistant. "
+                "Return a complete answer with no explanation."
+            ),
+        },
+        {
+            "role": "user",
+            "content": f"Question: {question}\n\nReturn only the final answer.",
+        },
+    ]
+
+
+def normalize_qa_response(text: str, *, preserve_multiline: bool = False) -> str:
     cleaned = text.strip()
     if not cleaned:
         return cleaned
 
-    cleaned = cleaned.splitlines()[0].strip()
+    if preserve_multiline:
+        cleaned = "\n".join(line.strip() for line in cleaned.splitlines() if line.strip())
+    else:
+        cleaned = cleaned.splitlines()[0].strip()
     cleaned = re.sub(r"^\s*\[\d+\]\s*", "", cleaned)
     cleaned = re.sub(r"^\s*(answer|final answer)\s*:\s*", "", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r"^\s*the answer is\s+", "", cleaned, flags=re.IGNORECASE)
     cleaned = cleaned.strip().strip("\"'`").strip()
     cleaned = re.sub(r"\s+\[\d+\]\s*$", "", cleaned)
     cleaned = re.sub(r"\s*\([^)]*implies[^)]*\)\s*$", "", cleaned, flags=re.IGNORECASE)
-    cleaned = cleaned.rstrip(" .;:")
+    if not preserve_multiline:
+        cleaned = cleaned.rstrip(" .;:")
 
     lowered = cleaned.lower()
-    if "unanswerable" in lowered or "not answerable" in lowered or "not supported" in lowered:
+    if preserve_multiline:
+        if lowered in {"unanswerable", "not answerable", "not supported"}:
+            return "unanswerable"
+    elif "unanswerable" in lowered or "not answerable" in lowered or "not supported" in lowered:
         return "unanswerable"
     return cleaned
 
@@ -301,6 +355,7 @@ class QAGenerator:
     def __init__(
         self,
         model_name: str,
+        revision: str | None = None,
         device: str = "auto",
         max_input_tokens: int = 768,
         max_new_tokens: int = 32,
@@ -309,13 +364,16 @@ class QAGenerator:
     ) -> None:
         self.device = resolve_device(device)
         self.model_name = model_name
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        config = AutoConfig.from_pretrained(model_name)
+        self.revision = revision
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name, revision=revision)
+        config = AutoConfig.from_pretrained(model_name, revision=revision)
         self.is_encoder_decoder = bool(config.is_encoder_decoder)
         model_kwargs = {}
         resolved_dtype = resolve_torch_dtype(torch_dtype)
         if resolved_dtype is not None:
             model_kwargs["torch_dtype"] = resolved_dtype
+        if revision is not None:
+            model_kwargs["revision"] = revision
         if use_device_map:
             model_kwargs["device_map"] = "auto"
         if self.is_encoder_decoder:
@@ -329,36 +387,162 @@ class QAGenerator:
         self.model.eval()
         self.max_input_tokens = max_input_tokens
         self.max_new_tokens = max_new_tokens
+        self.last_trace: dict[str, object] = {}
+        self._last_generation_stats: dict[str, object] = {}
 
     @torch.inference_mode()
-    def generate_from_prompt(self, prompt: str, max_new_tokens: int | None = None) -> str:
+    def generate_from_prompt(
+        self,
+        prompt: str,
+        max_new_tokens: int | None = None,
+        *,
+        add_special_tokens: bool = True,
+    ) -> str:
         encoded = self.tokenizer(
             prompt,
             return_tensors="pt",
             truncation=True,
             max_length=self.max_input_tokens,
+            add_special_tokens=add_special_tokens,
         ).to(self.device)
+        generation_limit = max_new_tokens if max_new_tokens is not None else self.max_new_tokens
         generated = self.model.generate(
             **encoded,
-            max_new_tokens=max_new_tokens or self.max_new_tokens,
+            max_new_tokens=generation_limit,
             do_sample=False,
             num_beams=1,
             pad_token_id=self.tokenizer.pad_token_id,
             eos_token_id=self.tokenizer.eos_token_id,
         )
         if self.is_encoder_decoder:
-            text = self.tokenizer.decode(generated[0], skip_special_tokens=True)
+            output_ids = generated[0]
         else:
             prompt_length = encoded["input_ids"].shape[1]
-            text = self.tokenizer.decode(generated[0][prompt_length:], skip_special_tokens=True)
+            output_ids = generated[0][prompt_length:]
+        text = self.tokenizer.decode(output_ids, skip_special_tokens=True)
+        eos_token_ids = self.tokenizer.eos_token_id
+        if eos_token_ids is None:
+            eos_ids: set[int] = set()
+        elif isinstance(eos_token_ids, int):
+            eos_ids = {eos_token_ids}
+        else:
+            eos_ids = {int(value) for value in eos_token_ids}
+        generated_tokens = int(output_ids.shape[0])
+        ended_with_eos = bool(generated_tokens and int(output_ids[-1]) in eos_ids)
+        self._last_generation_stats = {
+            "generated_tokens": generated_tokens,
+            "generation_max_new_tokens": generation_limit,
+            "generation_length_capped": generated_tokens >= generation_limit and not ended_with_eos,
+        }
         return text.strip()
+
+    def _render_chat(self, messages: list[dict[str, str]]) -> str:
+        if hasattr(self.tokenizer, "apply_chat_template"):
+            try:
+                return self.tokenizer.apply_chat_template(
+                    messages,
+                    tokenize=False,
+                    add_generation_prompt=True,
+                )
+            except Exception:
+                pass
+        return build_chat_prompt(messages)
+
+    def _chat_token_count(self, rendered_chat: str) -> int:
+        return len(self.tokenizer.encode(rendered_chat, add_special_tokens=False))
+
+    def _prepare_causal_qa_prompt(
+        self,
+        question: str,
+        context: str | None,
+        answer_style: str,
+    ) -> tuple[str, int, int, bool]:
+        full_prompt = self._render_chat(build_local_qa_messages(question, context, answer_style))
+        full_prompt_tokens = self._chat_token_count(full_prompt)
+        if context is None or full_prompt_tokens <= self.max_input_tokens:
+            return full_prompt, full_prompt_tokens, full_prompt_tokens, False
+
+        context_ids = self.tokenizer.encode(context, add_special_tokens=False)
+        lo, hi = 0, len(context_ids)
+        best_prompt = self._render_chat(build_local_qa_messages(question, None, answer_style))
+        best_prompt_tokens = self._chat_token_count(best_prompt)
+        while lo <= hi:
+            mid = (lo + hi) // 2
+            candidate_context = self.tokenizer.decode(
+                context_ids[:mid],
+                skip_special_tokens=True,
+            ).strip()
+            candidate_prompt = self._render_chat(
+                build_local_qa_messages(question, candidate_context, answer_style)
+            )
+            candidate_tokens = self._chat_token_count(candidate_prompt)
+            if candidate_tokens <= self.max_input_tokens:
+                best_prompt = candidate_prompt
+                best_prompt_tokens = candidate_tokens
+                lo = mid + 1
+            else:
+                hi = mid - 1
+        return best_prompt, full_prompt_tokens, best_prompt_tokens, True
 
     @torch.inference_mode()
     def answer(self, question: str, context: str | None = None) -> str:
-        prompt = build_qa_prompt(question, context)
-        return self.generate_from_prompt(prompt)
+        return self.answer_with_style(question, context, answer_style="extractive")
+
+    @torch.inference_mode()
+    def answer_with_style(
+        self,
+        question: str,
+        context: str | None = None,
+        *,
+        answer_style: str = "extractive",
+        max_new_tokens: int | None = None,
+    ) -> str:
+        if self.is_encoder_decoder:
+            if answer_style == "extractive":
+                prompt = build_qa_prompt(question, context)
+            elif answer_style == "complete":
+                prompt = (
+                    "Answer the question completely using only the provided context. "
+                    "If the answer is not supported, answer with 'unanswerable'.\n\n"
+                    f"Question: {question}\n\nContext:\n{context or ''}\n\nAnswer:"
+                )
+            else:
+                raise ValueError(f"Unsupported answer style: {answer_style}")
+            full_prompt_tokens = len(self.tokenizer.encode(prompt, add_special_tokens=True))
+            raw = self.generate_from_prompt(prompt, max_new_tokens=max_new_tokens)
+            used_prompt_tokens = min(full_prompt_tokens, self.max_input_tokens)
+            context_truncated = full_prompt_tokens > self.max_input_tokens
+        else:
+            prompt, full_prompt_tokens, used_prompt_tokens, context_truncated = (
+                self._prepare_causal_qa_prompt(question, context, answer_style)
+            )
+            raw = self.generate_from_prompt(
+                prompt,
+                max_new_tokens=max_new_tokens,
+                add_special_tokens=False,
+            )
+        normalized = normalize_qa_response(
+            raw,
+            preserve_multiline=answer_style == "complete",
+        )
+        final = (
+            compress_answer(question, normalized)
+            if answer_style == "extractive"
+            else normalized
+        )
+        self.last_trace = {
+            "raw_prediction": raw,
+            "full_prompt_tokens": full_prompt_tokens,
+            "used_prompt_tokens": used_prompt_tokens,
+            "context_truncated": context_truncated,
+            "refinement_applied": False,
+            "answer_style": answer_style,
+            **self._last_generation_stats,
+        }
+        return final
 
     def chat(self, messages: list[dict[str, str]]) -> str:
+        rendered_chat = False
         if hasattr(self.tokenizer, "apply_chat_template"):
             try:
                 prompt = self.tokenizer.apply_chat_template(
@@ -366,11 +550,12 @@ class QAGenerator:
                     tokenize=False,
                     add_generation_prompt=True,
                 )
+                rendered_chat = True
             except Exception:
                 prompt = build_chat_prompt(messages)
         else:
             prompt = build_chat_prompt(messages)
-        return self.generate_from_prompt(prompt)
+        return self.generate_from_prompt(prompt, add_special_tokens=not rendered_chat)
 
 
 class ExtractiveFallbackGenerator:
@@ -458,6 +643,7 @@ class OpenAICompatibleGenerator:
         self.max_input_tokens = max_input_tokens
         self.max_new_tokens = max_new_tokens
         self.temperature = temperature
+        self.last_trace: dict[str, object] = {}
 
     def _count_chat_tokens(self, messages: list[dict[str, str]]) -> int:
         if hasattr(self.tokenizer, "apply_chat_template"):
@@ -472,19 +658,28 @@ class OpenAICompatibleGenerator:
                 pass
         return sum(len(self.tokenizer.encode(message["content"], add_special_tokens=False)) for message in messages)
 
-    def _truncate_context(self, question: str, context: str | None) -> tuple[list[dict[str, str]], str | None]:
-        messages = build_openai_qa_messages(question, context)
+    def _truncate_context(
+        self,
+        question: str,
+        context: str | None,
+        answer_style: str,
+    ) -> tuple[list[dict[str, str]], str | None]:
+        messages = build_local_qa_messages(question, context, answer_style)
         if context is None or self._count_chat_tokens(messages) <= self.max_input_tokens:
             return messages, context
 
         context_ids = self.tokenizer.encode(context, add_special_tokens=False)
         lo, hi = 0, len(context_ids)
-        best_messages = build_openai_qa_messages(question, None)
+        best_messages = build_local_qa_messages(question, None, answer_style)
         best_context: str | None = None
         while lo <= hi:
             mid = (lo + hi) // 2
             truncated_context = self.tokenizer.decode(context_ids[:mid], skip_special_tokens=True).strip()
-            candidate_messages = build_openai_qa_messages(question, truncated_context)
+            candidate_messages = build_local_qa_messages(
+                question,
+                truncated_context,
+                answer_style,
+            )
             if self._count_chat_tokens(candidate_messages) <= self.max_input_tokens:
                 best_messages = candidate_messages
                 best_context = truncated_context
@@ -509,18 +704,59 @@ class OpenAICompatibleGenerator:
         return refined
 
     def answer(self, question: str, context: str | None = None) -> str:
-        truncated_messages, truncated_context = self._truncate_context(question, context)
+        return self.answer_with_style(question, context, answer_style="extractive")
+
+    def answer_with_style(
+        self,
+        question: str,
+        context: str | None = None,
+        *,
+        answer_style: str = "extractive",
+        max_new_tokens: int | None = None,
+    ) -> str:
+        full_messages = build_local_qa_messages(question, context, answer_style)
+        full_prompt_tokens = self._count_chat_tokens(full_messages)
+        truncated_messages, truncated_context = self._truncate_context(
+            question,
+            context,
+            answer_style,
+        )
+        used_prompt_tokens = self._count_chat_tokens(truncated_messages)
+        generation_limit = max_new_tokens if max_new_tokens is not None else self.max_new_tokens
         response = self.client.chat.completions.create(
             model=self.model_name,
             messages=truncated_messages,
             temperature=self.temperature,
-            max_tokens=self.max_new_tokens,
+            max_tokens=generation_limit,
         )
-        message = response.choices[0].message
-        answer = normalize_qa_response(message.content or "")
-        if should_refine_answer(answer):
+        choice = response.choices[0]
+        message = choice.message
+        raw_prediction = message.content or ""
+        answer = normalize_qa_response(
+            raw_prediction,
+            preserve_multiline=answer_style == "complete",
+        )
+        refinement_applied = answer_style == "extractive" and should_refine_answer(answer)
+        if refinement_applied:
             answer = self._refine_answer(question, answer, truncated_context)
-        return compress_answer(question, normalize_qa_response(answer))
+        if answer_style == "extractive":
+            final = compress_answer(question, normalize_qa_response(answer))
+        else:
+            final = answer
+        usage = getattr(response, "usage", None)
+        completion_tokens = getattr(usage, "completion_tokens", None) if usage is not None else None
+        self.last_trace = {
+            "raw_prediction": raw_prediction,
+            "full_prompt_tokens": full_prompt_tokens,
+            "used_prompt_tokens": used_prompt_tokens,
+            "context_truncated": context is not None and truncated_context != context,
+            "refinement_applied": refinement_applied,
+            "answer_style": answer_style,
+            "generated_tokens": completion_tokens,
+            "generation_max_new_tokens": generation_limit,
+            "generation_length_capped": getattr(choice, "finish_reason", None) == "length",
+        }
+        return final
 
     def chat(self, messages: list[dict[str, str]]) -> str:
         response = self.client.chat.completions.create(

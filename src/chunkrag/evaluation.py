@@ -37,11 +37,15 @@ def retrieval_metrics(retrieved_chunks: list[Chunk], example: QAExample) -> dict
         recall = float(any(relevant_flags))
         supporting_doc_coverage = 0.0
         all_supporting_docs_found = 0.0
+    answer_string_visible_at_k = float(
+        any(contains_normalized_answer(chunk.text, example.answers) for chunk in retrieved_chunks)
+    )
     return {
         "precision_at_k": precision,
         "recall_at_k": recall,
         "supporting_doc_coverage": supporting_doc_coverage,
         "all_supporting_docs_found": all_supporting_docs_found,
+        "answer_string_visible_at_k": answer_string_visible_at_k,
     }
 
 

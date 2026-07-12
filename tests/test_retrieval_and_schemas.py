@@ -20,6 +20,7 @@ class FakeEncoder:
     def __init__(self, *, fail_on_encode: bool = False) -> None:
         self.calls = 0
         self.fail_on_encode = fail_on_encode
+        self.last_texts = None
 
     def encode(
         self,
@@ -32,6 +33,7 @@ class FakeEncoder:
         if self.fail_on_encode:
             raise AssertionError("Encoder should not be called when loading from cache.")
         self.calls += 1
+        self.last_texts = list(texts)
         vectors = []
         for index, text in enumerate(texts):
             base = float(len(text) + index + 1)
@@ -87,6 +89,15 @@ class RetrievalAndSchemaTests(unittest.TestCase):
         )
 
         self.assertEqual([chunk.chunk_id for chunk, _ in fused[:3]], ["b", "a", "c"])
+
+    def test_dense_retriever_applies_query_prefix_only_to_queries(self) -> None:
+        encoder = FakeEncoder()
+        retriever = DenseRetriever(encoder=encoder, query_prefix="Represent: ")
+        retriever.build([Chunk("a", "doc-a", "A", "unit", "passage text", 2)])
+        self.assertEqual(encoder.last_texts, ["passage text"])
+
+        retriever.retrieve("question", 1)
+        self.assertEqual(encoder.last_texts, ["Represent: question"])
 
     def test_summary_rows_flatten_to_report_compatible_dicts(self) -> None:
         summary = SummaryRow(

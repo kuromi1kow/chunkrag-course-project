@@ -48,9 +48,15 @@ def best_f1(prediction: str, gold_answers: list[str]) -> float:
 
 
 def contains_normalized_answer(text: str, gold_answers: list[str]) -> bool:
-    normalized_text = normalize_answer(text)
+    text_tokens = normalize_answer(text).split()
     for answer in gold_answers:
-        normalized_answer = normalize_answer(answer)
-        if normalized_answer and normalized_answer in normalized_text:
+        answer_tokens = normalize_answer(answer).split()
+        answer_length = len(answer_tokens)
+        if not answer_tokens or answer_length > len(text_tokens):
+            continue
+        if any(
+            text_tokens[start : start + answer_length] == answer_tokens
+            for start in range(len(text_tokens) - answer_length + 1)
+        ):
             return True
     return False

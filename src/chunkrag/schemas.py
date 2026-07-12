@@ -81,6 +81,15 @@ class PredictionRecord:
     precision_at_k: float = 0.0
     supporting_doc_coverage: float = 0.0
     all_supporting_docs_found: float = 0.0
+    answer_string_visible_at_k: float = 0.0
+    raw_prediction: str | None = None
+    full_prompt_tokens: int | None = None
+    used_prompt_tokens: int | None = None
+    context_truncated: bool | None = None
+    refinement_applied: bool | None = None
+    generated_tokens: int | None = None
+    generation_max_new_tokens: int | None = None
+    generation_length_capped: bool | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
