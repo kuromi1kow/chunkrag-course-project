@@ -12,13 +12,15 @@ from .artifacts import ArtifactStore, run_manifest_template
 from .checkpoint import merge_shards
 from .canonical import read_json, read_jsonl
 from .colab import validate_colab_runtime
-from .completion import completed_stages, finalize_stage, mark_work_complete
-from .environment import environment_manifest, require_clean_git
+from .completion import build_completion_manifest, completed_stages, finalize_stage, mark_work_complete
+from .determinism import configure_determinism
+from .environment import environment_manifest, require_canonical_runtime, require_clean_git
 from .experiments import filter_plan, plan_experiment, validate_dependencies
 from .logging import JsonlLogger, configure_console_logging
 from .protocol import ProtocolError, load_protocol_config, repo_root
 from .canonical import atomic_write_json, identifier_hash, source_sha256
-from .validation import validate_repository
+from .validation import validate_completion_manifest, validate_repository
+from .constants import GPU_EXPERIMENTS
 
 
 MODES = ("run", "dry-run", "validation-only", "merge-only")
@@ -61,7 +63,12 @@ def main(argv: list[str] | None = None) -> int:
     config = load_protocol_config()
     artifact_root = args.artifact_root or root / config["artifact_root"]
     if args.mode == "validation-only":
-        print(json.dumps(validate_repository(root), sort_keys=True, indent=2))
+        report = validate_repository(root)
+        completion_path = artifact_root / "audit" / "completion.json"
+        if completion_path.is_file():
+            validate_completion_manifest(completion_path)
+            report["canonical_artifacts"] = "valid-and-locked"
+        print(json.dumps(report, sort_keys=True, indent=2))
         return 0
     items = filter_plan(
         plan_experiment(args.experiment), dataset=args.dataset,
@@ -73,7 +80,11 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps([item.to_dict() for item in items], sort_keys=True, indent=2))
         return 0
     state = require_clean_git(root)
-    lock = environment_manifest(root / "requirements-main-study.lock", check_installed=True)
+    resolved_lock = root / "requirements-main-study.transitive.json"
+    initial_source_hash = source_sha256(root, resolved_lock)
+    configure_determinism(require_torch=args.experiment in GPU_EXPERIMENTS)
+    lock = environment_manifest(resolved_lock, check_installed=True)
+    require_canonical_runtime(lock, gpu_required=args.experiment in GPU_EXPERIMENTS)
     if args.platform == "colab":
         if args.runtime_manifest is None:
             raise ProtocolError("Colab execution requires --runtime-manifest")
@@ -81,7 +92,10 @@ def main(argv: list[str] | None = None) -> int:
         validate_colab_runtime(runtime, expected_environment_hash=lock["lock_sha256"], expected_git_commit=state["commit"])
     store = ArtifactStore(artifact_root)
     store.initialize()
-    actual_completed = completed_stages(artifact_root)
+    actual_completed = completed_stages(
+        artifact_root, git_commit=state["commit"], config_sha256=config["config_sha256"],
+        environment_hash=lock["lock_sha256"],
+    )
     validate_dependencies(args.experiment, actual_completed)
     if args.completed and not set(args.completed).issubset(set(actual_completed)):
         raise ProtocolError(f"Claimed --completed stages lack hashed completion markers: {sorted(set(args.completed) - set(actual_completed))}")
@@ -96,7 +110,11 @@ def main(argv: list[str] | None = None) -> int:
             expected_ids = [row["question_id"] for row in read_jsonl(artifact_root / "manifests" / "questions" / f"{args.dataset}.jsonl")]
         else:
             raise ProtocolError("Merge-only requires --expected-ids unless merging question IDs for a dataset")
-        digest = merge_shards(sorted(args.shard_dir.glob("part-*.jsonl")), expected_ids, args.id_field, args.merge_output)
+        digest = merge_shards(
+            sorted(args.shard_dir.glob("part-*.jsonl")), expected_ids, args.id_field,
+            args.merge_output, schema="generation", require_state=True,
+            expected_config_sha256=config["config_sha256"], expected_environment_hash=lock["lock_sha256"],
+        )
         logger.emit("merge-completed", experiment=args.experiment, output=str(args.merge_output), sha256=digest)
         print(json.dumps({"output": str(args.merge_output), "sha256": digest}, sort_keys=True))
         return 0
@@ -113,12 +131,18 @@ def main(argv: list[str] | None = None) -> int:
             config_sha256=config["config_sha256"], environment_hash=lock["lock_sha256"],
         )
         logger.emit("work-completed", work_id=item.work_id, artifact_hashes=hashes)
-    stage_hash = finalize_stage(artifact_root, args.experiment)
+    stage_hash = finalize_stage(
+        artifact_root, args.experiment, git_commit=state["commit"],
+        config_sha256=config["config_sha256"], environment_hash=lock["lock_sha256"],
+    )
     if stage_hash:
         logger.emit("stage-completed", experiment=args.experiment, marker_sha256=stage_hash)
+    final_state = require_clean_git(root)
+    if final_state["commit"] != state["commit"] or source_sha256(root, resolved_lock) != initial_source_hash:
+        raise ProtocolError("Git commit or tracked source changed during canonical execution")
     manifest = run_manifest_template(
         git_commit=state["commit"],
-        source_hash=source_sha256(root, root / "requirements-main-study.lock"),
+        source_hash=initial_source_hash,
         config_hash=config["config_sha256"], environment_hash=lock["lock_sha256"],
         planned_counts={item.work_id: item.expected_records for item in items},
         hardware=lock["hardware"],
@@ -131,4 +155,10 @@ def main(argv: list[str] | None = None) -> int:
     })
     invocation_id = identifier_hash(state["commit"], started, *[item.work_id for item in items])
     atomic_write_json(artifact_root / "audit" / "invocations" / f"{invocation_id}.json", manifest)
+    if args.experiment == "E7" and stage_hash:
+        completion_hash = build_completion_manifest(
+            artifact_root, git_commit=state["commit"], config_sha256=config["config_sha256"],
+            environment_hash=lock["lock_sha256"], source_hash=initial_source_hash,
+        )
+        store.lock_read_only()
     return 0

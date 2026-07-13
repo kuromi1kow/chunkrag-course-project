@@ -15,7 +15,9 @@ These commands verify or dry-run only. They never download a dataset or load a m
 
 ## Canonical execution prerequisites
 
-1. Use Python 3.11 and install `requirements-main-study.lock`.
+1. Use Python 3.11.14 and install the exact tracked transitive environment with
+   `python scripts/install_main_study_environment.py`; the runner verifies every installed
+   distribution against `requirements-main-study.transitive.json`.
 2. Cache every pinned model and dataset revision.
 3. Use an NVIDIA A100 for canonical GPU stages.
 4. Commit all implementation and ensure `git status --porcelain` is empty.
@@ -81,9 +83,17 @@ MyDrive/chunkrag-main-v1/
 
 Credentials and user-specific Drive paths are never copied into released artifacts.
 
+E4 must be executed in three protocol-ordered pauses: run `human-package` first, collect
+the two human label files and adjudication, run all `judge__*` shards, and only then run
+`human-validation`. The judge handler rejects execution until the package's hashed work
+marker and all three human label files validate.
+
 ## Locked analysis regeneration
 
-After E0--E7 complete, artifacts are read-only, and the completion manifest is frozen:
+After E7 passes the full artifact and reproducibility audit, the runner creates and
+hashes `audit/completion.json`, verifies all E0--E7 work markers, and removes write
+permissions from raw artifacts. Analysis rejects alternate or user-authored completion
+manifests and can execute only once:
 
 ```bash
 make main-study-analysis COMPLETION_MANIFEST=artifacts/chunkrag-main-v1/audit/completion.json

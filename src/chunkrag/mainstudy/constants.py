@@ -4,6 +4,7 @@ from __future__ import annotations
 
 PROTOCOL_ID = "chunkrag-main-v1"
 PROTOCOL_SHA256 = "567b652fc403e7ff7e00e349de86357f9a293cac77e7e7f4d3612284eb2c89bf"
+FROZEN_CONFIG_SHA256 = "d94a8532761e850edf40006805709af8a25873c8412f785e65e8d0d643059746"
 SCHEMA_VERSION = PROTOCOL_ID
 MASTER_SEED = 8677
 
@@ -26,10 +27,10 @@ EXPERIMENT_DEPENDENCIES = {
     "E0": (),
     "E1": ("E0",),
     "E2": ("E1",),
-    "E3": ("E0",),
+    "E3": ("E0", "E2"),
     "E4": ("E2", "E3"),
-    "E5": ("E1",),
-    "E6": ("E1", "E3"),
+    "E5": ("E1", "E4"),
+    "E6": ("E1", "E3", "E5"),
     "E7": ("E0", "E1", "E2", "E3", "E4", "E5", "E6"),
 }
 
@@ -49,6 +50,8 @@ ARTIFACT_SUBDIRECTORIES = (
     "analysis",
     "audit",
 )
+
+GPU_EXPERIMENTS = frozenset({"E1", "E2", "E3", "E4", "E5", "E6", "E7"})
 
 MAIN_FIGURES = {
     "figure1": ("E1", "E2", "E3"),

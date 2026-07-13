@@ -6,6 +6,8 @@ import re
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from .canonical import canonical_json_hash
+
 EXTRACTIVE_SYSTEM = """You are an extractive question answering assistant. Use only the provided context.
 Copy the shortest answer span supported by the context. Do not explain your reasoning.
 If the answer is not fully supported, reply with exactly unanswerable."""
@@ -36,6 +38,14 @@ Return only the final answer."""
 
 def prompt_version(dataset: str) -> str:
     return "technical-v1" if dataset == "techqa" else "extractive-v1"
+
+
+def prompt_template_hash(dataset: str) -> str:
+    if dataset == "techqa":
+        payload = {"version": "technical-v1", "system": TECHNICAL_SYSTEM, "user_template": TECHNICAL_USER}
+    else:
+        payload = {"version": "extractive-v1", "system": EXTRACTIVE_SYSTEM, "user_template": EXTRACTIVE_USER}
+    return canonical_json_hash(payload)
 
 
 def messages(dataset: str, question: str, context: str) -> list[dict[str, str]]:

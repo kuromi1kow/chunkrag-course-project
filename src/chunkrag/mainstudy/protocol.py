@@ -10,6 +10,7 @@ from .canonical import canonical_json_hash, file_sha256
 from .constants import (
     DATASET_ORDER,
     EXPERIMENT_ORDER,
+    FROZEN_CONFIG_SHA256,
     JITTER_SEEDS,
     POLICY_ORDER,
     PROTOCOL_ID,
@@ -51,6 +52,11 @@ def _require_equal(config: dict[str, Any], path: tuple[str, ...], expected: Any)
 
 
 def validate_protocol_config(config: dict[str, Any]) -> None:
+    observed_hash = canonical_json_hash(config)
+    if observed_hash != FROZEN_CONFIG_SHA256:
+        raise ProtocolError(
+            f"Immutable configuration mismatch: expected {FROZEN_CONFIG_SHA256}, got {observed_hash}"
+        )
     _require_equal(config, ("protocol_id",), PROTOCOL_ID)
     _require_equal(config, ("protocol_sha256",), PROTOCOL_SHA256)
     _require_equal(config, ("dataset_order",), list(DATASET_ORDER))
@@ -83,7 +89,7 @@ def load_protocol_config(path: Path | None = None, *, verify: bool = True) -> di
     if not isinstance(config, dict):
         raise ProtocolError("Main-study config must be a JSON object")
     validate_protocol_config(config)
-    config["config_sha256"] = canonical_json_hash(config)
+    config["config_sha256"] = FROZEN_CONFIG_SHA256
     return config
 
 

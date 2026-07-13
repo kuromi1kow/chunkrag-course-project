@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from .canonical import identifier_hash
-from .constants import PROTOCOL_ID
+from .constants import PROTOCOL_ID, PROTOCOL_SHA256
 from .schemas import validate_record
 
 
@@ -60,7 +60,7 @@ def build_retrieval_record(
     fused: list[dict[str, Any]], reranked: list[dict[str, Any]], config_hash: str,
     upstream_hash: str, latency: Mapping[str, float], memory: Mapping[str, int],
 ) -> dict[str, Any]:
-    retrieval_id = identifier_hash(PROTOCOL_ID, question_id, condition_id, config_hash)
+    retrieval_id = identifier_hash(PROTOCOL_SHA256, question_id, condition_id, config_hash)
     record = {
         "schema_version": PROTOCOL_ID, "retrieval_id": retrieval_id,
         "question_id": question_id, "condition_id": condition_id,
@@ -92,6 +92,7 @@ class PrimaryRetriever:
     _dense_index: Any = None
     _bm25: Any = None
     _chunks_by_id: dict[str, Mapping[str, Any]] | None = None
+    _build_audit: dict[str, Any] | None = None
 
     def build(self) -> None:
         import faiss
@@ -100,13 +101,17 @@ class PrimaryRetriever:
         from sentence_transformers import SentenceTransformer
         from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
+        started = time.perf_counter()
         self._chunks_by_id = {str(row["chunk_id"]): row for row in self.chunk_records}
         self._model = SentenceTransformer(self.dense_repository, revision=self.dense_revision, device=self.device, local_files_only=True)
+        self._model.float()
         self._model.max_seq_length = 512
         texts = [str(row["text"]) for row in self.chunk_records]
         dense_tokenizer = self._model.tokenizer
+        dense_counts: list[int] = []
         for row, text in zip(self.chunk_records, texts):
             count = len(dense_tokenizer(text, add_special_tokens=True, truncation=False)["input_ids"])
+            dense_counts.append(count)
             if count > 512:
                 raise RuntimeError(f"Dense encoder would truncate chunk {row['chunk_id']}: {count}")
         vectors = self._model.encode(texts, batch_size=64, normalize_embeddings=True, convert_to_numpy=True).astype("float32")
@@ -114,10 +119,19 @@ class PrimaryRetriever:
             raise RuntimeError("Dense encoder returned wrong record count")
         self._dense_index = faiss.IndexFlatIP(vectors.shape[1])
         self._dense_index.add(vectors)
+        if self._dense_index.ntotal != len(self.chunk_records):
+            raise RuntimeError("FAISS index size does not equal the chunk manifest count")
         self._bm25 = BM25Okapi([lexical_tokenize(text) for text in texts])
         self._reranker_tokenizer = AutoTokenizer.from_pretrained(self.reranker_repository, revision=self.reranker_revision, local_files_only=True)
         self._reranker = AutoModelForSequenceClassification.from_pretrained(self.reranker_repository, revision=self.reranker_revision, local_files_only=True).to(self.device)
+        self._reranker.float()
         self._reranker.eval()
+        self._build_audit = {
+            "index_build_seconds": time.perf_counter() - started,
+            "embedding_tokens": sum(dense_counts), "dense_token_counts": dense_counts,
+            "index_bytes": len(faiss.serialize_index(self._dense_index)),
+            "index_vectors": int(self._dense_index.ntotal), "embedding_dtype": str(vectors.dtype),
+        }
 
     def query(self, question: str, *, stack: str = "hybrid-rerank") -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], dict[str, float]]:
         import numpy as np

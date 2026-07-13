@@ -169,10 +169,13 @@ def materialize_techqa_rows(rows: Iterable[Mapping[str, Any]], revision: str) ->
     candidates: list[dict[str, Any]] = []
     eligible_rows: list[tuple[int, Mapping[str, Any]]] = []
     for row_index, row in enumerate(rows):
-        if bool(row["is_impossible"]) or not str(row["answer"]).strip() or not row["contexts"]:
+        nonempty_contexts = [context for context in row["contexts"] if str(context.get("text", "")).strip()]
+        if bool(row["is_impossible"]) or not str(row["answer"]).strip() or not nonempty_contexts:
             continue
         eligible_rows.append((row_index, row))
         for context_index, context in enumerate(row["contexts"]):
+            if not str(context.get("text", "")).strip():
+                continue
             filename = nfc(str(context["filename"]))
             text = normalize_corpus_text(str(context["text"]))
             doc_id = techqa_document_id(filename)
@@ -190,7 +193,7 @@ def materialize_techqa_rows(rows: Iterable[Mapping[str, Any]], revision: str) ->
             else:
                 existing["source_provenance"].extend(record["source_provenance"])
     for _, row in eligible_rows:
-        filenames = [nfc(str(item["filename"])) for item in row["contexts"]]
+        filenames = [nfc(str(item["filename"])) for item in row["contexts"] if str(item.get("text", "")).strip()]
         gold_ids = [techqa_document_id(item) for item in filenames]
         question = _base_question(
             dataset="techqa", revision=revision, row=row, question=str(row["question"]),
@@ -285,3 +288,20 @@ def load_pinned_dataset(spec: Mapping[str, Any]):
     if spec.get("config") is not None:
         return load_dataset(spec["repository"], spec["config"], **kwargs)
     return load_dataset(spec["repository"], **kwargs)
+
+
+def eligible_row_count(dataset: str, rows: Iterable[Mapping[str, Any]]) -> int:
+    count = 0
+    for row in rows:
+        if dataset == "squad_v2":
+            texts = list(row.get("answers", {}).get("text", []))
+            eligible = bool(texts and any(str(text).strip() for text in texts))
+        elif dataset == "hotpot_qa":
+            titles = {nfc(str(item)) for item in row["context"]["title"]}
+            fact_titles = [nfc(str(item)) for item in row["supporting_facts"]["title"]]
+            eligible = bool(str(row.get("answer", "")).strip() and fact_titles and all(title in titles for title in fact_titles))
+        else:
+            nonempty_contexts = [item for item in row.get("contexts", []) if str(item.get("text", "")).strip()]
+            eligible = bool(not row["is_impossible"] and str(row["answer"]).strip() and nonempty_contexts)
+        count += int(eligible)
+    return count

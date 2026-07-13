@@ -64,6 +64,7 @@ def hardware_manifest() -> dict[str, Any]:
     payload: dict[str, Any] = {
         "python": sys.version.split()[0],
         "platform": platform.platform(),
+        "node": platform.node(),
         "machine": platform.machine(),
         "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
     }
@@ -75,38 +76,77 @@ def hardware_manifest() -> dict[str, Any]:
         payload["gpus"] = [line.strip() for line in result.stdout.splitlines() if line.strip()]
     except (OSError, subprocess.CalledProcessError):
         payload["gpus"] = []
+    try:
+        import torch
+        payload["torch_version"] = torch.__version__
+        payload["cuda_build"] = torch.version.cuda
+        payload["cudnn_version"] = torch.backends.cudnn.version() if torch.backends.cudnn.is_available() else None
+    except ImportError:
+        payload.update({"torch_version": None, "cuda_build": None, "cudnn_version": None})
     return payload
 
 
+def installed_packages() -> list[dict[str, str]]:
+    return sorted(
+        ({"name": str(distribution.metadata["Name"]), "version": distribution.version}
+         for distribution in importlib.metadata.distributions()
+         if distribution.metadata["Name"] and str(distribution.metadata["Name"]).lower() != "chunkrag"),
+        key=lambda row: (row["name"].lower(), row["version"]),
+    )
+
+
 def environment_manifest(lock_path: Path, *, check_installed: bool) -> dict[str, Any]:
+    payload = json.loads(lock_path.read_text(encoding="utf-8"))
+    required = {"schema_version", "python", "implementation", "packages"}
+    if not isinstance(payload, dict) or not required.issubset(payload):
+        raise ProtocolError("Resolved environment lock is missing required fields")
+    direct_path = lock_path.with_name("requirements-main-study.lock")
+    if payload.get("direct_lock_sha256") != file_sha256(direct_path):
+        raise ProtocolError("Resolved environment lock does not match the frozen direct lock")
+    observed = installed_packages()
+    if check_installed:
+        verify_direct_versions(installed=True)
+        expected = {(row["name"].lower(), row["version"]) for row in payload["packages"]}
+        actual = {(row["name"].lower(), row["version"]) for row in observed}
+        if actual != expected:
+            missing = sorted(expected - actual)
+            extra = sorted(actual - expected)
+            raise ProtocolError(f"Transitive environment mismatch; missing={missing}, extra={extra}")
+        if sys.version.split()[0] != payload["python"] or platform.python_implementation() != payload["implementation"]:
+            raise ProtocolError("Python runtime does not match the resolved environment lock")
     return {
         "lock_sha256": file_sha256(lock_path),
         "direct_versions": verify_direct_versions(installed=check_installed),
+        "packages": observed,
         "hardware": hardware_manifest(),
     }
 
 
 def freeze_transitive_environment(path: Path, lock_path: Path) -> str:
-    packages = sorted(
-        ({"name": distribution.metadata["Name"], "version": distribution.version}
-         for distribution in importlib.metadata.distributions()),
-        key=lambda row: (str(row["name"]).lower(), str(row["version"])),
-    )
     payload = {
-        "python": sys.version,
+        "schema_version": "chunkrag-main-environment-v1",
+        "python": sys.version.split()[0],
         "implementation": platform.python_implementation(),
         "direct_lock_sha256": file_sha256(lock_path),
-        "packages": packages,
-        "hardware": hardware_manifest(),
+        "packages": installed_packages(),
     }
-    payload["environment_hash"] = canonical_json_hash(payload)
     return atomic_write_json(path, payload)
 
 
 def require_canonical_a100(manifest: dict[str, Any]) -> None:
-    gpus = manifest.get("hardware", {}).get("gpus", [])
+    hardware = manifest.get("hardware", manifest)
+    gpus = hardware.get("gpus", [])
     if not gpus or any("A100" not in gpu for gpu in gpus):
         raise ProtocolError("Canonical Colab/SCC output requires NVIDIA A100 hardware")
+    if not hardware.get("cuda_build"):
+        raise ProtocolError("Canonical GPU output requires a recorded CUDA build")
+
+
+def require_canonical_runtime(manifest: dict[str, Any], *, gpu_required: bool) -> None:
+    if sys.version_info[:2] != (3, 11):
+        raise ProtocolError("Canonical execution requires Python 3.11")
+    if gpu_required:
+        require_canonical_a100(manifest)
 
 
 def write_runtime_template(path: Path, manifest: dict[str, Any]) -> None:
