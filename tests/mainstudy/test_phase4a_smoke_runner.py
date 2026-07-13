@@ -7,12 +7,14 @@ import pytest
 from chunkrag.mainstudy.artifacts import ArtifactStore
 from chunkrag.mainstudy.canonical import atomic_write_jsonl
 from chunkrag.mainstudy import execution
+from chunkrag.mainstudy.evaluation import build_evaluation_record
 from chunkrag.mainstudy.execution import _gold_chunks
 from chunkrag.mainstudy.protocol import ProtocolError
 from scripts.run_phase4a_smoke import (
     QUESTION_COUNT,
     _canonical_smoke_shard_question_ids,
     _subset_corpus,
+    _validate_evaluation_identity,
     _validate_output_paths,
 )
 
@@ -82,6 +84,21 @@ def test_smoke_checkpoint_rejects_question_substitution(monkeypatch) -> None:
         _canonical_smoke_shard_question_ids(
             object(), "squad_v2", 0, ["q-a", "q-b"],
         )
+
+
+def test_automatic_evaluation_empty_judge_is_not_techqa_provenance() -> None:
+    row = build_evaluation_record(
+        {"generation_id": "generation", "record_hash": "a" * 64},
+        {"references": ["answer"], "gold_document_ids": ["document"]},
+        {"exact_match": 1.0, "f1": 1.0},
+        "b" * 64,
+    )
+    assert row["judge"] == {}
+    _validate_evaluation_identity(
+        row,
+        {"models": {"qwen": {"repository": "unused", "revision": "unused"}}},
+        {"qwen": "unused"},
+    )
 
 
 def test_hotpot_gold_packing_omits_unavailable_source_sentence(tmp_path: Path) -> None:

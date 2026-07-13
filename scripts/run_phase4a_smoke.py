@@ -254,6 +254,28 @@ def _human_validation(store: ArtifactStore, package: list[Mapping[str, Any]]) ->
     return atomic_write_json(root / "judge-validation.json", validation)
 
 
+def _validate_evaluation_identity(
+    row: Mapping[str, Any], config: Mapping[str, Any], model_snapshots: Mapping[str, str],
+) -> None:
+    validate_record("evaluation", row)
+    if row["evaluation_id"] != identifier_hash(row["generation_id"], row["evaluator_config_hash"]):
+        raise ProtocolError("Evaluation identifier mismatch")
+    # The evaluation schema represents the absence of an independent judge with
+    # an empty mapping.  Only non-empty judge metadata denotes a TechQA trace.
+    judge = row.get("judge")
+    if not judge:
+        return
+    spec = config["models"]["qwen"]
+    if (
+        row["evaluator_config_hash"] != techqa_judge_template_hash(spec)
+        or judge["prompt_version"] != "techqa-judge-v1"
+        or judge["model_repository"] != spec["repository"]
+        or judge["model_revision"] != spec["revision"]
+        or judge["model_snapshot_hash"] != model_snapshots["qwen"]
+    ):
+        raise ProtocolError("TechQA judge prompt or model provenance mismatch")
+
+
 def _validate_ids(root: Path, config: Mapping[str, Any]) -> dict[str, Any]:
     retrieval = [row for path in (root / "retrieval").glob("**/*.jsonl") for row in read_jsonl(path)]
     generation = [row for path in (root / "generation").glob("**/part-*.jsonl") for row in read_jsonl(path)]
@@ -301,20 +323,7 @@ def _validate_ids(root: Path, config: Mapping[str, Any]) -> dict[str, Any]:
                     ):
                         raise ProtocolError("Generation identifier, prompt hash, or model revision mismatch")
     for row in evaluation:
-        validate_record("evaluation", row)
-        if row["evaluation_id"] != identifier_hash(row["generation_id"], row["evaluator_config_hash"]):
-            raise ProtocolError("Evaluation identifier mismatch")
-        if row.get("judge") is not None:
-            judge = row["judge"]
-            spec = config["models"]["qwen"]
-            if (
-                row["evaluator_config_hash"] != techqa_judge_template_hash(spec)
-                or judge["prompt_version"] != "techqa-judge-v1"
-                or judge["model_repository"] != spec["repository"]
-                or judge["model_revision"] != spec["revision"]
-                or judge["model_snapshot_hash"] != model_snapshots["qwen"]
-            ):
-                raise ProtocolError("TechQA judge prompt or model provenance mismatch")
+        _validate_evaluation_identity(row, config, model_snapshots)
     validate_record_links([*retrieval, *gold], generation)
     validate_record_links(generation, evaluation)
     if generation_count != len(generation):
