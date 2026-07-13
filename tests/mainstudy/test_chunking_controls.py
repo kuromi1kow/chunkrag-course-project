@@ -2,7 +2,15 @@
 
 import unittest
 
-from chunkrag.mainstudy.chunking import TokenizedSource, chunk_records, fixed_cuts, recursive_cuts, semantic_cuts, sentence_cuts
+from chunkrag.mainstudy.chunking import (
+    TokenizedSource,
+    _repair_short_nonfinal,
+    chunk_records,
+    fixed_cuts,
+    recursive_cuts,
+    semantic_cuts,
+    sentence_cuts,
+)
 from chunkrag.mainstudy.controls import jitter_cuts
 
 
@@ -43,6 +51,49 @@ class ChunkingTests(unittest.TestCase):
     def test_zero_token_source_fails_closed(self) -> None:
         with self.assertRaisesRegex(ValueError, "nonempty tokenized source"):
             fixed_cuts(0)
+
+    def test_sentence_repairs_observed_techqa_internal_short_chunks(self) -> None:
+        cases = (
+            (
+                [0, 216, 456, 708, 889, 935, 1169],
+                [0, 216, 456, 708, 935, 1169],
+            ),
+            ([0, 208, 267, 505], [0, 203, 267, 505]),
+            ([0, 183, 224, 443, 627], [0, 224, 443, 627]),
+            ([0, 188, 247, 443], [0, 247, 443]),
+        )
+        for original, expected in cases:
+            with self.subTest(original=original):
+                repaired = _repair_short_nonfinal(original, original[-1])
+                self.assertEqual(repaired, expected)
+                lengths = [right - left for left, right in zip(repaired, repaired[1:])]
+                self.assertTrue(all(64 <= length <= 254 for length in lengths[:-1]))
+                self.assertLessEqual(lengths[-1], 254)
+
+    def test_sentence_canonical_path_repairs_unmergeable_internal_short_chunk(self) -> None:
+        source = TokenizedSource.build("x" * 505, CharTokenizer())
+        spans = [(0, 95), (95, 208), (208, 243), (243, 267), (267, 505)]
+        cuts = sentence_cuts(source, spans)
+        self.assertEqual(cuts, [0, 203, 267, 505])
+        records = chunk_records(
+            {"dataset": "techqa", "document_id": "techqa::regression", "text": source.text},
+            source, "sentence192", cuts, "tok", "rev",
+        )
+        self.assertEqual([row["token_count"] for row in records], [203, 64, 238])
+        self.assertEqual("".join(row["text"] for row in records), source.text)
+
+    def test_sentence_repair_is_deterministic_and_does_not_mutate_input(self) -> None:
+        original = [0, 208, 267, 505]
+        first = _repair_short_nonfinal(original, 505)
+        second = _repair_short_nonfinal(original, 505)
+        self.assertEqual(first, second)
+        self.assertEqual(original, [0, 208, 267, 505])
+
+    def test_sentence_repair_fails_closed_on_invalid_cuts(self) -> None:
+        with self.assertRaisesRegex(ValueError, "strictly increasing"):
+            _repair_short_nonfinal([0, 0, 100], 100)
+        with self.assertRaisesRegex(ValueError, "overlong"):
+            _repair_short_nonfinal([0, 255], 255)
 
     def test_recursive_and_sentence_are_deterministic(self) -> None:
         self.assertEqual(recursive_cuts(self.source), recursive_cuts(self.source))

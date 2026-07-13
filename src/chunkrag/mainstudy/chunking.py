@@ -65,6 +65,68 @@ def _merge_short_final(cuts: list[int], total: int, maximum: int = 254, minimum:
     return cuts
 
 
+def _repair_short_nonfinal(
+    cuts: list[int], total: int, maximum: int = 254, minimum: int = 64,
+) -> list[int]:
+    """Enforce the frozen minimum on non-final sentence chunks.
+
+    Complete sentence boundaries are retained whenever a backward or forward merge
+    satisfies the frozen maximum.  If neither merge is feasible, move only the
+    nearest preceding (or, for a leading chunk, following) boundary by the exact
+    deficit.  This is the minimum token-boundary adjustment that can satisfy the
+    protocol's hard 64--254 token bounds without dropping, duplicating, or
+    reordering source tokens.
+    """
+    if total <= 0:
+        raise ValueError("Canonical chunking requires a nonempty tokenized source")
+    if len(cuts) < 2 or cuts[0] != 0 or cuts[-1] != total:
+        raise ValueError("Chunk cuts must include exact source boundaries")
+    if any(left >= right for left, right in zip(cuts, cuts[1:])):
+        raise ValueError("Chunk cuts must be strictly increasing")
+    if any(right - left > maximum for left, right in zip(cuts, cuts[1:])):
+        raise ValueError("Sentence cuts contain an overlong chunk")
+
+    repaired = list(cuts)
+    index = 0
+    while index < len(repaired) - 2:
+        start, end, following_end = repaired[index:index + 3]
+        length = end - start
+        if length >= minimum:
+            index += 1
+            continue
+
+        # Prefer the same backward merge used by the frozen final-short rule.
+        if index > 0 and end - repaired[index - 1] <= maximum:
+            del repaired[index]
+            index = max(0, index - 1)
+            continue
+
+        # Preserve complete sentence boundaries by merging forward when possible.
+        if following_end - start <= maximum:
+            del repaired[index + 1]
+            index = max(0, index - 1)
+            continue
+
+        deficit = minimum - length
+        if index > 0 and start - repaired[index - 1] - deficit >= minimum:
+            # Neither whole-sentence merge fits. Borrow only the missing tokens
+            # from the preceding chunk, which is the smallest possible change.
+            repaired[index] -= deficit
+        elif following_end - end - deficit >= minimum:
+            # This symmetric branch is needed only for a short leading chunk.
+            repaired[index + 1] += deficit
+        else:
+            raise ValueError("Cannot satisfy frozen non-final chunk bounds")
+        index += 1
+
+    lengths = [right - left for left, right in zip(repaired, repaired[1:])]
+    if any(length > maximum for length in lengths):
+        raise ValueError("Sentence repair produced an overlong chunk")
+    if any(length < minimum for length in lengths[:-1]):
+        raise ValueError("Sentence repair retained a short non-final chunk")
+    return repaired
+
+
 def fixed_cuts(total: int, target: int = 192) -> list[int]:
     cuts = [0] + list(range(target, total, target)) + [total]
     return _merge_short_final(cuts, total)
@@ -151,7 +213,8 @@ def sentence_cuts(source: TokenizedSource, spans: Sequence[tuple[int, int]] | No
             else:
                 break
         cuts.append(end)
-    return _merge_short_final(cuts, source.tokens)
+    cuts = _merge_short_final(cuts, source.tokens)
+    return _repair_short_nonfinal(cuts, source.tokens)
 
 
 def semantic_cuts(
