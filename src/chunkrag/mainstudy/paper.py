@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
@@ -43,6 +44,17 @@ def _escape(value: Any) -> str:
     return str(value).replace("_", "\\_").replace("%", "\\%")
 
 
+def _load_pyplot():
+    """Load the frozen non-interactive renderer without ambient notebook state."""
+    os.environ["MPLBACKEND"] = "Agg"
+    import matplotlib
+
+    matplotlib.use("Agg", force=True)
+    import matplotlib.pyplot as plt
+
+    return plt
+
+
 def regenerate_tables(analysis: Mapping[str, Any], output_dir: Path) -> list[Path]:
     output_dir.mkdir(parents=True, exist_ok=True)
     primary = analysis.get("primary", [])
@@ -66,7 +78,7 @@ def regenerate_tables(analysis: Mapping[str, Any], output_dir: Path) -> list[Pat
 
 
 def regenerate_figures(analysis: Mapping[str, Any], output_dir: Path) -> list[Path]:
-    import matplotlib.pyplot as plt
+    plt = _load_pyplot()
 
     output_dir.mkdir(parents=True, exist_ok=True)
     figures: list[Path] = []

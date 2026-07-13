@@ -384,7 +384,9 @@ def _write_smoke_analysis(root: Path, completion: Path, output_dir: Path) -> dic
     analysis_hash = atomic_write_json(root / "analysis" / "smoke-summary.json", summary)
     table = output_dir / "phase4a_smoke_table.tex"
     table.write_text("\\begin{tabular}{lr}\nStage & Status \\\\\n\\hline\n" + "\n".join(f"E{i} & complete \\\\" for i in range(8)) + "\n\\end{tabular}\n", encoding="utf-8")
-    import matplotlib.pyplot as plt
+    from chunkrag.mainstudy.paper import _load_pyplot
+
+    plt = _load_pyplot()
     figure = output_dir / "phase4a_smoke_pipeline.pdf"
     fig, axis = plt.subplots(figsize=(7.0, 1.8)); axis.plot(range(8), [1] * 8, "o-"); axis.set_xticks(range(8), [f"E{i}" for i in range(8)]); axis.set_yticks([]); fig.savefig(figure, bbox_inches="tight"); plt.close(fig)
     outputs = [table, figure]

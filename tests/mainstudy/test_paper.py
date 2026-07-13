@@ -3,11 +3,17 @@
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
-from chunkrag.mainstudy.paper import regenerate_paper_artifacts
+from chunkrag.mainstudy.paper import _load_pyplot, regenerate_paper_artifacts
 
 
 class PaperArtifactTests(unittest.TestCase):
+    def test_headless_backend_ignores_colab_inline_ambient_value(self) -> None:
+        with patch.dict("os.environ", {"MPLBACKEND": "module://matplotlib_inline.backend_inline"}):
+            pyplot = _load_pyplot()
+            self.assertEqual(pyplot.get_backend().lower(), "agg")
+
     def test_three_tables_and_three_figures_render(self) -> None:
         primary = []
         exposure = []
