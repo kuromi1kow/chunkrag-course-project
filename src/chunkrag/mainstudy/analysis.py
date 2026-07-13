@@ -8,23 +8,67 @@ from pathlib import Path
 from typing import Any
 
 from .canonical import atomic_write_json, canonical_json_hash, file_sha256, read_json, read_jsonl
-from .constants import EXPERIMENT_ORDER, PROTOCOL_ID
+from .constants import EXPERIMENT_ORDER, PROTOCOL_ID, PROTOCOL_SHA256
 from .statistics import (
     cliffs_delta, cluster_bootstrap, cluster_bootstrap_difference, cluster_sign_flip,
     cr1_dataset_interaction, holm_adjust, rank_biserial, tost,
 )
+from .experiments import condition_ids_e2
+from .completion import completed_stages
 
 
 class AnalysisGateError(RuntimeError):
     pass
 
 
-def require_completed_experiments(completion_manifest: Mapping[str, Any]) -> None:
+def require_completed_experiments(
+    completion_manifest: Mapping[str, Any], *, artifact_root: Path, completion_path: Path,
+) -> None:
+    expected_path = artifact_root / "audit" / "completion.json"
+    if completion_path.resolve() != expected_path.resolve():
+        raise AnalysisGateError("Confirmatory analysis requires the canonical completion manifest path")
+    if completion_manifest.get("protocol_sha256") != PROTOCOL_SHA256:
+        raise AnalysisGateError("Completion manifest protocol mismatch")
     completed = completion_manifest.get("completed_experiments", [])
     if list(completed) != list(EXPERIMENT_ORDER):
         raise AnalysisGateError("Confirmatory analysis requires completed E0--E7 in frozen order")
     if not completion_manifest.get("artifacts_locked_read_only", False):
         raise AnalysisGateError("Confirmatory analysis requires read-only result artifacts")
+    for stage in completion_manifest.get("stage_markers", []):
+        path = artifact_root / stage["path"]
+        if not path.is_file() or file_sha256(path) != stage["sha256"]:
+            raise AnalysisGateError(f"Invalid stage marker: {stage.get('path')}")
+        if path.stat().st_mode & 0o222:
+            raise AnalysisGateError(f"Stage marker is still writable: {stage.get('path')}")
+    provenance = {
+        "git_commit": completion_manifest.get("git_commit"),
+        "config_sha256": completion_manifest.get("config_sha256"),
+        "environment_hash": completion_manifest.get("environment_hash"),
+    }
+    if not all(isinstance(value, str) and value for value in provenance.values()):
+        raise AnalysisGateError("Completion manifest lacks canonical provenance")
+    try:
+        observed_stages = completed_stages(artifact_root, **provenance)
+    except (ValueError, KeyError) as error:
+        raise AnalysisGateError("Completion work/stage validation failed") from error
+    if observed_stages != list(EXPERIMENT_ORDER):
+        raise AnalysisGateError("Completion manifest does not correspond to validated E0--E7 work markers")
+    artifacts = completion_manifest.get("artifacts")
+    if not isinstance(artifacts, list) or not artifacts:
+        raise AnalysisGateError("Completion manifest contains no artifact inventory")
+    for reference in artifacts:
+        path = artifact_root / reference["path"]
+        if not path.is_file() or path.stat().st_size != int(reference["bytes"]):
+            raise AnalysisGateError(f"Missing or resized locked artifact: {reference['path']}")
+        if file_sha256(path) != reference["sha256"]:
+            raise AnalysisGateError(f"Locked artifact hash mismatch: {reference['path']}")
+        if path.stat().st_mode & 0o222:
+            raise AnalysisGateError(f"Result artifact is still writable: {reference['path']}")
+    lock_path = artifact_root / "audit" / "analysis.lock.json"
+    if completion_path.stat().st_mode & 0o222:
+        raise AnalysisGateError("Completion manifest is still writable")
+    if lock_path.exists():
+        raise AnalysisGateError("Confirmatory analysis has already been executed")
 
 
 def paired_contrast(
@@ -39,11 +83,16 @@ def analyze_contrast(
     *, test_id: str, contrasts: Sequence[float], clusters: Sequence[str], equivalence_margin: float | None = None,
 ) -> dict[str, Any]:
     low, high = cluster_bootstrap(contrasts, clusters, test_id)
+    cluster_values: dict[str, list[float]] = defaultdict(list)
+    for value, cluster in zip(contrasts, clusters):
+        cluster_values[str(cluster)].append(float(value))
+    cluster_means = [sum(values) / len(values) for _, values in sorted(cluster_values.items())]
     result = {
         "test_id": test_id, "n": len(contrasts), "clusters": len(set(clusters)),
         "mean_difference": sum(contrasts) / len(contrasts), "ci95_low": low, "ci95_high": high,
         "rank_biserial": rank_biserial(contrasts),
         "raw_p": cluster_sign_flip(contrasts, clusters, test_id),
+        "cluster_symmetry_diagnostic": {"cluster_means": cluster_means, "positive": sum(value > 0 for value in cluster_means), "negative": sum(value < 0 for value in cluster_means), "zero": sum(value == 0 for value in cluster_means)},
     }
     if equivalence_margin is not None:
         result["tost"] = tost(contrasts, clusters, equivalence_margin)
@@ -218,7 +267,7 @@ def analyze_techqa_family(artifact_root: Path) -> dict[str, Any]:
         exact = scores(f"{policy}__matched-4096")
         jitters = [scores(f"{policy}-jitter-{seed}__matched-4096") for seed in (1103, 2207, 3301, 4409, 5519)]
         h1 = [exact[q]["utility"] - sum(item[q]["utility"] for item in jitters) / 5 for q in order]
-        results.append(analyze_contrast(test_id=f"H1:techqa:{policy}", contrasts=h1, clusters=clusters))
+        results.append(analyze_contrast(test_id=f"H1:techqa:{policy}", contrasts=h1, clusters=clusters, equivalence_margin=0.05))
         op = scores(f"{policy}__operational-1024")
         matched = scores(f"{policy}__matched-1024")
         h2 = [(op[q]["utility"] - fixed_op[q]["utility"]) - (matched[q]["utility"] - fixed_matched[q]["utility"]) for q in order]
@@ -238,7 +287,15 @@ def analyze_techqa_family(artifact_root: Path) -> dict[str, Any]:
             evidence_low, evidence_high = cluster_bootstrap(evidence_values, clusters, f"figure3-evidence:techqa:{policy}:{label}")
             exposure_rows.append({"dataset": "techqa", "policy": policy, "condition": label, "answer_mean": float(sum(answer_values) / len(answer_values)), "answer_ci_low": answer_low, "answer_ci_high": answer_high, "evidence_mean": float(sum(evidence_values) / len(evidence_values)), "evidence_ci_low": evidence_low, "evidence_ci_high": evidence_high})
     adjusted = adjust_family(results) if validated else [{**row, "holm_p": None} for row in results]
-    return {"validated": validated, "remove_from_main": remove_from_main, "results": adjusted, "mechanism": mechanism, "exposure_rows": exposure_rows}
+    gold_gaps = []
+    for budget in (1024, 4096):
+        gold = scores(f"gold-{budget}")
+        conditions = [condition for condition in condition_ids_e2() if condition.endswith(str(budget))]
+        for condition in conditions:
+            system = scores(condition)
+            values = [gold[q]["utility"] - system[q]["utility"] for q in order]
+            gold_gaps.append({"condition_id": condition, "budget": budget, "mean_gold_gap_semantic_utility": float(sum(values) / len(values)), "n": len(values)})
+    return {"validated": validated, "remove_from_main": remove_from_main, "results": adjusted, "mechanism": mechanism, "exposure_rows": exposure_rows, "gold_semantic_gaps": gold_gaps, "human_subset_results": validation_payload.get("human_subset_results", [])}
 
 
 def gold_techqa_summary(artifact_root: Path) -> dict[str, Any]:
@@ -272,7 +329,19 @@ def gold_techqa_summary(artifact_root: Path) -> dict[str, Any]:
 
 def regenerate_analysis(artifact_root: Path, completion_manifest: Path, output_path: Path) -> str:
     completion = read_json(completion_manifest)
-    require_completed_experiments(completion)
+    from .environment import require_clean_git
+    from .protocol import repo_root
+    from .canonical import source_sha256
+    repository = repo_root()
+    state = require_clean_git(repository)
+    if state["commit"] != completion.get("git_commit"):
+        raise AnalysisGateError("Confirmatory analysis Git commit differs from the canonical run")
+    if source_sha256(repository, repository / "requirements-main-study.transitive.json") != completion.get("source_hash"):
+        raise AnalysisGateError("Confirmatory analysis source hash differs from the canonical run")
+    canonical_output = artifact_root / "analysis" / "confirmatory.json"
+    if output_path.resolve() != canonical_output.resolve():
+        raise AnalysisGateError("Confirmatory analysis output path is immutable")
+    require_completed_experiments(completion, artifact_root=artifact_root, completion_path=completion_manifest)
     payload = analyze_primary_families(artifact_root)
     payload["dataset_summary"] = dataset_summary(artifact_root)
     techqa = analyze_techqa_family(artifact_root)
@@ -281,4 +350,14 @@ def regenerate_analysis(artifact_root: Path, completion_manifest: Path, output_p
     payload["exposure_rows"].extend(techqa["exposure_rows"])
     payload["gold_techqa"] = gold_techqa_summary(artifact_root)
     payload["completion_manifest_hash"] = canonical_json_hash(completion)
-    return write_analysis(output_path, payload)
+    digest = write_analysis(output_path, payload)
+    lock = {
+        "schema_version": PROTOCOL_ID, "protocol_sha256": PROTOCOL_SHA256,
+        "completion_manifest_hash": canonical_json_hash(completion),
+        "analysis_path": output_path.relative_to(artifact_root).as_posix(), "analysis_sha256": digest,
+    }
+    atomic_write_json(artifact_root / "audit" / "analysis.lock.json", lock)
+    output_path.chmod(output_path.stat().st_mode & ~0o222)
+    analysis_lock = artifact_root / "audit" / "analysis.lock.json"
+    analysis_lock.chmod(analysis_lock.stat().st_mode & ~0o222)
+    return digest

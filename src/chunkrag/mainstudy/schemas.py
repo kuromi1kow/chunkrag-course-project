@@ -47,6 +47,7 @@ SCHEMAS: dict[str, set[str]] = {
         "truncation_location", "model_repository", "model_revision", "model_snapshot_hash",
         "dtype", "hardware", "raw_output", "normalized_output", "generated_tokens",
         "stopping_reason", "latency", "attempt_history", "upstream_hash",
+        "record_hash",
     },
     "evaluation": {
         "evaluation_id", "generation_id", "references", "gold_document_ids", "metrics",
@@ -111,6 +112,12 @@ def validate_record(schema: str, record: Mapping[str, Any], *, strict: bool = Tr
             raise SchemaError(f"Unknown packing ID: {record['packing_id']}")
         if record["budget"] not in (1024, 4096):
             raise SchemaError("Generation budget must be 1024 or 4096")
+        from .canonical import canonical_json_hash
+        payload = dict(record)
+        declared = payload.pop("record_hash")
+        _require_hash(declared, "generation.record_hash")
+        if declared != canonical_json_hash(payload):
+            raise SchemaError("Generation record hash does not match its canonical payload")
     elif schema == "evaluation":
         _require_hash(record["evaluation_id"], "evaluation.evaluation_id")
     elif schema == "checkpoint":

@@ -11,7 +11,10 @@ class FakeTokenizer:
     pad_token_id = 0
 
     def __call__(self, text, **kwargs):
-        return {"input_ids": list(text.encode("utf-8"))}
+        payload = {"input_ids": list(text.encode("utf-8"))}
+        if kwargs.get("return_offsets_mapping"):
+            payload["offset_mapping"] = [(index, index + 1) for index in range(len(text))]
+        return payload
 
     def apply_chat_template(self, messages, tokenize=True, add_generation_prompt=True):
         text = "\n".join(item["content"] for item in messages) + "\nassistant:"

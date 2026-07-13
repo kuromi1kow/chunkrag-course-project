@@ -39,20 +39,24 @@ def longest_prefix(
 ) -> PackedContext:
     if len(_prompt_ids(tokenizer, dataset, question, "")) + safety_margin > input_budget:
         raise ValueError("Frozen question and prompt cannot fit the complete-chat input budget")
-    low, high = 0, len(rendered)
+    encoded = tokenizer(
+        rendered, add_special_tokens=False, truncation=False, return_offsets_mapping=True,
+    )
+    offsets = encoded.get("offset_mapping")
+    if offsets is None:
+        raise ValueError("Canonical packing requires a fast tokenizer with offset mappings")
+    token_limit = min(len(offsets), context_target if context_target is not None else input_budget)
+    positions = [0, *(int(offsets[index][1]) for index in range(token_limit))]
     best = 0
-    best_ids: list[int] = []
-    while low <= high:
-        mid = (low + high) // 2
-        candidate = rendered[:mid]
+    best_ids: list[int] = _prompt_ids(tokenizer, dataset, question, "")
+    for position in reversed(sorted(set(positions))):
+        candidate = rendered[:position]
         context_tokens = _context_token_count(tokenizer, candidate)
         ids = _prompt_ids(tokenizer, dataset, question, candidate)
         fits = len(ids) + safety_margin <= input_budget and (context_target is None or context_tokens <= context_target)
         if fits:
-            best, best_ids = mid, ids
-            low = mid + 1
-        else:
-            high = mid - 1
+            best, best_ids = position, ids
+            break
     context = rendered[:best]
     count = _context_token_count(tokenizer, context)
     target = count if context_target is None else context_target
@@ -65,7 +69,7 @@ def operational_pack(
 ) -> PackedContext:
     rendered, spans = render_passages(chunks[:4])
     packed = longest_prefix(tokenizer, dataset, question, rendered, input_budget=input_budget)
-    per_chunk = tuple(_context_token_count(tokenizer, packed.consumed_context[max(0, span["rendered_start"]):min(len(packed.consumed_context), span["rendered_end"])]) if span["rendered_start"] < len(packed.consumed_context) else 0 for span in spans)
+    per_chunk = tuple(_context_token_count(tokenizer, packed.consumed_context[max(0, span["text_rendered_start"]):min(len(packed.consumed_context), span["text_rendered_end"])]) if span["text_rendered_start"] < len(packed.consumed_context) else 0 for span in spans)
     return PackedContext(rendered, packed.consumed_context, tuple(spans), packed.prompt_token_ids, packed.full_prompt_tokens, packed.context_tokens, packed.target, packed.truncation_location, per_chunk)
 
 
@@ -92,5 +96,5 @@ def matched_pack(
     )
     if abs(packed.context_tokens - target) > 2:
         raise ValueError(f"Matched context differs from target by more than two tokens: {packed.context_tokens} vs {target}")
-    per_chunk = tuple(_context_token_count(tokenizer, packed.consumed_context[max(0, span["rendered_start"]):min(len(packed.consumed_context), span["rendered_end"])]) if span["rendered_start"] < len(packed.consumed_context) else 0 for span in spans)
+    per_chunk = tuple(_context_token_count(tokenizer, packed.consumed_context[max(0, span["text_rendered_start"]):min(len(packed.consumed_context), span["text_rendered_end"])]) if span["text_rendered_start"] < len(packed.consumed_context) else 0 for span in spans)
     return PackedContext(rendered, packed.consumed_context, tuple(spans), packed.prompt_token_ids, packed.full_prompt_tokens, packed.context_tokens, target, packed.truncation_location, per_chunk)

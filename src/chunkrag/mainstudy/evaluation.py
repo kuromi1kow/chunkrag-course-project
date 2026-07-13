@@ -85,9 +85,7 @@ TECHQA_JUDGE_SYSTEM = """You are evaluating a technical question-answering syste
 answer using the question, reference answer, and consumed context. Do not reward wording
 similarity by itself. Return valid JSON only."""
 
-
-def techqa_judge_messages(question: str, reference: str, context: str, candidate: str) -> list[dict[str, str]]:
-    user = f"""Question:
+TECHQA_JUDGE_USER = """Question:
 {question}
 
 Reference answer:
@@ -109,7 +107,18 @@ Assign integer scores:
 
 Return exactly:
 {{"correctness": 0, "completeness": 0, "groundedness": 0, "reason": "brief reason"}}"""
+
+
+def techqa_judge_messages(question: str, reference: str, context: str, candidate: str) -> list[dict[str, str]]:
+    user = TECHQA_JUDGE_USER.format(question=question, reference=reference, context=context, candidate=candidate)
     return [{"role": "system", "content": TECHQA_JUDGE_SYSTEM}, {"role": "user", "content": user}]
+
+
+def techqa_judge_template_hash(model: Mapping[str, Any]) -> str:
+    return canonical_json_hash({
+        "prompt_version": "techqa-judge-v1", "system": TECHQA_JUDGE_SYSTEM,
+        "user_template": TECHQA_JUDGE_USER, "model": dict(model),
+    })
 
 
 def parse_judge_json(text: str) -> dict[str, Any]:
@@ -136,7 +145,7 @@ def build_evaluation_record(
         "generation_id": generation["generation_id"], "references": question["references"],
         "gold_document_ids": question["gold_document_ids"], "metrics": dict(metrics),
         "judge": dict(judge or {}), "human_annotation_ids": list(human_annotation_ids),
-        "evaluator_config_hash": evaluator_config_hash, "upstream_hash": canonical_json_hash(generation),
+        "evaluator_config_hash": evaluator_config_hash, "upstream_hash": generation["record_hash"],
     }
     validate_record("evaluation", record)
     return record

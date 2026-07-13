@@ -80,6 +80,12 @@ class ArtifactStore:
         for path in sorted(self.root.rglob("*")):
             if path.is_file():
                 path.chmod(path.stat().st_mode & ~0o222)
+        for name in ("manifests", "chunks", "retrieval", "generation", "evaluation"):
+            base = self.root / name
+            if base.exists():
+                for path in sorted((item for item in base.rglob("*") if item.is_dir()), reverse=True):
+                    path.chmod(path.stat().st_mode & ~0o222)
+                base.chmod(base.stat().st_mode & ~0o222)
 
 
 def upstream_hash(record: Mapping[str, Any]) -> str:
@@ -102,7 +108,7 @@ def validate_record_links(
     upstream_records: list[Mapping[str, Any]], downstream_records: list[Mapping[str, Any]],
     *, downstream_field: str = "upstream_hash",
 ) -> None:
-    upstream_hashes = {canonical_json_hash(record) for record in upstream_records}
+    upstream_hashes = {str(record.get("record_hash") or canonical_json_hash(record)) for record in upstream_records}
     missing = {
         str(record[downstream_field]) for record in downstream_records
         if str(record.get(downstream_field)) not in upstream_hashes

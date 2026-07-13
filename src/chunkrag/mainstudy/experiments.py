@@ -86,10 +86,10 @@ def plan_experiment(experiment: str) -> list[WorkItem]:
                     items.append(WorkItem("E3", dataset, condition, shard, min(50, EXPECTED_QUESTION_COUNTS[dataset] - shard * 50), prerequisites))
         return items
     if experiment == "E4":
+        items.append(WorkItem("E4", "techqa", "human-package", None, 360, prerequisites))
         for condition in [*condition_ids_e2(), "gold-1024", "gold-4096"]:
             for shard in range(6):
                 items.append(WorkItem("E4", "techqa", f"judge__{condition}", shard, 50, prerequisites))
-        items.append(WorkItem("E4", "techqa", "human-package", None, 360, prerequisites))
         items.append(WorkItem("E4", "techqa", "human-validation", None, 1, prerequisites))
         return items
     if experiment == "E5":

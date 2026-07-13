@@ -159,7 +159,7 @@ def semantic_cuts(
     if not units:
         return [0, source.tokens]
     texts = [source.text[slice(*source.char_span(start, end))] for start, end in units]
-    vectors = np.asarray(encode(texts), dtype=np.float64)
+    vectors = np.asarray(encode(texts), dtype=np.float32)
     norms = np.linalg.norm(vectors, axis=1, keepdims=True)
     if np.any(norms == 0):
         raise ValueError("Semantic encoder returned a zero vector")

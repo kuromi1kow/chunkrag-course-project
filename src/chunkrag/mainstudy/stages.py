@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from .artifacts import ArtifactStore
-from .canonical import atomic_write_json, canonical_json_hash, read_jsonl
+from .canonical import atomic_write_json, canonical_json_hash, read_jsonl, tree_sha256
 from .constants import PROTOCOL_ID
 from .data import (
     cluster_records,
@@ -18,6 +18,7 @@ from .data import (
     materialize_hotpot_rows,
     materialize_squad_rows,
     materialize_techqa_rows,
+    eligible_row_count,
     validate_cluster_constraints,
 )
 from .experiments import WorkItem
@@ -36,7 +37,25 @@ def execute_e0(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) 
                 raise ProtocolError(f"Cannot finalize E0 before dataset manifest exists: {dataset}")
             from .canonical import read_json
             manifests.append(read_json(path))
-        return [atomic_write_json(store.root / "manifests" / "dataset_manifest.json", {"schema_version": PROTOCOL_ID, "datasets": manifests})]
+        dataset_hash = atomic_write_json(store.root / "manifests" / "dataset_manifest.json", {"schema_version": PROTOCOL_ID, "datasets": manifests})
+        from .validation import validate_statistical_primitives
+        statistical_validation = atomic_write_json(store.root / "audit" / "statistical-self-tests.json", validate_statistical_primitives())
+        validation = atomic_write_json(store.root / "audit" / "e0-validation.json", {
+            "schema_version": PROTOCOL_ID, "status": "valid", "datasets": [row["dataset"] for row in manifests],
+            "question_counts": {row["dataset"]: row["selected_questions"] for row in manifests},
+            "materialization_repeated": True,
+        })
+        hash_rows = []
+        e0_files = [
+            *(item for item in (store.root / "manifests").rglob("*") if item.is_file() and item.name != "hash-manifest.json"),
+            *(item for item in (store.root / "analysis" / "design-sensitivity").glob("*.json") if item.is_file()),
+            store.root / "audit" / "e0-validation.json",
+            store.root / "audit" / "statistical-self-tests.json",
+        ]
+        for path in sorted(e0_files):
+            hash_rows.append({"path": path.relative_to(store.root).as_posix(), "sha256": file_sha256(path), "bytes": path.stat().st_size})
+        hash_manifest = atomic_write_json(store.root / "manifests" / "hash-manifest.json", {"schema_version": PROTOCOL_ID, "files": hash_rows})
+        return [dataset_hash, hash_manifest, validation, statistical_validation]
     dataset_spec = config["datasets"][item.dataset]
     raw = load_pinned_dataset(dataset_spec)
     rows = list(raw)
@@ -69,18 +88,24 @@ def execute_e0(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) 
     sensitivity = sensitivity_report(item.dataset, [row["size"] for row in clusters])
     sensitivity_hash = atomic_write_json(store.root / "analysis" / "design-sensitivity" / f"{item.dataset}.json", sensitivity)
     cache_files = []
+    cache_paths = [Path(entry["filename"]).resolve() for entry in getattr(raw, "cache_files", [])]
+    common_cache_root = Path(__import__("os").path.commonpath([str(path.parent) for path in cache_paths])) if cache_paths else None
     for entry in getattr(raw, "cache_files", []):
-        filename = Path(entry["filename"])
-        cache_files.append({"name": filename.name, "sha256": file_sha256(filename)})
+        filename = Path(entry["filename"]).resolve()
+        relative = filename.relative_to(common_cache_root).as_posix() if common_cache_root is not None else filename.name
+        cache_files.append({"path": relative, "sha256": file_sha256(filename)})
+    snapshot_hash = tree_sha256(common_cache_root, cache_paths) if common_cache_root is not None else canonical_json_hash([])
     dataset_manifest = {
         "schema_version": PROTOCOL_ID, "dataset": item.dataset,
         "repository": dataset_spec["repository"], "config": dataset_spec.get("config"),
         "split": dataset_spec["split"], "revision": dataset_spec["revision"],
         "fingerprint": getattr(raw, "_fingerprint", None), "rows_before_eligibility": len(rows),
+        "rows_after_eligibility": eligible_row_count(item.dataset, rows),
         "selected_questions": len(questions), "corpus_documents": len(corpus),
-        "cache_files": sorted(cache_files, key=lambda row: row["name"]),
+        "cache_snapshot_sha256": snapshot_hash, "cache_files": sorted(cache_files, key=lambda row: row["path"]),
         "license": getattr(getattr(raw, "info", None), "license", None),
-        "artifact_hashes": [reference.sha256 for reference in references],
+        "question_manifest_sha256": references[1].sha256, "corpus_manifest_sha256": references[0].sha256,
+        "cluster_manifest_sha256": references[2].sha256, "gold_manifest_sha256": references[3].sha256,
     }
     dataset_hash = atomic_write_json(store.root / "manifests" / "datasets" / f"{item.dataset}.json", dataset_manifest)
     return [*(reference.sha256 for reference in references), sensitivity_hash, dataset_hash]

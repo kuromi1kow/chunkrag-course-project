@@ -7,6 +7,7 @@ import json
 import os
 import tempfile
 import unicodedata
+import subprocess
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
@@ -89,14 +90,15 @@ def tree_sha256(root: Path, paths: Sequence[Path] | None = None) -> str:
 
 
 def source_sha256(repo_root: Path, environment_lock: Path) -> str:
-    included: list[Path] = []
-    for relative in ("src", "scripts", "configs", "tests"):
-        base = repo_root / relative
-        if base.exists():
-            included.extend(path for path in base.rglob("*") if path.is_file())
-    for path in (repo_root / "pyproject.toml", environment_lock):
-        if path.is_file():
-            included.append(path)
+    declared = subprocess.run(
+        ["git", "ls-files", "-z", "--", "src", "scripts", "configs", "tests", "pyproject.toml", str(environment_lock.relative_to(repo_root))],
+        cwd=repo_root, check=True, capture_output=True,
+    ).stdout.split(b"\0")
+    included = [repo_root / item.decode("utf-8") for item in declared if item]
+    if environment_lock not in included:
+        raise CanonicalizationError("Resolved environment lock is not tracked by Git")
+    if not included or any(not path.is_file() for path in included):
+        raise CanonicalizationError("Tracked source set is empty or contains a missing file")
     return tree_sha256(repo_root, included)
 
 

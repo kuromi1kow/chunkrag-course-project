@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from .artifacts import ArtifactStore
-from .canonical import canonical_json_hash, file_sha256, read_jsonl, tree_sha256
+from .canonical import canonical_json_hash, file_sha256, read_json, read_jsonl, tree_sha256
 from .checkpoint import ShardCheckpoint
 from .chunking import (
     TokenizedSource, chunk_records, fixed_cuts, recursive_cuts, semantic_cuts,
@@ -18,12 +18,14 @@ from .constants import JITTER_SEEDS, POLICY_ORDER, PROTOCOL_ID, PROTOCOL_SHA256,
 from .controls import jitter_cuts, validate_changed_fraction
 from .evaluation import (
     best_answer_metrics, build_evaluation_record, parse_judge_json, techqa_judge_messages,
+    techqa_judge_template_hash,
 )
 from .experiments import WorkItem, condition_ids_e2
 from .generation import LocalGenerator, build_generation_record
 from .human import agreement_report, blindness_scan, build_blinded_package, build_training_package, validate_label_rows
 from .packing import matched_pack, matched_target, operational_pack
-from .prompts import render_passages
+from .outputs import maybe_write_e5_effect_table, maybe_write_gold_gaps, qwen_effect_summary, write_retrieval_outputs
+from .prompts import prompt_template_hash, render_passages
 from .protocol import ProtocolError, repo_root
 from .retrieval import PrimaryRetriever, build_retrieval_record
 
@@ -61,6 +63,7 @@ def _load_encoder(config: Mapping[str, Any], role: str, device: str = "cuda") ->
         from sentence_transformers import SentenceTransformer
 
         model = SentenceTransformer(spec["repository"], revision=spec["revision"], device=device, local_files_only=True)
+        model.float()
         model.eval()
         _ENCODERS[key] = model
     return _ENCODERS[key]
@@ -113,6 +116,12 @@ def execute_e1(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) 
                 base, seed=control_seed, policy=policy, document_id=document["document_id"],
                 final_short=(base[-1] - base[-2] < 64),
             )
+            repeated = jitter_cuts(
+                base, seed=control_seed, policy=policy, document_id=document["document_id"],
+                final_short=(base[-1] - base[-2] < 64),
+            )
+            if repeated != jitter:
+                raise ProtocolError(f"Randomized boundaries are not byte-identical: {document['document_id']}")
             cuts = list(jitter.cuts)
             generation_hash = jitter.generation_hash
             jitter_results.append(jitter)
@@ -139,6 +148,8 @@ def execute_e1(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) 
     retrieval_config_hash = canonical_json_hash({"retrieval": config["retrieval"], "models": {"dense": dense, "reranker": reranker}})
     upstream = canonical_json_hash([question_hash, corpus_hash, chunk_ref.sha256])
     traces: list[dict[str, Any]] = []
+    for question in questions[:5]:
+        engine.query(question["question"])
     for question in questions:
         dense_rows, sparse_rows, fused, reranked, latency = engine.query(question["question"])
         traces.append(build_retrieval_record(
@@ -152,7 +163,13 @@ def execute_e1(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) 
         f"retrieval/primary/{item.dataset}/{item.condition_id}.jsonl",
         traces, "retrieval", "retrieval_id",
     )
-    return [chunk_ref.sha256, trace_ref.sha256]
+    if engine._build_audit is None:
+        raise ProtocolError("Retriever did not produce the frozen build audit")
+    derived = write_retrieval_outputs(
+        _root(store), namespace="primary", dataset=item.dataset, condition_id=item.condition_id,
+        questions=questions, chunks=chunks, traces=traces, build_audit=engine._build_audit,
+    )
+    return [chunk_ref.sha256, trace_ref.sha256, *derived]
 
 
 def _questions_for_shard(store: ArtifactStore, dataset: str, shard: int) -> list[dict[str, Any]]:
@@ -242,9 +259,10 @@ def _generate_shard(
         _root(store) / "generation" / role / item.dataset / item.condition_id,
         item.experiment, item.dataset, item.condition_id, item.shard_index,
         [row["question_id"] for row in questions], config["config_sha256"],
-        file_sha256(repo_root() / "requirements-main-study.lock"),
+        file_sha256(repo_root() / "requirements-main-study.transitive.json"),
     )
     if checkpoint.final_path.is_file():
+        checkpoint.validate_final(lambda row: str(row["question_id"]))
         evaluation_ref = _evaluate_generation_shard(store, item.dataset, item.condition_id, checkpoint.final_path)
         return [file_sha256(checkpoint.final_path), evaluation_ref]
     for question in questions:
@@ -262,7 +280,7 @@ def _generate_shard(
             control_seed=_condition_base(source_condition)[1], packing_id=packing_id, budget=budget,
             packed=packed, model_repository=generator.repository, model_revision=generator.revision,
             model_snapshot_hash=snapshot_hash, retrieval_or_gold_hash=upstream,
-            prompt_version_hash=canonical_json_hash({"dataset": item.dataset, "packing": packing_id}),
+            prompt_version_hash=prompt_template_hash(item.dataset),
             raw_output=raw, generated_tokens=trace["generated_tokens"],
             stopping_reason=trace["stopping_reason"], latency={"generation_seconds": trace["latency_seconds"]},
             attempt_history=attempts, hardware={"peak_gpu_memory_bytes": trace.get("peak_gpu_memory_bytes", 0)},
@@ -370,9 +388,10 @@ def _execute_gold(item: WorkItem, config: Mapping[str, Any], store: ArtifactStor
         _root(store) / "generation" / role / item.dataset / item.condition_id,
         item.experiment, item.dataset, item.condition_id, item.shard_index,
         [row["question_id"] for row in questions], config["config_sha256"],
-        file_sha256(repo_root() / "requirements-main-study.lock"),
+        file_sha256(repo_root() / "requirements-main-study.transitive.json"),
     )
     if checkpoint.final_path.is_file():
+        checkpoint.validate_final(lambda row: str(row["question_id"]))
         evaluation_ref = _evaluate_generation_shard(store, item.dataset, item.condition_id, checkpoint.final_path)
         return [file_sha256(checkpoint.final_path), evaluation_ref]
     gold_by_question = {row["question_id"]: row for row in _load_manifest(store, "gold", item.dataset)}
@@ -392,7 +411,7 @@ def _execute_gold(item: WorkItem, config: Mapping[str, Any], store: ArtifactStor
             packing_id=item.condition_id, budget=budget, packed=packed,
             model_repository=generator.repository, model_revision=generator.revision,
             model_snapshot_hash=_snapshot_hash(generator), retrieval_or_gold_hash=upstream,
-            prompt_version_hash=canonical_json_hash({"dataset": item.dataset, "gold": True}),
+            prompt_version_hash=prompt_template_hash(item.dataset),
             raw_output=raw, generated_tokens=trace["generated_tokens"],
             stopping_reason=trace["stopping_reason"], latency={"generation_seconds": trace["latency_seconds"]},
             attempt_history=attempts, hardware={"peak_gpu_memory_bytes": trace.get("peak_gpu_memory_bytes", 0)},
@@ -435,6 +454,19 @@ def _automatic_metrics(generation: Mapping[str, Any], question: Mapping[str, Any
     else:
         represented = sum(bool(intervals.get(doc_id)) for doc_id in set(question["gold_document_ids"]))
         metrics["consumed_gold_evidence_fraction"] = represented / len(set(question["gold_document_ids"])) if question["gold_document_ids"] else 0.0
+        from .evaluation import normalize_answer
+        reference_sequences = [normalize_answer(reference).split() for reference in question["references"]]
+        visible = False
+        consumed_end = len(generation["consumed_context"])
+        for span in generation["ranked_source_spans"]:
+            if span["text_rendered_start"] >= consumed_end:
+                continue
+            text = generation["consumed_context"][span["text_rendered_start"]:min(consumed_end, span["text_rendered_end"])]
+            tokens = normalize_answer(text).split()
+            if any(sequence and any(tokens[index:index + len(sequence)] == sequence for index in range(len(tokens) - len(sequence) + 1)) for sequence in reference_sequences):
+                visible = True
+                break
+        metrics["normalized_answer_sequence_visible"] = float(visible)
     return metrics
 
 
@@ -453,7 +485,13 @@ def _evaluate_generation_shard(store: ArtifactStore, dataset: str, condition: st
 
 
 def execute_e3(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) -> list[str]:
-    return _execute_gold(item, config, store, role="mistral")
+    hashes = _execute_gold(item, config, store, role="mistral")
+    assert item.dataset is not None
+    gap_hash = maybe_write_gold_gaps(
+        _root(store), item.dataset,
+        [row["question_id"] for row in _load_manifest(store, "questions", item.dataset)],
+    )
+    return [*hashes, *([gap_hash] if gap_hash else [])]
 
 
 def _generation_shard_path(store: ArtifactStore, role: str, dataset: str, condition: str, shard: int) -> Path:
@@ -463,6 +501,9 @@ def _generation_shard_path(store: ArtifactStore, role: str, dataset: str, condit
 def execute_e4(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) -> list[str]:
     assert item.dataset == "techqa"
     if item.condition_id == "human-package":
+        judge_root = _root(store) / "evaluation" / "judge" / "techqa"
+        if judge_root.exists() and any(judge_root.glob("**/part-*.jsonl")):
+            raise ProtocolError("Human package must be frozen before any TechQA judge output exists")
         questions = _load_manifest(store, "questions", "techqa")
         generations: dict[tuple[str, str], Mapping[str, Any]] = {}
         mapping = {
@@ -512,7 +553,9 @@ def execute_e4(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) 
             condition = path.parent.name
             for row in read_jsonl(path):
                 judge_by_generation[row["generation_id"]] = row["judge"]
-                invalid_by_condition[condition].append(not any(attempt["status"] == "success" for attempt in row["judge"]["attempts"]))
+                invalid_by_condition[condition].append(not any(attempt["status"] == "parsed" for attempt in row["judge"]["attempts"]))
+        if len(judge_by_generation) != 9_900 or len(invalid_by_condition) != 33 or any(len(values) != 300 for values in invalid_by_condition.values()):
+            raise ProtocolError("Human validation requires all 9,900 frozen TechQA judge traces")
         human_values: dict[str, list[int]] = {key: [] for key in ("correctness", "completeness", "groundedness")}
         judge_values: dict[str, list[int]] = {key: [] for key in human_values}
         for row in adjudicated:
@@ -537,16 +580,42 @@ def execute_e4(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) 
         if validation["remove_from_main"]:
             validation["confirmatory"] = False
         validation["schema_version"] = PROTOCOL_ID
+        summary_rows = []
+        adjudicated_by_id = {row["annotation_record_id"]: row for row in adjudicated}
+        by_condition: dict[str, list[Mapping[str, Any]]] = defaultdict(list)
+        for annotation_id, link in linkage.items():
+            if annotation_id in adjudicated_by_id:
+                by_condition[link["condition"]].append(adjudicated_by_id[annotation_id])
+        for condition, rows in sorted(by_condition.items()):
+            for dimension in ("correctness", "completeness", "groundedness"):
+                values = [int(row[dimension]) for row in rows if row.get(dimension) is not None]
+                summary_rows.append({"condition": condition, "dimension": dimension, "mean": sum(values) / len(values) if values else None, "n": len(values)})
+        validation["human_subset_results"] = summary_rows
         digest = atomic_write_json(human_root / "judge-validation.json", validation)
         return [digest]
     assert item.shard_index is not None
+    package_path = _root(store) / "evaluation" / "human" / "techqa-package.json"
+    if not package_path.is_file():
+        raise ProtocolError("TechQA judge cannot run before the blinded human package is frozen")
+    from .completion import completed_work_ids
+    if "E4/techqa/human-package" not in completed_work_ids(_root(store), "E4"):
+        raise ProtocolError("TechQA human package lacks a validated immutable work marker")
+    human_root = _root(store) / "evaluation" / "human"
+    label_paths = [human_root / name for name in ("human-labels-a.jsonl", "human-labels-b.jsonl", "human-adjudicated.jsonl")]
+    if not all(path.is_file() for path in label_paths):
+        raise ProtocolError("TechQA judge cannot run before both human labels and adjudication are collected")
+    package_ids = {row["annotation_record_id"] for row in read_json(package_path)["records"]}
+    validate_label_rows(read_jsonl(label_paths[0]), package_ids, adjudicated=False)
+    validate_label_rows(read_jsonl(label_paths[1]), package_ids, adjudicated=False)
+    validate_label_rows(read_jsonl(label_paths[2]), package_ids, adjudicated=True)
     source_condition = item.condition_id.removeprefix("judge__")
     path = _generation_shard_path(store, "mistral", "techqa", source_condition, item.shard_index)
     generations = read_jsonl(path)
     questions = {row["question_id"]: row for row in _load_manifest(store, "questions", "techqa")}
     judge = _generator(config, "qwen")
+    judge_snapshot_hash = _snapshot_hash(judge)
     records: list[dict[str, Any]] = []
-    evaluator_hash = canonical_json_hash({"prompt": "techqa-judge-v1", "model": config["models"]["qwen"]})
+    evaluator_hash = techqa_judge_template_hash(config["models"]["qwen"])
     for generation in generations:
         question = questions[generation["question_id"]]
         judge_messages = techqa_judge_messages(question["question"], question["references"][0], generation["consumed_context"], generation["normalized_output"])
@@ -557,25 +626,34 @@ def execute_e4(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) 
             parsed = {"correctness": 0, "completeness": 0, "groundedness": 0, "reason": "permanently failed generation", "semantic_utility": 0.0}
             records.append(build_evaluation_record(
                 generation, question, {"exact_match": 0.0, "f1": 0.0}, evaluator_hash,
-                judge={"raw": "", "parsed": parsed, "attempts": [{"attempt": 0, "status": "generation_failed"}]},
+                judge={"prompt_version": "techqa-judge-v1", "messages": judge_messages,
+                       "model_repository": judge.repository, "model_revision": judge.revision,
+                       "model_snapshot_hash": judge_snapshot_hash, "raw": "", "parsed": parsed,
+                       "attempts": [{"attempt": 0, "status": "generation_failed"}]},
             ))
             continue
         parsed: dict[str, Any] | None = None
         attempts: list[dict[str, Any]] = []
         raw = ""
         for attempt in (1, 2):
-            raw, _ = judge.generate(ids, 256)
+            raw, _, infrastructure_attempts = _generate_with_retries(judge, ids, 256)
+            attempts.extend({**row, "parse_attempt": attempt} for row in infrastructure_attempts)
+            if not any(row["status"] == "success" for row in infrastructure_attempts):
+                continue
             try:
                 parsed = parse_judge_json(raw)
-                attempts.append({"attempt": attempt, "status": "success"})
+                attempts.append({"parse_attempt": attempt, "status": "parsed"})
                 break
             except (json.JSONDecodeError, ValueError):
-                attempts.append({"attempt": attempt, "status": "invalid_json"})
+                attempts.append({"parse_attempt": attempt, "status": "invalid_json"})
         if parsed is None:
             parsed = {"correctness": 0, "completeness": 0, "groundedness": 0, "reason": "invalid JSON after retry", "semantic_utility": 0.0}
         records.append(build_evaluation_record(
             generation, question, best_answer_metrics(generation["normalized_output"], question["references"]),
-            evaluator_hash, judge={"raw": raw, "parsed": parsed, "attempts": attempts},
+            evaluator_hash, judge={"prompt_version": "techqa-judge-v1", "messages": judge_messages,
+                                   "model_repository": judge.repository, "model_revision": judge.revision,
+                                   "model_snapshot_hash": judge_snapshot_hash, "raw": raw,
+                                   "parsed": parsed, "attempts": attempts},
         ))
     ref = store.write_jsonl(
         f"evaluation/judge/techqa/{source_condition}/part-{item.shard_index:03d}.jsonl",
@@ -599,9 +677,14 @@ def execute_e5(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) 
     questions = _load_manifest(store, "questions", item.dataset)
     question_hash = file_sha256(_root(store) / "manifests" / "questions" / f"{item.dataset}.jsonl")
     corpus_hash = file_sha256(_root(store) / "manifests" / "corpora" / f"{item.dataset}.jsonl")
-    config_hash = canonical_json_hash({"embedder": embedder, "stack": stack, "policy": policy})
+    config_hash = canonical_json_hash({
+        "embedder": embedder, "stack": stack, "policy": policy,
+        "retrieval": config["retrieval"], "dense_model": dense, "reranker_model": reranker,
+    })
     upstream = canonical_json_hash([question_hash, corpus_hash, file_sha256(_root(store) / "chunks" / item.dataset / f"{policy}.jsonl")])
     traces: list[dict[str, Any]] = []
+    for question in questions[:5]:
+        engine.query(question["question"], stack=stack)
     for question in questions:
         dense_rows, sparse_rows, fused, reranked, latency = engine.query(question["question"], stack=stack)
         selected = dense_rows if stack == "dense" else fused if stack == "hybrid" else reranked
@@ -614,24 +697,41 @@ def execute_e5(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) 
             latency=latency, memory=_gpu_memory(),
         ))
     ref = store.write_jsonl(f"retrieval/secondary/{item.dataset}/{item.condition_id}.jsonl", traces, "retrieval", "retrieval_id")
-    return [ref.sha256]
+    if engine._build_audit is None:
+        raise ProtocolError("Secondary retriever did not produce the frozen build audit")
+    derived = write_retrieval_outputs(
+        _root(store), namespace="secondary", dataset=item.dataset, condition_id=item.condition_id,
+        questions=questions, chunks=chunks, traces=traces, build_audit=engine._build_audit,
+    )
+    summary_hash = maybe_write_e5_effect_table(_root(store), item.dataset, embedder, stack)
+    return [ref.sha256, *derived, *([summary_hash] if summary_hash else [])]
 
 
 def execute_e6(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) -> list[str]:
     if item.condition_id == "gold-4096":
-        return _execute_gold(item, config, store, role="qwen")
-    source_condition, packing_id = item.condition_id.split("__", 1)
-    return _generate_shard(item, config, store, role="qwen", source_condition=source_condition, packing_id=packing_id)
+        hashes = _execute_gold(item, config, store, role="qwen")
+    else:
+        source_condition, packing_id = item.condition_id.split("__", 1)
+        hashes = _generate_shard(item, config, store, role="qwen", source_condition=source_condition, packing_id=packing_id)
+    assert item.dataset is not None
+    questions = _load_manifest(store, "questions", item.dataset)
+    summary = qwen_effect_summary(_root(store), item.dataset, {row["question_id"]: row["cluster_id"] for row in questions})
+    if summary is not None:
+        from .canonical import atomic_write_json
+        hashes.append(atomic_write_json(_root(store) / "analysis" / "e6" / f"{item.dataset}.json", summary))
+    return hashes
 
 
 def execute_e7(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) -> list[str]:
     from .validation import validate_repository
+    from .artifact_audit import validate_main_artifacts
     from .artifacts import validate_record_links
-    from .reproducibility import compare_generation, compare_metrics, compare_retrieval
+    from .reproducibility import aggregate_metrics, compare_generation, compare_metrics, compare_retrieval
     from .canonical import atomic_write_jsonl
 
-    report = validate_repository(repo_root())
-    report.update({"schema_version": PROTOCOL_ID, "protocol_sha256": PROTOCOL_SHA256, "experiment": "E7", "work_id": item.work_id, "datasets": {}})
+    repository_report = validate_repository(repo_root(), check_environment=True)
+    report = validate_main_artifacts(_root(store), config)
+    report.update({"protocol_sha256": PROTOCOL_SHA256, "experiment": "E7", "work_id": item.work_id, "repository": repository_report, "reproducibility": {}})
     audit_root = _root(store) / "audit" / "recomputed"
     audit_store = ArtifactStore(audit_root)
     audit_store.initialize()
@@ -670,9 +770,16 @@ def execute_e7(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) 
                 qid = question["question_id"]
                 compare_generation(original_generations[qid], recomputed_generations[qid])
                 compare_metrics(original_eval_by_generation[original_generations[qid]["generation_id"]], recomputed_eval_by_generation[recomputed_generations[qid]["generation_id"]])
-        report["datasets"][dataset] = {"questions": [row["question_id"] for row in questions], "status": "exact"}
+            original_subset = [original_eval_by_generation[original_generations[row["question_id"]]["generation_id"]] for row in questions]
+            recomputed_subset = [recomputed_eval_by_generation[recomputed_generations[row["question_id"]]["generation_id"]] for row in questions]
+            original_aggregate, recomputed_aggregate = aggregate_metrics(original_subset), aggregate_metrics(recomputed_subset)
+            if original_aggregate.keys() != recomputed_aggregate.keys() or any(abs(original_aggregate[key] - recomputed_aggregate[key]) > 1e-12 for key in original_aggregate):
+                raise ProtocolError(f"E7 aggregate metric mismatch: {dataset}/{condition}")
+        report["reproducibility"][dataset] = {"questions": [row["question_id"] for row in questions], "status": "exact"}
     retrieval_rows = [row for path in (_root(store) / "retrieval").glob("**/*.jsonl") for row in read_jsonl(path)]
     generation_rows = [row for path in (_root(store) / "generation").glob("**/part-*.jsonl") for row in read_jsonl(path)]
+    cost_rows = [read_json(path) for path in (_root(store) / "audit" / "cost").glob("**/*.json")]
+    from .environment import hardware_manifest
     report["cost_summary"] = {
         "storage_bytes": sum(path.stat().st_size for path in _root(store).rglob("*") if path.is_file()),
         "retrieval_records": len(retrieval_rows), "generation_records": len(generation_rows),
@@ -680,7 +787,11 @@ def execute_e7(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) 
         "generation_seconds": sum(sum(float(value) for value in row["latency"].values()) for row in generation_rows),
         "prompt_input_tokens": sum(int(row["used_input_tokens"]) for row in generation_rows),
         "generated_tokens": sum(int(row["generated_tokens"]) for row in generation_rows),
-        "index_bytes": sum(path.stat().st_size for path in (_root(store) / "chunks").glob("**/*.jsonl")),
+        "index_bytes": sum(int(row["index_bytes"]) for row in cost_rows),
+        "index_build_seconds": sum(float(row["index_build_seconds"]) for row in cost_rows),
+        "embedding_tokens": sum(int(row["embedding_tokens"]) for row in cost_rows),
+        "warmup_validated": bool(cost_rows) and all(int(row["warmup_questions"]) == 5 for row in cost_rows),
+        "timing_environment": hardware_manifest(), "retrieval_batch_size": 64, "reranker_batch_size": 32,
         "peak_gpu_memory_bytes": max(
             [int(value) for row in retrieval_rows for value in row.get("memory", {}).values() if isinstance(value, int)]
             + [int(row.get("hardware", {}).get("peak_gpu_memory_bytes", 0)) for row in generation_rows]
@@ -693,6 +804,8 @@ def execute_e7(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) 
     evaluation_rows = [row for path in (_root(store) / "evaluation").glob("**/part-*.jsonl") for row in read_jsonl(path)]
     validate_record_links(generation_rows, evaluation_rows)
     report["hash_chain"] = {"generation_links": len(generation_rows), "evaluation_links": len(evaluation_rows), "status": "valid"}
+    if not report["cost_summary"]["warmup_validated"]:
+        raise ProtocolError("E7 timing audit found a missing five-question warm-up")
     report["status"] = "complete"
     path = _root(store) / "audit" / "e7-repository-validation.json"
     from .canonical import atomic_write_json

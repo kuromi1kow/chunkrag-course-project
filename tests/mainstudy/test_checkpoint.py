@@ -14,7 +14,7 @@ class CheckpointTests(unittest.TestCase):
 
     def test_resume_and_finalize(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            checkpoint = ShardCheckpoint(Path(directory), "E2", "d", "c", 0, ["q1", "q2"], "a" * 64, "b" * 64)
+            checkpoint = ShardCheckpoint(Path(directory), "E2", "d", "c", 0, ["q1", "q2"], "a" * 64, "b" * 64, schema=None)
             one = {"question_id": "q1", "value": 1}
             two = {"question_id": "q2", "value": 2}
             checkpoint.append("q1", one)

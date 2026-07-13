@@ -7,7 +7,7 @@ from collections.abc import Mapping
 from dataclasses import asdict
 from typing import Any
 
-from .canonical import identifier_hash
+from .canonical import canonical_json_hash, identifier_hash
 from .constants import PROTOCOL_ID
 from .packing import PackedContext
 from .prompts import messages, normalize_generated_answer, prompt_version
@@ -94,6 +94,7 @@ def build_generation_record(
         "stopping_reason": stopping_reason, "latency": dict(latency),
         "attempt_history": attempt_history, "upstream_hash": retrieval_or_gold_hash,
     }
+    record["record_hash"] = canonical_json_hash(record)
     validate_record("generation", record)
     return record
 
