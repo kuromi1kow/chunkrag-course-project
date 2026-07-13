@@ -245,6 +245,15 @@ def _generate_with_retries(generator: LocalGenerator, prompt_ids: list[int], max
     return raw, trace, attempts
 
 
+def _pending_checkpoint_questions(
+    checkpoint: ShardCheckpoint, questions: Sequence[Mapping[str, Any]],
+) -> list[Mapping[str, Any]]:
+    """Recover the durable prefix and return only records that still need inference."""
+    state = checkpoint.validate_partial(lambda row: str(row["question_id"]))
+    completed = set(state["completed"])
+    return [question for question in questions if str(question["question_id"]) not in completed]
+
+
 def _generate_shard(
     item: WorkItem, config: Mapping[str, Any], store: ArtifactStore, *, role: str,
     source_condition: str, packing_id: str,
@@ -265,7 +274,7 @@ def _generate_shard(
         checkpoint.validate_final(lambda row: str(row["question_id"]))
         evaluation_ref = _evaluate_generation_shard(store, item.dataset, item.condition_id, checkpoint.final_path)
         return [file_sha256(checkpoint.final_path), evaluation_ref]
-    for question in questions:
+    for question in _pending_checkpoint_questions(checkpoint, questions):
         chunks, upstream = _retrieved_chunks(store, item.dataset, source_condition, question["question_id"])
         if packing_id.startswith("operational"):
             packed = operational_pack(tokenizer, item.dataset, question["question"], chunks, budget)
@@ -395,7 +404,7 @@ def _execute_gold(item: WorkItem, config: Mapping[str, Any], store: ArtifactStor
         evaluation_ref = _evaluate_generation_shard(store, item.dataset, item.condition_id, checkpoint.final_path)
         return [file_sha256(checkpoint.final_path), evaluation_ref]
     gold_by_question = {row["question_id"]: row for row in _load_manifest(store, "gold", item.dataset)}
-    for question in questions:
+    for question in _pending_checkpoint_questions(checkpoint, questions):
         target = _matched_target_for_question(store, config, item.dataset, question, budget, tokenizer, qwen=role == "qwen")
         chunks = _gold_chunks(store, config, item.dataset, question, tokenizer, target)
         rendered, _ = render_passages(chunks)

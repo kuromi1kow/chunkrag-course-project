@@ -6,6 +6,7 @@ from pathlib import Path
 
 from chunkrag.mainstudy.checkpoint import CheckpointError, ShardCheckpoint, merge_shards, shard_question_ids
 from chunkrag.mainstudy.canonical import read_jsonl
+from chunkrag.mainstudy.execution import _pending_checkpoint_questions
 
 
 class CheckpointTests(unittest.TestCase):
@@ -24,6 +25,18 @@ class CheckpointTests(unittest.TestCase):
             checkpoint.append("q2", two)
             final = checkpoint.finalize(lambda row: row["question_id"])
             self.assertEqual([row["question_id"] for row in read_jsonl(final)], ["q1", "q2"])
+
+    def test_execution_resume_skips_durable_records_before_inference(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            checkpoint = ShardCheckpoint(
+                Path(directory), "E2", "d", "c", 0, ["q1", "q2"],
+                "a" * 64, "b" * 64, schema=None,
+            )
+            checkpoint.append("q1", {"question_id": "q1", "value": "durable"})
+            pending = _pending_checkpoint_questions(
+                checkpoint, [{"question_id": "q1"}, {"question_id": "q2"}],
+            )
+            self.assertEqual(pending, [{"question_id": "q2"}])
 
     def test_merge_rejects_missing(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
