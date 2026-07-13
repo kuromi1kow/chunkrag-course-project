@@ -546,7 +546,7 @@ def execute_e4(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) 
         linkage_digest = atomic_write_json(_root(store) / "evaluation" / "human" / "techqa-linkage-private.json", {"schema_version": PROTOCOL_ID, "records": linkage})
         return [digest, training_digest, linkage_digest]
     if item.condition_id == "human-validation":
-        from .canonical import read_json, atomic_write_json
+        from .canonical import atomic_write_json
         from .statistics import judge_acceptance
 
         human_root = _root(store) / "evaluation" / "human"
