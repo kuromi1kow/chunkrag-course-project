@@ -71,6 +71,18 @@
       "version": "1.3.3"
     },
     {
+      "name": "cuda-bindings",
+      "version": "13.3.1"
+    },
+    {
+      "name": "cuda-pathfinder",
+      "version": "1.5.6"
+    },
+    {
+      "name": "cuda-toolkit",
+      "version": "13.0.3.0"
+    },
+    {
       "name": "cycler",
       "version": "0.12.1"
     },
@@ -221,6 +233,66 @@
     {
       "name": "numpy",
       "version": "1.26.4"
+    },
+    {
+      "name": "nvidia-cublas",
+      "version": "13.1.1.3"
+    },
+    {
+      "name": "nvidia-cuda-cupti",
+      "version": "13.0.85"
+    },
+    {
+      "name": "nvidia-cuda-nvrtc",
+      "version": "13.0.88"
+    },
+    {
+      "name": "nvidia-cuda-runtime",
+      "version": "13.0.96"
+    },
+    {
+      "name": "nvidia-cudnn-cu13",
+      "version": "9.20.0.48"
+    },
+    {
+      "name": "nvidia-cufft",
+      "version": "12.0.0.61"
+    },
+    {
+      "name": "nvidia-cufile",
+      "version": "1.15.1.6"
+    },
+    {
+      "name": "nvidia-curand",
+      "version": "10.4.0.35"
+    },
+    {
+      "name": "nvidia-cusolver",
+      "version": "12.0.4.66"
+    },
+    {
+      "name": "nvidia-cusparse",
+      "version": "12.6.3.3"
+    },
+    {
+      "name": "nvidia-cusparselt-cu13",
+      "version": "0.8.1"
+    },
+    {
+      "name": "nvidia-nccl-cu13",
+      "version": "2.29.7"
+    },
+    {
+      "name": "nvidia-nvjitlink",
+      "version": "13.3.33"
+    },
+    {
+      "name": "nvidia-nvshmem-cu13",
+      "version": "3.4.5"
+    },
+    {
+      "name": "nvidia-nvtx",
+      "version": "13.0.85"
     },
     {
       "name": "orjson",
@@ -413,6 +485,10 @@
     {
       "name": "transformers",
       "version": "4.57.6"
+    },
+    {
+      "name": "triton",
+      "version": "3.7.1"
     },
     {
       "name": "typer",
