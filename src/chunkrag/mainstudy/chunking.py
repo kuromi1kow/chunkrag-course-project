@@ -51,7 +51,13 @@ class TokenizedSource:
 
 
 def _merge_short_final(cuts: list[int], total: int, maximum: int = 254, minimum: int = 64) -> list[int]:
-    if len(cuts) < 2:
+    if total <= 0:
+        raise ValueError("Canonical chunking requires a nonempty tokenized source")
+    if len(cuts) < 2 or cuts[0] != 0 or cuts[-1] != total:
+        raise ValueError("Chunk cuts must include exact source boundaries")
+    if len(cuts) < 3:
+        # A source shorter than one target window is already one valid final-short
+        # chunk.  There is no preceding chunk to merge it into.
         return cuts
     final_length = total - cuts[-2]
     if final_length < minimum and total - cuts[-3] <= maximum:

@@ -23,6 +23,27 @@ class ChunkingTests(unittest.TestCase):
         self.assertEqual("".join(row["text"] for row in records), self.text)
         self.assertTrue(all(row["token_count"] <= 254 for row in records))
 
+    def test_single_window_sources_remain_one_final_short_chunk(self) -> None:
+        for total in (1, 8, 63, 64, 191, 192):
+            text = "x" * total
+            source = TokenizedSource.build(text, CharTokenizer())
+            expected = [0, total]
+            self.assertEqual(fixed_cuts(total), expected)
+            self.assertEqual(recursive_cuts(source), expected)
+            self.assertEqual(sentence_cuts(source, [(0, total)]), expected)
+            self.assertEqual(semantic_cuts(source, lambda _: [[1.0, 0.0]], [(0, total)]), expected)
+            records = chunk_records(
+                {"dataset": "squad_v2", "document_id": f"short-{total}", "text": text},
+                source, "fixed192", expected, "tok", "rev",
+            )
+            self.assertEqual(len(records), 1)
+            self.assertEqual(records[0]["token_count"], total)
+            self.assertEqual(records[0]["final_short"], total < 64)
+
+    def test_zero_token_source_fails_closed(self) -> None:
+        with self.assertRaisesRegex(ValueError, "nonempty tokenized source"):
+            fixed_cuts(0)
+
     def test_recursive_and_sentence_are_deterministic(self) -> None:
         self.assertEqual(recursive_cuts(self.source), recursive_cuts(self.source))
         spans = [(0, 184), (184, 368), (368, len(self.text))]
