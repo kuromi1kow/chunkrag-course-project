@@ -131,6 +131,39 @@ def _hotpot_documents(row: Mapping[str, Any], revision: str, row_index: int) -> 
     return documents, by_title, sentence_provenance
 
 
+def _hotpot_supporting_fact_records(
+    documents: list[dict[str, Any]], by_title: Mapping[str, str],
+    sentence_provenance: list[dict[str, Any]], fact_titles: list[str],
+    fact_indices: list[int],
+) -> list[dict[str, Any]]:
+    """Resolve exact annotations while preserving unavailable source indices."""
+    documents_by_id = {row["document_id"]: row for row in documents}
+    facts: list[dict[str, Any]] = []
+    for title, sentence_index in zip(fact_titles, fact_indices):
+        document_id = by_title[title]
+        provenance = next((
+            item for item in sentence_provenance
+            if item["document_id"] == document_id and item["sentence_index"] == sentence_index
+        ), None)
+        if provenance is None:
+            # The pinned HotpotQA split contains one source annotation with sent_id=902
+            # for a five-sentence document.  Do not infer a replacement sentence.  The
+            # null interval retains the exact annotation and is counted as uncovered by
+            # downstream evidence metrics.
+            document_index = int(documents_by_id[document_id]["source_provenance"][0]["document_index"])
+            facts.append({
+                "title": title, "document_id": document_id,
+                "document_index": document_index, "sentence_index": sentence_index,
+                "char_start": None, "char_end": None,
+            })
+            continue
+        facts.append({
+            "title": title, "document_id": document_id,
+            **{key: provenance[key] for key in ("document_index", "sentence_index", "char_start", "char_end")},
+        })
+    return facts
+
+
 def materialize_hotpot_rows(rows: Iterable[Mapping[str, Any]], revision: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     corpus: dict[str, dict[str, Any]] = {}
     candidates: list[dict[str, Any]] = []
@@ -146,17 +179,18 @@ def materialize_hotpot_rows(rows: Iterable[Mapping[str, Any]], revision: str) ->
         fact_indices = [int(item) for item in row["supporting_facts"]["sent_id"]]
         if not str(row.get("answer", "")).strip() or not fact_titles or any(title not in by_title for title in fact_titles):
             continue
-        facts: list[dict[str, Any]] = []
-        for title, sentence_index in zip(fact_titles, fact_indices):
-            doc_id = by_title[title]
-            provenance = next(item for item in sentence_provenance if item["document_id"] == doc_id and item["sentence_index"] == sentence_index)
-            facts.append({"title": title, "document_id": doc_id, **{key: provenance[key] for key in ("document_index", "sentence_index", "char_start", "char_end")}})
+        facts = _hotpot_supporting_fact_records(
+            documents, by_title, sentence_provenance, fact_titles, fact_indices,
+        )
         allocation_key = min(fact_titles)
         question = _base_question(
             dataset="hotpot_qa", revision=revision, row=row, question=str(row["question"]),
             references=[str(row["answer"])], gold_document_ids=[by_title[title] for title in fact_titles],
             gold_spans=[], supporting_facts=facts,
-            eligibility={"answerable": True, "allocation_key": allocation_key},
+            eligibility={
+                "answerable": True, "allocation_key": allocation_key,
+                "unresolved_supporting_facts": sum(fact["char_start"] is None for fact in facts),
+            },
         )
         candidates.append(question)
     selected = _select(candidates, EXPECTED_QUESTION_COUNTS["hotpot_qa"], 2)

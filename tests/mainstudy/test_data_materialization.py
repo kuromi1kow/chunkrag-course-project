@@ -3,8 +3,8 @@
 import unittest
 
 from chunkrag.mainstudy.data import (
-    _select, cluster_records, materialize_hotpot_rows, normalize_corpus_text,
-    squad_document_id,
+    _hotpot_documents, _hotpot_supporting_fact_records, _select, cluster_records,
+    materialize_hotpot_rows, normalize_corpus_text, squad_document_id,
 )
 
 
@@ -22,6 +22,21 @@ class DataMaterializationTests(unittest.TestCase):
     def test_cluster_records(self) -> None:
         rows = [{"question_id": "q1", "cluster_id": "c"}, {"question_id": "q2", "cluster_id": "c"}]
         self.assertEqual(cluster_records("d", rows)[0]["size"], 2)
+
+    def test_unavailable_hotpot_sentence_index_is_retained_without_inference(self) -> None:
+        row = {
+            "id": "malformed", "question": "q", "answer": "a",
+            "context": {"title": ["Document"], "sentences": [["zero", "one"]]},
+            "supporting_facts": {"title": ["Document"], "sent_id": [902]},
+        }
+        documents, by_title, provenance = _hotpot_documents(row, "revision", 7)
+        facts = _hotpot_supporting_fact_records(
+            documents, by_title, provenance, ["Document"], [902],
+        )
+        self.assertEqual(facts[0]["sentence_index"], 902)
+        self.assertEqual(facts[0]["document_index"], 0)
+        self.assertIsNone(facts[0]["char_start"])
+        self.assertIsNone(facts[0]["char_end"])
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ import unittest
 
 from chunkrag.mainstudy.evaluation import (
     best_answer_metrics, document_metrics, interval_fully_covered, parse_judge_json,
+    supporting_fact_fully_covered,
 )
 from chunkrag.mainstudy.human import HUMAN_CONDITIONS, blindness_scan, build_blinded_package, build_training_package
 
@@ -14,6 +15,13 @@ class EvaluationHumanTests(unittest.TestCase):
         self.assertEqual(metrics, {"exact_match": 1.0, "f1": 1.0})
         self.assertTrue(interval_fully_covered(2, 8, [(0, 4), (4, 9)]))
         self.assertEqual(document_metrics(["x", "g"], ["g"], 2)["mrr"], 0.5)
+
+    def test_unavailable_supporting_fact_is_uncovered(self) -> None:
+        missing = {"document_id": "d", "sentence_index": 902, "char_start": None, "char_end": None}
+        valid = {"document_id": "d", "sentence_index": 1, "char_start": 2, "char_end": 8}
+        intervals = {"d": [(0, 4), (4, 9)]}
+        self.assertFalse(supporting_fact_fully_covered(missing, intervals))
+        self.assertTrue(supporting_fact_fully_covered(valid, intervals))
 
     def test_judge_json_strict(self) -> None:
         parsed = parse_judge_json('{"correctness":2,"completeness":1,"groundedness":2,"reason":"ok"}')

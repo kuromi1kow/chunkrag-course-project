@@ -348,16 +348,20 @@ def _gold_chunks(
         chunks.append({"chunk_id": None, "document_id": doc["document_id"], "title": doc["title"], "text": doc["text"][char_start:char_end], "char_start": char_start, "char_end": char_end})
     elif dataset == "hotpot_qa":
         facts = sorted(question["supporting_facts"], key=lambda row: (row["document_index"], row["sentence_index"]))
+        available_facts = [
+            fact for fact in facts
+            if isinstance(fact.get("char_start"), int) and isinstance(fact.get("char_end"), int)
+        ]
         ordered: list[tuple[str, int, int, int]] = []
         seen: set[tuple[str, int]] = set()
-        for fact in facts:
+        for fact in available_facts:
             key = (fact["document_id"], fact["sentence_index"])
             if key not in seen:
                 seen.add(key)
                 ordered.append((fact["document_id"], fact["sentence_index"], fact["char_start"], fact["char_end"]))
-        max_distance = max((len(corpus[fact["document_id"]]["source_provenance"][0]["sentence_spans"]) for fact in facts), default=0)
+        max_distance = max((len(corpus[fact["document_id"]]["source_provenance"][0]["sentence_spans"]) for fact in available_facts), default=0)
         for distance in range(1, max_distance + 1):
-            for fact in facts:
+            for fact in available_facts:
                 spans = corpus[fact["document_id"]]["source_provenance"][0]["sentence_spans"]
                 for index in (fact["sentence_index"] - distance, fact["sentence_index"] + distance):
                     if 0 <= index < len(spans) and (fact["document_id"], index) not in seen:
@@ -450,7 +454,7 @@ def _consumed_intervals(generation: Mapping[str, Any]) -> dict[str, list[tuple[i
 
 
 def _automatic_metrics(generation: Mapping[str, Any], question: Mapping[str, Any]) -> dict[str, Any]:
-    from .evaluation import interval_fully_covered
+    from .evaluation import interval_fully_covered, supporting_fact_fully_covered
 
     metrics: dict[str, Any] = best_answer_metrics(generation["normalized_output"], question["references"])
     intervals = _consumed_intervals(generation)
@@ -458,7 +462,7 @@ def _automatic_metrics(generation: Mapping[str, Any], question: Mapping[str, Any
         metrics["consumed_gold_evidence_fraction"] = float(any(interval_fully_covered(span["char_start"], span["char_end"], intervals.get(span["document_id"], [])) for span in question["gold_spans"]))
     elif question["dataset"] == "hotpot_qa":
         facts = question["supporting_facts"]
-        covered = sum(interval_fully_covered(fact["char_start"], fact["char_end"], intervals.get(fact["document_id"], [])) for fact in facts)
+        covered = sum(supporting_fact_fully_covered(fact, intervals) for fact in facts)
         metrics["consumed_gold_evidence_fraction"] = covered / len(facts) if facts else 0.0
     else:
         represented = sum(bool(intervals.get(doc_id)) for doc_id in set(question["gold_document_ids"]))

@@ -12,7 +12,10 @@ import numpy as np
 
 from .canonical import atomic_write_json, atomic_write_jsonl, read_jsonl
 from .constants import PROTOCOL_ID
-from .evaluation import document_metrics, document_ranking, interval_fully_covered
+from .evaluation import (
+    document_metrics, document_ranking, interval_fully_covered,
+    supporting_fact_fully_covered,
+)
 from .statistics import cluster_bootstrap
 from .environment import hardware_manifest
 
@@ -76,9 +79,7 @@ def retrieval_metric_rows(
                 row[f"gold_document_hit_at_{depth}"] = row[f"allhit_at_{depth}"]
             elif dataset == "hotpot_qa":
                 facts = question["supporting_facts"]
-                covered = sum(interval_fully_covered(
-                    int(fact["char_start"]), int(fact["char_end"]), intervals.get(str(fact["document_id"]), []),
-                ) for fact in facts)
+                covered = sum(supporting_fact_fully_covered(fact, intervals) for fact in facts)
                 row[f"supporting_sentence_fraction_at_{depth}"] = covered / len(facts) if facts else 0.0
                 row[f"all_supporting_sentences_at_{depth}"] = float(covered == len(facts))
         rows.append(row)

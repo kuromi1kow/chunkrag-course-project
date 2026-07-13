@@ -59,6 +59,16 @@ def interval_fully_covered(target_start: int, target_end: int, intervals: Sequen
     return target_start == target_end
 
 
+def supporting_fact_fully_covered(
+    fact: Mapping[str, Any], intervals: Mapping[str, Sequence[tuple[int, int]]],
+) -> bool:
+    """Treat an unavailable pinned source annotation as explicitly uncovered."""
+    start, end = fact.get("char_start"), fact.get("char_end")
+    if not isinstance(start, int) or not isinstance(end, int):
+        return False
+    return interval_fully_covered(start, end, intervals.get(str(fact["document_id"]), []))
+
+
 def document_ranking(chunk_ids: Sequence[str], chunk_by_id: Mapping[str, Mapping[str, Any]]) -> list[str]:
     seen: set[str] = set()
     documents: list[str] = []
