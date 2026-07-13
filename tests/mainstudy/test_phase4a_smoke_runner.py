@@ -6,9 +6,15 @@ import pytest
 
 from chunkrag.mainstudy.artifacts import ArtifactStore
 from chunkrag.mainstudy.canonical import atomic_write_jsonl
+from chunkrag.mainstudy import execution
 from chunkrag.mainstudy.execution import _gold_chunks
 from chunkrag.mainstudy.protocol import ProtocolError
-from scripts.run_phase4a_smoke import QUESTION_COUNT, _subset_corpus, _validate_output_paths
+from scripts.run_phase4a_smoke import (
+    QUESTION_COUNT,
+    _canonical_smoke_shard_question_ids,
+    _subset_corpus,
+    _validate_output_paths,
+)
 
 
 def _document(document_id: str, row_index: int) -> dict[str, object]:
@@ -45,6 +51,37 @@ def test_phase4a_hotpot_fixture_keeps_all_selected_row_documents() -> None:
     questions = [{"question_id": "q-079", "gold_document_ids": ["doc-079"]}]
     selected = _subset_corpus("hotpot_qa", corpus, questions, rows)
     assert "doc-079" in {row["document_id"] for row in selected}
+
+
+def test_smoke_checkpoint_uses_canonical_shard_order(monkeypatch) -> None:
+    monkeypatch.setattr(
+        execution,
+        "_questions_for_shard",
+        lambda store, dataset, shard: [
+            {"question_id": "q-a"},
+            {"question_id": "q-b"},
+            {"question_id": "q-c"},
+        ],
+    )
+    selection_rank_order = ["q-b", "q-c", "q-a"]
+    assert _canonical_smoke_shard_question_ids(
+        object(), "squad_v2", 0, selection_rank_order,
+    ) == ["q-a", "q-b", "q-c"]
+
+
+def test_smoke_checkpoint_rejects_question_substitution(monkeypatch) -> None:
+    monkeypatch.setattr(
+        execution,
+        "_questions_for_shard",
+        lambda store, dataset, shard: [
+            {"question_id": "q-a"},
+            {"question_id": "q-substituted"},
+        ],
+    )
+    with pytest.raises(ProtocolError, match="substituted question IDs"):
+        _canonical_smoke_shard_question_ids(
+            object(), "squad_v2", 0, ["q-a", "q-b"],
+        )
 
 
 def test_hotpot_gold_packing_omits_unavailable_source_sentence(tmp_path: Path) -> None:

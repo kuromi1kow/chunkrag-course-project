@@ -163,6 +163,25 @@ def _run_item(item: WorkItem, config: Mapping[str, Any], store: ArtifactStore) -
     return execution.HANDLERS[item.experiment](item, config, store)
 
 
+def _canonical_smoke_shard_question_ids(
+    store: ArtifactStore, dataset: str, shard_index: int, frozen_smoke_ids: list[str],
+) -> list[str]:
+    """Return the exact ID order used by canonical generation checkpointing."""
+    canonical = [
+        str(row["question_id"])
+        for row in execution._questions_for_shard(store, dataset, shard_index)
+    ]
+    if len(canonical) != len(set(canonical)):
+        raise ProtocolError(f"Canonical smoke shard contains duplicate IDs: {dataset}/{shard_index}")
+    if set(canonical) != set(frozen_smoke_ids):
+        missing = sorted(set(frozen_smoke_ids) - set(canonical))
+        extra = sorted(set(canonical) - set(frozen_smoke_ids))
+        raise ProtocolError(
+            f"Canonical smoke shard substituted question IDs: missing={missing}, extra={extra}"
+        )
+    return canonical
+
+
 def _build_human_package(store: ArtifactStore) -> tuple[list[dict[str, Any]], list[str]]:
     questions = read_jsonl(store.root / "manifests" / "questions" / "techqa.jsonl")
     question_by_id = {row["question_id"]: row for row in questions}
@@ -434,7 +453,10 @@ def main() -> int:
         pass
     finally:
         execution._generate_with_retries = original_retry
-    checkpoint = ShardCheckpoint(store.root / "generation" / "mistral" / "squad_v2" / primary.condition_id, "E2", "squad_v2", primary.condition_id, 0, ids["squad_v2"], config["config_sha256"], lock["lock_sha256"])
+    checkpoint_ids = _canonical_smoke_shard_question_ids(
+        store, "squad_v2", 0, ids["squad_v2"],
+    )
+    checkpoint = ShardCheckpoint(store.root / "generation" / "mistral" / "squad_v2" / primary.condition_id, "E2", "squad_v2", primary.condition_id, 0, checkpoint_ids, config["config_sha256"], lock["lock_sha256"])
     checkpoint_state = checkpoint.validate_partial(lambda row: str(row["question_id"]))
     if len(checkpoint_state["completed"]) != 2: raise ProtocolError("Planned interruption did not preserve two records")
     interrupted_ids = list(checkpoint_state["completed"])

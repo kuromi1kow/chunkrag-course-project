@@ -34,7 +34,7 @@ class LocalGenerator:
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.repository, revision=self.revision, local_files_only=True)
         self.model = AutoModelForCausalLM.from_pretrained(
-            self.repository, revision=self.revision, torch_dtype=torch.float16, local_files_only=True,
+            self.repository, revision=self.revision, dtype=torch.float16, local_files_only=True,
         ).to(self.device)
         self.model.eval()
 
@@ -44,12 +44,14 @@ class LocalGenerator:
         if self.model is None or self.tokenizer is None:
             raise GenerationError("Local generator must be loaded before inference")
         input_ids = torch.tensor([prompt_token_ids], dtype=torch.long, device=self.device)
+        attention_mask = torch.ones_like(input_ids)
         if torch.cuda.is_available():
             torch.cuda.reset_peak_memory_stats()
         started = time.perf_counter()
         with torch.inference_mode():
             output = self.model.generate(
-                input_ids=input_ids, max_new_tokens=max_new_tokens, do_sample=False,
+                input_ids=input_ids, attention_mask=attention_mask,
+                max_new_tokens=max_new_tokens, do_sample=False,
                 num_beams=1, repetition_penalty=1.0, no_repeat_ngram_size=0,
                 length_penalty=1.0, use_cache=True,
                 pad_token_id=self.tokenizer.pad_token_id if self.tokenizer.pad_token_id is not None else self.tokenizer.eos_token_id,
