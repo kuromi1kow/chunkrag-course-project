@@ -9,7 +9,7 @@ OUTPUT_DIR ?= $(ROOT_DIR)/outputs/rigorous_smoke
 OPENAI_TUNNEL_URL ?= http://127.0.0.1:8000/v1
 OPENAI_TUNNEL_KEY ?= chunkrag-demo-key
 
-.PHONY: help setup setup-demo setup-openwebui dashboard openwebui openwebui-scc quickstart rigorous-local plot-rigorous chonkie reports reports-midway reports-final paper-figures test scc-vllm scc-rigorous scc-tunnel
+.PHONY: help setup setup-demo setup-openwebui dashboard openwebui openwebui-scc quickstart rigorous-local plot-rigorous chonkie reports reports-midway reports-final paper-figures test main-study-verify main-study-test main-study-plan main-study-analysis scc-vllm scc-rigorous scc-tunnel
 
 help:
 	@echo "Available targets:"
@@ -28,6 +28,10 @@ help:
 	@echo "  make reports-final     - rebuild final PDF only"
 	@echo "  make paper-figures     - rebuild reports/figures/*.pdf used by the final report"
 	@echo "  make test              - compile code and run unit tests"
+	@echo "  make main-study-verify - verify frozen protocol, config, lock, DAG, and output map"
+	@echo "  make main-study-test   - run synthetic-only main-study validation tests"
+	@echo "  make main-study-plan   - dry-run the complete E0 work plan (no dataset/model load)"
+	@echo "  make main-study-analysis COMPLETION_MANIFEST=... - regenerate locked analyses"
 	@echo "  make scc-vllm          - submit SCC vLLM job (run from SCC shell)"
 	@echo "  make scc-rigorous      - submit SCC rigorous run (run from SCC shell)"
 	@echo "  make scc-tunnel        - open local SSH tunnel to SCC vLLM endpoint"
@@ -84,6 +88,19 @@ paper-figures:
 test:
 	$(PYTHON) -m compileall src scripts tests
 	PYTHONPATH=src .venv/bin/python -m unittest discover -s tests -v
+
+main-study-verify:
+	PYTHONPATH=src $(PYTHON) scripts/verify_main_study.py
+
+main-study-test:
+	PYTHONPATH=src $(PYTHON) -m unittest discover -s tests/mainstudy -v
+
+main-study-plan:
+	PYTHONPATH=src $(PYTHON) scripts/run_main_study.py --experiment E0 --mode dry-run
+
+main-study-analysis:
+	test -n "$(COMPLETION_MANIFEST)"
+	PYTHONPATH=src $(PYTHON) scripts/regenerate_main_analysis.py --completion-manifest "$(COMPLETION_MANIFEST)"
 
 scc-vllm:
 	bash scripts/submit_scc_vllm.sh "$(REMOTE_ROOT)/outputs/openwebui_vllm"
