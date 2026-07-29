@@ -1,0 +1,21 @@
+{
+  "config_sha256": "45edcdb29a84ce152eb0518ff4deb5c85c3627918ca7103582e77d95f20a5248",
+  "device": "cuda",
+  "generator_dtype": null,
+  "num_summary_rows": 72,
+  "packages": {
+    "datasets": "2.21.0",
+    "faiss-cpu": "1.14.3",
+    "langchain-text-splitters": "0.3.11",
+    "numpy": "1.26.4",
+    "rank-bm25": "0.2.2",
+    "sentence-transformers": "3.4.1",
+    "spacy": "3.8.14",
+    "torch": "2.11.0+cu128",
+    "transformers": "4.57.6"
+  },
+  "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+  "python": "3.12.13",
+  "source_tree_sha256": "9d5083d3eb20eb98aadd82e3171e870042ec69b7d217cfccdb26738cf222efe1",
+  "status": "complete"
+}

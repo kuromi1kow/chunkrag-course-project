@@ -17,13 +17,20 @@ Run the missing paired hybrid-versus-reranking experiment in Colab:
 
 The notebook evaluates BGE hybrid retrieval with and without a revision-pinned
 cross-encoder over 3 datasets, 3 seeds, and 4 chunkers. It writes 72 paired cells to
-`MyDrive/chunkrag_outputs/ipmc_firm_rerank_bge`. After copying that directory to
+`MyDrive/chunkrag_outputs/ipmc_firm_rerank_bge`. The completed T4 run used commit
+`d2bbd3d` and took 22 minutes. After copying that directory to
 `outputs/ipmc_firm_rerank_bge`, run:
 
 ```bash
 make firm-rerank-analysis
 make paper
 ```
+
+The analyzer validates all paired prediction files, archives only summary-level
+artifacts, strips identity-bearing Git fields from the retained manifest, and rebuilds
+the manuscript table. In the completed run, reranking improves HotpotQA AllHit@4 by
+5.3--8.9 points across chunkers but reduces TechQA AllHit@4 by 3.5--5.0 points, with a
+1.5--6.0x retrieval-latency cost.
 
 The venue-specific readiness checklist is in
 `reports/ipmc_firm_submission_checklist.md`.

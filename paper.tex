@@ -40,14 +40,14 @@ embedding. A corrected failure audit attributes 59.1\% of recursive HotpotQA
 exact-match failures to incomplete retrieval rather than repairable generation.
 Second, a prospective study crosses three data seeds, dense, BM25, and hybrid retrieval,
 two embedding models, and four encoder-compatible chunkers over SQuAD, HotpotQA, and
-TechQA. The best observed chunker changes across datasets, embedders, and retrievers;
-switching from MiniLM to BGE, for example, raises the best dense HotpotQA AllHit@4 from
-$50.7\pm4.8$ to $70.2\pm8.9$. Controlled Qwen and Mistral generation likewise yields
+TechQA. A paired extension reranks BGE-hybrid candidates with an MS MARCO cross-encoder.
+Across chunkers, reranking raises HotpotQA AllHit@4 by 5.3--8.9 points but lowers TechQA
+AllHit@4 by 3.5--5.0 points, while increasing retrieval latency by
+$1.5\times$--$6.0\times$. Controlled Qwen and Mistral generation likewise yields
 dataset-specific rankings, and none of 18 planned chunker contrasts survives Holm
-correction. The results show that document hits, answer-bearing evidence, answer
-quality, and efficiency are distinct objectives. Reliable RAG evaluation must audit
-the complete retrieval-ranking-generation path and the evidence actually exposed to
-the generator.
+correction. Document hits, answer-bearing evidence, answer quality, and efficiency are
+distinct objectives. Reliable RAG evaluation must audit the complete
+retrieval--ranking--generation path and the evidence actually exposed to the generator.
 \end{abstract}
 
 \begin{keywords}
@@ -80,8 +80,8 @@ Together, the studies ask:
   \item Do encoder and generator token limits change what each nominal chunking
         configuration actually exposes to the system?
   \item Do observed chunker rankings persist across larger samples, a technical-support
-        dataset, dense and lexical retrieval, two embedding models, and two controlled
-        local generators?
+        dataset, dense and lexical retrieval, two embedding models, cross-encoder
+        reranking, and two controlled local generators?
 \end{enumerate}
 
 This paper makes four contributions. First, it frames chunking as a control on the
@@ -93,10 +93,12 @@ it reconstructs the exact retrieved contexts and replays both tokenizer budgets.
 audit changes the interpretation of the original experiment: some differences are
 inseparable from embedding and prompt truncation, and an earlier claim that most
 failures were ``fixable'' is not supported. Fourth, it executes a larger robustness
-extension across three datasets, three seeds, lexical, dense, and fused retrieval, two
-embedding models, and controlled local generation with Qwen2.5-1.5B and Mistral-7B.
-The extension directly tests---and does not support---a dataset- or
-architecture-independent chunker ranking.
+extension across three datasets, three seeds, lexical, dense, fused, and cross-encoder
+reranked retrieval, two embedding models, and controlled local generation with
+Qwen2.5-1.5B and Mistral-7B. Reranking improves multi-hop support recovery on HotpotQA
+but harms both support-document and answer-evidence retrieval on TechQA. The extension
+therefore rejects both a dataset-independent chunker ranking and a
+domain-independent reranking benefit.
 
 Code, configurations, per-question predictions, and audit outputs are included in the
 anonymous supplementary material.
@@ -112,7 +114,9 @@ encoder \citep{reimers2019sentencebert} derived from MiniLM
 \citep{wang2020minilm}, and searches normalized embeddings with inner product. The
 robustness extension also uses BGE-small-en-v1.5, an English embedding checkpoint from
 the BGE/FlagEmbedding family \citep{xiao2023cpack}, and compares dense retrieval with
-BM25 and weighted reciprocal-rank fusion.
+BM25 \citep{robertson2009bm25} and weighted reciprocal-rank fusion
+\citep{cormack2009rrf}. A final stage applies a query--passage cross-encoder, following
+the standard neural reranking pattern \citep{nogueira2019reranking}.
 
 \paragraph{Segmentation and retrieval granularity.}
 Topical text segmentation predates neural retrieval; TextTiling, for example, detects
@@ -269,6 +273,15 @@ chunk tokenizer, its exactly matching result is shared rather than interpreted a
 independent encoder runs. For each dataset--retriever--embedder--chunker cell, we report
 mean AllHit@4 and the sample standard deviation across the three data seeds.
 
+\paragraph{Cross-encoder reranking extension.}
+We fix BGE hybrid retrieval and rerank its top 20 fused candidates with
+\texttt{cross-encoder/ms-marco-MiniLM-L6-v2}, pinned to one model revision. The
+cross-encoder jointly scores each question--chunk pair; its four highest-scoring chunks
+replace the fused top four. Hybrid and reranked conditions use identical questions,
+corpora, chunkers, candidate-pool size, and data seeds, so each comparison is paired
+before the final top-$k$ cutoff. We report AllHit@4, AnsVis@4, descriptive
+question-level gain/loss counts, and the ratio of mean end-to-end retrieval latency.
+
 \subsection{Prompt, Generator, and Stored Output}
 \label{sec:generation}
 
@@ -329,6 +342,11 @@ transparency. Marginal table intervals use 2,000 question-bootstrap draws. Retri
 means use three data seeds and are reported with sample standard deviations; with only
 three seeds, we avoid treating their dispersion as a precise population confidence
 interval.
+
+For the reranking extension, deltas are computed within each seed before averaging.
+Gain/loss counts compare paired binary outcomes over seed--question instances. Because
+the seeded samples can overlap and there are only three seeds, we treat these counts and
+deltas as descriptive evidence rather than independent-trial significance tests.
 
 The archival intervals express variation over sampled questions conditional on one
 recorded run; the prospective intervals are likewise conditional on one deterministic
@@ -490,6 +508,31 @@ deviations over three seeds, not significance claims; the extension supports int
 not a new universal winner. Table~\ref{tab:robustness-retrieval} reports every dense and
 hybrid setting in the appendix.
 
+\subsection{Cross-Encoder Reranking Trade-offs}
+
+\input{generated/table_ipmc_firm_rerank}
+
+Reranking is beneficial on the Wikipedia benchmarks but not on the technical-support
+domain. SQuAD document retrieval is already near ceiling, so AllHit@4 changes by at
+most 0.2 points; nevertheless, AnsVis@4 increases by 1.3--2.7 points across chunkers.
+For fixed-254, the reranker adds answer-visible evidence for 15 paired seed--question
+instances and removes it for 3, yielding the largest SQuAD net gain.
+
+HotpotQA shows the clearest support-recovery benefit. AllHit@4 increases by 5.3--8.9
+points across chunkers, and AnsVis@4 increases by 1.8--3.1 points. Under fixed-128,
+reranking converts 35 incomplete-support instances into complete hits while losing
+complete support on 15, a net gain of 20 among 225 paired seed--question instances.
+This is the setting in which a second-stage relevance model most clearly improves the
+multi-hop evidence set.
+
+The direction reverses on TechQA. AllHit@4 decreases by 3.5--5.0 points and AnsVis@4
+by 0.5--2.5 points across all four chunkers. Under fixed-128, only 6 instances gain a
+gold-document hit while 36 lose one. Under sentence-254, 16 instances gain visible
+answer evidence while 31 lose it. The MS MARCO-trained cross-encoder therefore does not
+provide a portable improvement for long technical-support documents. Reranking also
+raises mean retrieval latency by $1.5\times$--$6.0\times$, so its quality gains are not
+free even where they are positive.
+
 \subsection{Controlled Local Generation Extension}
 
 Qwen yields dataset-dependent observed rankings. Its highest observed F1 is fixed-128 on
@@ -529,15 +572,26 @@ turn response-form diagnostics into proof of repairability: that claim requires 
 prompt intervention evaluated on held-out questions. Appendix~\ref{sec:additional-discussion}
 states the prospective protocol and remaining interpretive cautions.
 
+The reranking extension further shows why ranking integrity must be evaluated by domain
+and evidence endpoint. An MS MARCO cross-encoder improves complete multi-hop support on
+HotpotQA yet systematically drops gold documents and answer-bearing chunks on TechQA.
+One plausible explanation is domain and relevance-granularity mismatch: a generic
+passage ranker may favor locally query-similar excerpts over the long technical
+resolution containing the reference answer. Our experiment establishes the reversal,
+not its cause; testing that mechanism requires in-domain judgments or reranker
+adaptation. Reporting only an average benchmark gain would hide this
+deployment-relevant failure.
+
 \section{Conclusion}
 
 The evidence does not support a portable best chunk size. The pilot is confounded by
 encoder and prompt truncation, and its corrected HotpotQA audit finds incomplete
 retrieval more often than repairable generation. In the extension, observed winners
 change across datasets and system components, and no post-hoc contrast survives the
-18-test correction. Future chunking studies should match token budgets, retain consumed
-evidence and raw outputs, sample multiple data splits, and test claims across domains and
-model families.
+18-test correction. Cross-encoder reranking improves HotpotQA support recovery but harms
+TechQA retrieval and incurs substantial latency. Future RAG studies should match token
+budgets, retain consumed evidence and raw outputs, sample multiple data splits, and test
+both chunking and ranking claims across domains and model families.
 
 \section{Limitations}
 
@@ -559,8 +613,10 @@ dispersion estimate, and each prospective generator is run once on the same seed
 60/30/50 questions. We test two embedders, three retriever families, and two generator
 checkpoints (1.5B Qwen and 7B Mistral), but family and size are confounded and this is not
 a systematic scale study. All datasets are English and only one technical-support domain
-is added; we do not vary temperature, retrieval depth, rerankers, languages, or hardware.
-TechQA's complete-answer
+is added. The reranking experiment tests one MS MARCO cross-encoder, one candidate-pool
+size, and one retrieval depth on a Colab T4; it does not isolate whether the TechQA
+reversal comes from domain shift, relevance granularity, or model capacity. We do not
+vary temperature, languages, or serving hardware. TechQA's complete-answer
 instruction differs from the extractive benchmark instruction, so absolute scores
 should not be compared across datasets. Token F1 under-rewards paraphrased long answers
 and does not measure factual completeness. Document identity is also only a proxy for
@@ -583,6 +639,13 @@ retrieved from consumed context, and explicitly withdrawing unsupported causal a
 representational biases not assessed here. TechQA includes operational and security-related
 support material whose historical instructions may be obsolete. None of the evaluated
 systems should be treated as suitable for high-stakes or production technical support.
+
+\section*{Declaration of Generative AI and AI-Assisted Technologies}
+
+During manuscript preparation, the authors used OpenAI Codex for language editing,
+code refactoring, experiment orchestration, and consistency checks. The authors reviewed
+and edited all generated material, verified reported results against retained artifacts,
+and take full responsibility for the content of the manuscript.
 
 \bibliographystyle{cas-model2-names}
 \bibliography{references}
@@ -747,7 +810,10 @@ Retrieval samples per seed & SQuAD 150 (900-candidate pool); HotpotQA 75; TechQA
 Generation samples & seed 42 per checkpoint; identical SQuAD 60, HotpotQA 30, and TechQA 50 questions \\
 Chunkers & fixed-128/19; fixed-254/38; recursive-254/38; sentence-254/0 \\
 Embeddings & all-MiniLM-L6-v2 and BGE-small-en-v1.5; normalized vectors \\
-Retrievers & dense; BM25; hybrid weighted RRF (20 candidates; 0.6 dense/0.4 BM25); top-$k=4$ \\
+Retrievers & dense; BM25; hybrid weighted RRF (20 candidates; 0.6 dense/0.4 BM25);
+BGE hybrid followed by MS MARCO MiniLM cross-encoder reranking; top-$k=4$ \\
+Reranking runtime & Google Colab Tesla T4; three seeds; paired 20-candidate reranking;
+retrieval latency includes the cross-encoder stage \\
 Generators & Qwen2.5-1.5B-Instruct and Mistral-7B-Instruct-v0.3; BGE hybrid retrieval; identical retrieved chunk IDs \\
 Decoding & greedy; 96 new tokens for SQuAD/HotpotQA and 512 for TechQA; complete chat at most 1,536 native-model tokens \\
 Answer style & extractive for SQuAD/HotpotQA; concise complete answer for TechQA \\

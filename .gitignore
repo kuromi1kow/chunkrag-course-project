@@ -15,3 +15,9 @@ reports/*.bbl
 reports/*.blg
 reports/*.log
 reports/*.out
+paper.blg
+paper.log
+
+# Local reranking run retains benchmark passages; commit only sanitized summaries.
+outputs/ipmc_firm_rerank_bge/
+outputs/ipmc_firm_rerank_analysis.json

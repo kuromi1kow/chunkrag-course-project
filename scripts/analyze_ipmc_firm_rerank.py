@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 from collections import defaultdict
 from pathlib import Path
 from statistics import mean, stdev
@@ -186,6 +187,11 @@ def score(value: float) -> str:
     return f"{100.0 * value:.1f}"
 
 
+def delta_score(value: float) -> float:
+    percentage_points = 100.0 * value
+    return 0.0 if abs(percentage_points) < 0.05 else percentage_points
+
+
 def render_tex(report: dict[str, Any]) -> str:
     rows = []
     for cell in report["cells"]:
@@ -197,10 +203,10 @@ def render_tex(report: dict[str, Any]) -> str:
                 cell["chunker"].replace("_", r"\_"),
                 score(allhit["hybrid_mean"]),
                 score(allhit["rerank_mean"]),
-                100.0 * allhit["paired_delta_mean"],
+                delta_score(allhit["paired_delta_mean"]),
                 score(ansvis["hybrid_mean"]),
                 score(ansvis["rerank_mean"]),
-                100.0 * ansvis["paired_delta_mean"],
+                delta_score(ansvis["paired_delta_mean"]),
                 cell["latency"]["ratio"],
             )
         )
@@ -233,6 +239,23 @@ def render_tex(report: dict[str, Any]) -> str:
     )
 
 
+def archive_summary_artifacts(run_root: Path, archive_dir: Path) -> None:
+    archive_dir.mkdir(parents=True, exist_ok=True)
+    for name in ("experiment_config.json", "all_results.json", "aggregate_results.json"):
+        source = run_root / name
+        if not source.is_file():
+            raise FileNotFoundError(f"Required summary artifact is missing: {source}")
+        shutil.copy2(source, archive_dir / name)
+
+    manifest = dict(read_json(run_root / "run_manifest.json"))
+    manifest.pop("git_commit", None)
+    manifest.pop("git_worktree_dirty_at_run", None)
+    (archive_dir / "run_manifest.json").write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -242,7 +265,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--json-output",
-        default="outputs/ipmc_firm_rerank_analysis.json",
+        default="artifacts/ipmc_firm_rerank_analysis.json",
         type=Path,
     )
     parser.add_argument(
@@ -250,9 +273,15 @@ def main() -> None:
         default="generated/table_ipmc_firm_rerank.tex",
         type=Path,
     )
+    parser.add_argument(
+        "--archive-dir",
+        default="artifacts/run_summaries/ipmc_firm_rerank_bge",
+        type=Path,
+    )
     args = parser.parse_args()
 
     report = analyze(args.run_root)
+    archive_summary_artifacts(args.run_root, args.archive_dir)
     args.json_output.parent.mkdir(parents=True, exist_ok=True)
     args.tex_output.parent.mkdir(parents=True, exist_ok=True)
     args.json_output.write_text(
@@ -260,6 +289,7 @@ def main() -> None:
         encoding="utf-8",
     )
     args.tex_output.write_text(render_tex(report), encoding="utf-8")
+    print(f"Archived sanitized summaries to {args.archive_dir}")
     print(f"Wrote {args.json_output}")
     print(f"Wrote {args.tex_output}")
 

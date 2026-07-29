@@ -24,6 +24,32 @@ def write_json(path: Path, payload) -> None:
 
 
 class FirmRerankAnalysisTests(unittest.TestCase):
+    def test_archive_excludes_identity_fields_and_predictions(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "run"
+            archive = Path(tmpdir) / "archive"
+            write_json(root / "experiment_config.json", {"seeds": [13, 21, 34]})
+            write_json(root / "all_results.json", [{"dataset": "squad_v2"}])
+            write_json(root / "aggregate_results.json", [{"dataset": "squad_v2"}])
+            write_json(
+                root / "run_manifest.json",
+                {
+                    "status": "complete",
+                    "git_commit": "deadbeef",
+                    "git_worktree_dirty_at_run": False,
+                    "source_tree_sha256": "a" * 64,
+                },
+            )
+            write_json(root / "seed_13" / "raw_predictions.json", [{"text": "passage"}])
+
+            MODULE.archive_summary_artifacts(root, archive)
+
+            manifest = json.loads((archive / "run_manifest.json").read_text())
+            self.assertNotIn("git_commit", manifest)
+            self.assertNotIn("git_worktree_dirty_at_run", manifest)
+            self.assertEqual(manifest["status"], "complete")
+            self.assertFalse(any(archive.rglob("*predictions.json")))
+
     def test_analyze_requires_and_compares_the_complete_paired_matrix(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)

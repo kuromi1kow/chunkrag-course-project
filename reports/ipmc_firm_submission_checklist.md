@@ -26,14 +26,15 @@ screen.
 - [x] Lexical baseline: BM25.
 - [x] Hybrid baseline: weighted reciprocal-rank fusion of dense and BM25 ranks.
 - [x] Cross-encoder reranker implementation with a pinned model revision.
-- [ ] Run the 72-cell paired BGE hybrid versus hybrid-rerank Colab experiment.
-- [ ] Copy the completed reranking artifacts from Drive into the repository.
-- [ ] Regenerate the retrieval table with hybrid versus hybrid-rerank quality and latency.
-- [ ] Report AllHit@4, DocCov@4, AnsVis@4, mean retrieval latency, and indexed chunk count.
-- [ ] Add paired per-question hybrid-versus-rerank analysis on each dataset.
-- [ ] Add reranking failure cases: document hit without answer visibility, incomplete
+- [x] Run the 72-cell paired BGE hybrid versus hybrid-rerank Colab experiment.
+- [x] Copy the completed reranking artifacts from Drive into the repository.
+- [x] Regenerate the retrieval table with hybrid versus hybrid-rerank quality and latency.
+- [x] Report AllHit@4, AnsVis@4, and the mean retrieval-latency ratio; DocCov@4 and
+  indexed chunk counts remain in the complete retrieval appendix/artifacts.
+- [x] Add paired per-question hybrid-versus-rerank analysis on each dataset.
+- [x] Add reranking failure cases: document hit without answer visibility, incomplete
   multi-hop support, and answer-bearing evidence dropped by reranking.
-- [ ] Keep claims conditional: do not call an observed winner statistically superior
+- [x] Keep claims conditional: do not call an observed winner statistically superior
   unless the planned paired test supports it.
 
 ## Manuscript positioning
@@ -42,26 +43,29 @@ screen.
   and Evidence Exposure in RAG*.
 - [x] Abstract reframed around multi-stage ranking, integrity, evidence exposure,
   quality, and efficiency.
-- [ ] Replace the ACL front matter with Elsevier's CAS single-column format.
-- [ ] Keep the review manuscript anonymized.
+- [x] Replace the ACL front matter with Elsevier's CAS single-column format.
+- [x] Keep the review manuscript anonymized.
 - [ ] Prepare a separate title page with author names, affiliations, acknowledgements,
   declarations of interest, corresponding-author postal address, email, and phone.
-- [ ] Keep the abstract at no more than 250 words.
+- [x] Keep the abstract at no more than 250 words.
 - [x] Provide 1--7 English keywords.
 - [ ] Add a glossary for field-specific terms if required by the final form.
 - [ ] Add CRediT author contributions.
 - [ ] Add funding and competing-interest declarations.
-- [ ] Add the required generative-AI-use declaration before the references.
+- [x] Add the required generative-AI-use declaration before the references.
 - [ ] Remove or anonymize repository URLs and identity-bearing artifact paths for review.
 
 ## Evidence and reproducibility
 
-- [ ] Verify every number in the abstract against generated artifacts.
-- [ ] Verify every cited work against DOI, ACL Anthology, arXiv, or the official model
-  and dataset page.
-- [ ] Ensure all model and dataset revisions are immutable and reported.
-- [ ] Preserve run manifests, exact configs, package versions, hardware, seeds, raw
+- [x] Verify every number in the abstract against generated artifacts.
+- [x] Verify the new BM25, RRF, and cross-encoder citations against DOI or arXiv;
+  complete one final citation audit for the pre-existing bibliography.
+- [x] Ensure all reranking model and dataset revisions are immutable and reported in
+  the retained config and run manifest.
+- [x] Preserve run manifests, exact configs, package versions, hardware, seeds, raw
   predictions, and latency traces.
+- [ ] Verify every remaining cited work against DOI, ACL Anthology, arXiv, or the official model
+  and dataset page.
 - [ ] Build the anonymous supplementary ZIP and run its integrity/anonymity audit.
 - [ ] Confirm the public repository has an explicit software license before promising
   reuse rights.
@@ -79,12 +83,16 @@ screen.
 - [ ] Final spell, grammar, citation, anonymity, and PDF rendering checks.
 - [ ] All authors approve the submitted version and author order.
 
-## Immediate run
+## Completed reranking run
 
-Open `notebooks/colab_ipmc_firm_rerank.ipynb` in a GPU Colab runtime and run all
-cells. The notebook writes to:
+The T4 Colab run completed in 22 minutes on commit `d2bbd3d` and wrote:
 
 `MyDrive/chunkrag_outputs/ipmc_firm_rerank_bge`
 
-It fails closed if that directory is already non-empty and validates that the completed
-run contains exactly 72 paired summary cells.
+The retained manifest reports `status=complete`, CUDA, a clean source tree, and exactly
+72 paired summary cells. Local analysis is regenerated with:
+
+```bash
+make firm-rerank-analysis
+make paper
+```
