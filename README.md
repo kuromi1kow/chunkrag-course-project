@@ -1,9 +1,32 @@
 # Anonymous paper and reproducibility bundle
 
-This directory contains the anonymous ACL paper, build inputs, reviewer-response
+This directory contains the anonymous research paper, build inputs, reviewer-response
 matrix, summary-level run artifacts, audits, exact experiment configurations,
 and the code/tests needed to reproduce the reported pipeline. Run
 `tectonic paper.tex` in this directory to rebuild the paper.
+
+## IP&MC 2026 FIRM extension
+
+The active venue target is the FIRM track at IP&MC 2026. The anonymous manuscript now
+uses Elsevier's CAS single-column format and is titled *Ranking Before Generation:
+Auditing Chunking, Retrieval Fusion, and Evidence Exposure in RAG*.
+
+Run the missing paired hybrid-versus-reranking experiment in Colab:
+
+[Open the FIRM reranking notebook in Colab](https://colab.research.google.com/github/kuromi1kow/chunkrag-course-project/blob/main/notebooks/colab_ipmc_firm_rerank.ipynb)
+
+The notebook evaluates BGE hybrid retrieval with and without a revision-pinned
+cross-encoder over 3 datasets, 3 seeds, and 4 chunkers. It writes 72 paired cells to
+`MyDrive/chunkrag_outputs/ipmc_firm_rerank_bge`. After copying that directory to
+`outputs/ipmc_firm_rerank_bge`, run:
+
+```bash
+make firm-rerank-analysis
+make paper
+```
+
+The venue-specific readiness checklist is in
+`reports/ipmc_firm_submission_checklist.md`.
 
 ## Included and intentionally omitted
 

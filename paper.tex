@@ -1,9 +1,6 @@
-\documentclass[11pt]{article}
+\documentclass[a4paper,fleqn]{cas-sc}
 
-
-  \usepackage[review]{acl}
-
-\usepackage{times}
+\usepackage[authoryear,longnamesfirst]{natbib}
 \usepackage{latexsym}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -17,39 +14,48 @@
 
 \graphicspath{{figures/}}
 
-\title{Chunking in RAG:\\
-A Controlled Audit and Multi-Dataset Robustness Study}
-
-  \author{Anonymous Authors}
-
-\date{}
-\makeatletter
-\setlength{\@fptop}{0pt}
-\setlength{\@dblfptop}{0pt}
-\makeatother
 \begin{document}
-\maketitle
+\let\WriteBookmarks\relax
+\def\floatpagepagefraction{1}
+\def\textpagefraction{.001}
+
+\shorttitle{Ranking Before Generation}
+\shortauthors{Anonymous Author(s)}
+
+\title[mode=title]{Ranking Before Generation: Auditing Chunking, Retrieval Fusion,
+and Evidence Exposure in RAG}
+
+\author[1]{Anonymous Author(s)}
+\affiliation[1]{organization={Institution withheld for double-anonymous review}}
 
 \begin{abstract}
-We revisit document chunking in retrieval-augmented question answering through two
-complementary studies. First, we audit an archived Mistral-7B pilot on 60 SQuAD~2.0
-and 30 HotpotQA questions. Although recursive-256 has the highest observed F1, no
-post-hoc contrast is significant after Holm correction. Replaying the exact prompts
-shows that the 1,024-token generator limit truncates every SQuAD fixed-512 prompt and
-that MiniLM truncates 93.9\% of the corresponding corpus chunks during embedding. A
-corrected failure audit also attributes 59.1\% of recursive HotpotQA exact-match
-failures to incomplete retrieval rather than repairable generation.
-Second, a prospective robustness extension varies three data seeds, three retriever
-families, two embedding models, and four encoder-compatible chunkers over larger
-SQuAD and HotpotQA samples and a new technical-support domain, TechQA. The best
-observed chunker changes across datasets, embedders, and retrievers; for example,
-switching from MiniLM to BGE raises the best dense HotpotQA AllHit@4 from
-$50.7\pm4.8$ to $70.2\pm8.9$. Controlled local Qwen2.5-1.5B and Mistral-7B studies
-also select dataset-specific observed winners. None of 18 recursive-versus-comparator
-contrasts survives a single Holm correction across both generators and all three
-datasets. These results reject a universal chunker ranking and show why token budgets
-and system components must be reported together.
+Retrieval-augmented generation is a multi-stage ranking system: documents are
+segmented, candidates are retrieved and fused, evidence is packed into a finite
+context, and a language model generates an answer. We study how chunk boundaries
+interact with these stages rather than treating chunking as an isolated preprocessing
+choice. First, we audit an archived Mistral-7B pilot on SQuAD~2.0 and HotpotQA.
+Replaying the exact token budgets shows that the generator truncates every SQuAD
+fixed-512 prompt and MiniLM truncates 93.9\% of the corresponding corpus chunks during
+embedding. A corrected failure audit attributes 59.1\% of recursive HotpotQA
+exact-match failures to incomplete retrieval rather than repairable generation.
+Second, a prospective study crosses three data seeds, dense, BM25, and hybrid retrieval,
+two embedding models, and four encoder-compatible chunkers over SQuAD, HotpotQA, and
+TechQA. The best observed chunker changes across datasets, embedders, and retrievers;
+switching from MiniLM to BGE, for example, raises the best dense HotpotQA AllHit@4 from
+$50.7\pm4.8$ to $70.2\pm8.9$. Controlled Qwen and Mistral generation likewise yields
+dataset-specific rankings, and none of 18 planned chunker contrasts survives Holm
+correction. The results show that document hits, answer-bearing evidence, answer
+quality, and efficiency are distinct objectives. Reliable RAG evaluation must audit
+the complete retrieval-ranking-generation path and the evidence actually exposed to
+the generator.
 \end{abstract}
+
+\begin{keywords}
+retrieval-augmented generation \sep information retrieval \sep ranking \sep
+document chunking \sep reranking \sep robustness \sep evaluation
+\end{keywords}
+
+\maketitle
 
 \section{Introduction}
 
@@ -78,18 +84,19 @@ Together, the studies ask:
         local generators?
 \end{enumerate}
 
-This paper makes four contributions. First, it provides a controlled archival pilot
-with per-question predictions and separate answer and evidence-retrieval metrics.
+This paper makes four contributions. First, it frames chunking as a control on the
+retrieval unit inside a multi-stage ranking pipeline and provides a controlled archival
+pilot with per-question predictions and separate answer and evidence-retrieval metrics.
 Second, it adds paired bootstrap intervals, randomization tests, and an overlap analysis
 showing that identical aggregate recall can conceal different missed questions. Third,
 it reconstructs the exact retrieved contexts and replays both tokenizer budgets. This
 audit changes the interpretation of the original experiment: some differences are
 inseparable from embedding and prompt truncation, and an earlier claim that most
 failures were ``fixable'' is not supported. Fourth, it executes a larger robustness
-extension across three datasets, three seeds, three retriever families, two embedding
-models, and controlled local generation with Qwen2.5-1.5B and Mistral-7B. The extension
-directly tests---and does not support---a dataset- or architecture-independent chunker
-ranking.
+extension across three datasets, three seeds, lexical, dense, and fused retrieval, two
+embedding models, and controlled local generation with Qwen2.5-1.5B and Mistral-7B.
+The extension directly tests---and does not support---a dataset- or
+architecture-independent chunker ranking.
 
 Code, configurations, per-question predictions, and audit outputs are included in the
 anonymous supplementary material.
@@ -577,6 +584,7 @@ representational biases not assessed here. TechQA includes operational and secur
 support material whose historical instructions may be obsolete. None of the evaluated
 systems should be treated as suitable for high-stakes or production technical support.
 
+\bibliographystyle{cas-model2-names}
 \bibliography{references}
 
 \appendix

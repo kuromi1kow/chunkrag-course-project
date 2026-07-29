@@ -192,12 +192,17 @@ class RerankRetriever:
         self,
         base_retriever: Retriever,
         model_name: str,
+        model_revision: str | None,
         device: str,
         candidate_pool_size: int = 20,
         batch_size: int = 16,
     ) -> None:
         self.base_retriever = base_retriever
-        self.cross_encoder = CrossEncoder(model_name, device=device)
+        self.cross_encoder = CrossEncoder(
+            model_name,
+            revision=model_revision,
+            device=device,
+        )
         self.candidate_pool_size = candidate_pool_size
         self.batch_size = batch_size
 
@@ -319,6 +324,7 @@ def _build_rerank_retriever(spec: dict[str, Any], factory: RetrieverFactory) -> 
     return RerankRetriever(
         base_retriever=base_retriever,
         model_name=spec.get("model_name", "cross-encoder/ms-marco-MiniLM-L-6-v2"),
+        model_revision=spec.get("model_revision"),
         device=factory.context.device,
         candidate_pool_size=candidate_pool_size,
         batch_size=spec.get("batch_size", 16),

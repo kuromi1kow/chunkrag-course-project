@@ -6,10 +6,11 @@ PYTHON ?= python3.11
 REMOTE_ROOT ?= /projectnb/cs505am/projects/kuromiqo_chunkrag_project
 RESULTS_PATH ?= $(ROOT_DIR)/outputs/rigorous_smoke/aggregate_results.json
 OUTPUT_DIR ?= $(ROOT_DIR)/outputs/rigorous_smoke
+FIRM_RERANK_OUTPUT ?= $(ROOT_DIR)/outputs/ipmc_firm_rerank_bge
 OPENAI_TUNNEL_URL ?= http://127.0.0.1:8000/v1
 OPENAI_TUNNEL_KEY ?= chunkrag-demo-key
 
-.PHONY: help setup setup-demo setup-openwebui dashboard openwebui openwebui-scc quickstart rigorous-local plot-rigorous chonkie reports reports-midway reports-final paper-figures test main-study-verify main-study-test main-study-plan main-study-analysis scc-vllm scc-rigorous scc-tunnel
+.PHONY: help setup setup-demo setup-openwebui dashboard openwebui openwebui-scc quickstart rigorous-local plot-rigorous chonkie reports reports-midway reports-final paper paper-figures firm-rerank firm-rerank-analysis test main-study-verify main-study-test main-study-plan main-study-analysis scc-vllm scc-rigorous scc-tunnel
 
 help:
 	@echo "Available targets:"
@@ -26,7 +27,10 @@ help:
 	@echo "  make reports           - rebuild midway and final PDFs (regenerates figures + tables)"
 	@echo "  make reports-midway    - rebuild midway PDF only"
 	@echo "  make reports-final     - rebuild final PDF only"
+	@echo "  make paper             - rebuild the anonymous Elsevier CAS manuscript"
 	@echo "  make paper-figures     - rebuild reports/figures/*.pdf used by the final report"
+	@echo "  make firm-rerank       - run paired BGE hybrid and cross-encoder reranking"
+	@echo "  make firm-rerank-analysis - validate reranking artifacts and build its table"
 	@echo "  make test              - compile code and run unit tests"
 	@echo "  make main-study-verify - verify frozen protocol, config, lock, DAG, and output map"
 	@echo "  make main-study-test   - run synthetic-only main-study validation tests"
@@ -80,10 +84,22 @@ reports-midway:
 reports-final:
 	bash scripts/build_reports.sh final
 
+paper:
+	tectonic paper.tex
+
 paper-figures:
 	if [ -x .venv/bin/python ]; then .venv/bin/python scripts/build_paper_figures.py; \
 	elif [ -x .venv_figs/bin/python ]; then .venv_figs/bin/python scripts/build_paper_figures.py; \
 	else $(PYTHON) scripts/build_paper_figures.py; fi
+
+firm-rerank:
+	source .venv/bin/activate && python scripts/run_experiments.py \
+		--config configs/ipmc_firm_rerank_bge.json \
+		--output-dir "$(FIRM_RERANK_OUTPUT)"
+
+firm-rerank-analysis:
+	$(PYTHON) scripts/analyze_ipmc_firm_rerank.py \
+		--run-root "$(FIRM_RERANK_OUTPUT)"
 
 test:
 	$(PYTHON) -m compileall src scripts tests

@@ -3,10 +3,16 @@ from __future__ import annotations
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import numpy as np
 
-from chunkrag.retrieval import DenseRetriever, mean_reciprocal_rank_fusion
+from chunkrag.retrieval import (
+    DenseRetriever,
+    RetrieverFactory,
+    RetrieverFactoryContext,
+    mean_reciprocal_rank_fusion,
+)
 from chunkrag.schemas import (
     AggregateMetricSummary,
     AggregateSummaryRow,
@@ -98,6 +104,33 @@ class RetrievalAndSchemaTests(unittest.TestCase):
 
         retriever.retrieve("question", 1)
         self.assertEqual(encoder.last_texts, ["Represent: question"])
+
+    @patch("chunkrag.retrieval.CrossEncoder")
+    def test_reranker_pins_cross_encoder_revision(self, cross_encoder_cls) -> None:
+        chunks = [Chunk("a", "doc-a", "A", "unit", "passage text", 2)]
+        factory = RetrieverFactory(
+            chunks,
+            RetrieverFactoryContext(
+                encoder=FakeEncoder(),
+                encoder_identifier="fake-encoder",
+                device="cpu",
+            ),
+        )
+
+        factory.create(
+            {
+                "type": "rerank",
+                "model_name": "cross-encoder/example",
+                "model_revision": "deadbeef",
+                "base_retriever": {"type": "dense"},
+            }
+        )
+
+        cross_encoder_cls.assert_called_once_with(
+            "cross-encoder/example",
+            revision="deadbeef",
+            device="cpu",
+        )
 
     def test_summary_rows_flatten_to_report_compatible_dicts(self) -> None:
         summary = SummaryRow(
