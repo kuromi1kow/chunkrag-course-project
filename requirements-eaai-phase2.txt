@@ -1,0 +1,18 @@
+# Exact direct dependencies for the prospective EAAI Phase 2 extension.
+# Colab may supply a compatible CUDA-enabled torch build; the notebook does
+# not replace that build unless explicitly requested by the operator.
+accelerate==0.34.2
+datasets==2.21.0
+faiss-cpu==1.14.3
+huggingface-hub==0.36.2
+joblib==1.4.2
+langchain-text-splitters==0.3.11
+numpy==1.26.4
+pandas==2.3.3
+rank-bm25==0.2.2
+scikit-learn==1.5.2
+sentence-transformers==3.4.1
+sentencepiece==0.2.1
+spacy==3.8.14
+transformers==4.57.6
+tqdm==4.68.4
