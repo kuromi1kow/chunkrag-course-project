@@ -18,6 +18,12 @@ Open `notebooks/eaai_phase2_colab.ipynb` in a GPU Colab runtime and run cells in
 order. The notebook checks out the exact implementation commit, verifies the
 private frozen-baseline archive, and checkpoints every new row to Google Drive.
 
+The notebook explicitly sets `USE_TF=0` and `USE_FLAX=0`. Phase 2 uses PyTorch
+only; these environment flags prevent current Colab Python 3.13 images from
+importing their preinstalled TensorFlow/JAX stack, which is incompatible with
+the frozen NumPy dependency. Model revisions and scientific settings are
+unchanged.
+
 The following private files must remain at
 `MyDrive/chunkrag_outputs/eaai_phase2/`:
 

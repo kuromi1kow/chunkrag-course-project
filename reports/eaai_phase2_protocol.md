@@ -236,3 +236,15 @@ If the adaptive method does not improve the prespecified held-out engineering tr
 ## Dated deviation log
 
 No deviations recorded as of 2026-08-09. Future entries must be appended below this line and must not edit the protocol above.
+
+### 2026-08-27: Colab backend-import compatibility
+
+The current Google Colab Python 3.13 image failed before retrieval because
+Transformers imported an unused preinstalled TensorFlow/JAX backend whose JAX
+version expects NumPy 2, while this protocol freezes NumPy 1.26.4. Phase 2 uses
+PyTorch exclusively. The execution environment therefore sets `USE_TF=0` and
+`USE_FLAX=0` before any Transformers import. A direct import check for
+`PreTrainedModel`, `SentenceTransformer`, and `CrossEncoder` passed afterward.
+No package pin, model or dataset revision, partition, seed, retrieval method,
+generation setting, endpoint, or analysis rule changed. The first failed run
+terminated during imports and produced no new retrieval or generation row.
