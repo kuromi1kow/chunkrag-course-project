@@ -1,0 +1,18 @@
+\begin{table}[htbp]\centering\small
+\caption{Study 2 development grid: TechQA validation NDCG@4 for every run, scored on both grade schemes (post hoc, one training seed, 200 questions). Model selection used each method's own grades (B column for B runs, L column for L runs); the selected configuration is $10^{-4}$ with 227 updates.}\label{tab:validationgrid}
+\begin{tabular}{lrrrr}\toprule
+Method & LR & Updates & B grades & L grades\\\midrule
+H (hybrid order) & -- & -- & 0.780 & 0.767\\
+B & $5\times10^{-5}$ & 227 & 0.809 & 0.799\\
+B & $5\times10^{-5}$ & 454 & 0.822 & 0.810\\
+B & $5\times10^{-5}$ & 681 & 0.817 & 0.805\\
+B & $10^{-4}$ & 227 & 0.838 & 0.824\\
+B & $10^{-4}$ & 454 & 0.831 & 0.819\\
+B & $10^{-4}$ & 681 & 0.835 & 0.821\\
+L & $5\times10^{-5}$ & 227 & 0.826 & 0.817\\
+L & $5\times10^{-5}$ & 454 & 0.804 & 0.799\\
+L & $5\times10^{-5}$ & 681 & 0.797 & 0.790\\
+L & $10^{-4}$ & 227 & 0.817 & 0.810\\
+L & $10^{-4}$ & 454 & 0.790 & 0.786\\
+L & $10^{-4}$ & 681 & 0.800 & 0.798\\
+\bottomrule\end{tabular}\end{table}

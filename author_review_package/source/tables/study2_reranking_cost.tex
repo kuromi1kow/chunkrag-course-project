@@ -1,0 +1,12 @@
+\begin{table}[htbp]\centering\small
+\caption{Batched reranker scoring (batch size 32). Pairs and scoring seconds cover all batches; pairs/s excludes the first 32-pair batch and uses 21,808 pairs per instance. Loading is separate. These are synchronized forward-pass measurements, not request latency.}\label{tab:rerankcost}
+\begin{tabular}{lrrrrr}\toprule
+Instance & Pairs & Base load (s) & Adapter load (s) & Scoring (s) & Pairs/s\\\midrule
+U & 21840 & 1.05 & 0.00 & 133.0 & 164.2\\
+B, seed 20260904 & 21840 & 1.02 & 0.44 & 238.2 & 91.7\\
+B, seed 20260905 & 21840 & 1.03 & 0.47 & 238.3 & 91.7\\
+B, seed 20260906 & 21840 & 1.07 & 0.44 & 238.3 & 91.7\\
+L, seed 20260904 & 21840 & 1.03 & 0.44 & 238.3 & 91.7\\
+L, seed 20260905 & 21840 & 1.04 & 0.45 & 238.3 & 91.6\\
+L, seed 20260906 & 21840 & 1.03 & 0.46 & 238.3 & 91.6\\
+\bottomrule\end{tabular}\end{table}

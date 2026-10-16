@@ -1,4 +1,18 @@
-# Anonymous paper and reproducibility bundle
+# ChunkRAG research project
+
+## October 2026 manuscript revision
+
+The revised paper, **Does literal-match reranker supervision improve support-answer generation? A controlled study with external transfer**, by Assylkhan Geniyat, Zukhriddin Fakhriddinov and Atharv Gulati, is available in [author_review_package/](author_review_package/), dated 16 October 2026.
+
+- [Main manuscript](author_review_package/manuscript.pdf)
+- [Full supplement](author_review_package/supplement.pdf)
+- [Combined preprint with appendices](author_review_package/arxiv/main.pdf)
+- [LaTeX source archive](author_review_package/arxiv/arxiv_source.zip)
+- [Editable sources and build instructions](author_review_package/README.md)
+
+The directory includes the supplied final documents and source checksums. The following sections describe the earlier chunking and retrieval study, whose paper is retained as `paper.pdf` and `paper.tex`. `MANIFEST.sha256` belongs to that earlier bundle; the October revision has its own [final-file checksums](author_review_package/SHA256SUMS_FINAL.txt).
+
+## Earlier anonymous paper and reproducibility bundle
 
 This directory contains the anonymous research paper, build inputs, reviewer-response
 matrix, summary-level run artifacts, audits, exact experiment configurations,

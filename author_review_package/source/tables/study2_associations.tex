@@ -1,0 +1,14 @@
+\begin{table}[htbp]\centering\small
+\caption{Document-level associations with the $L-B$ response-F1 difference (exploratory). Predictors are $L-B$ differences, except top-four overlap, which is the raw B/L overlap.}\label{tab:associations}
+\begin{tabular}{lrrr}\toprule
+Predictor & N & Pearson $r$ & Spearman $\rho$\\\midrule
+NDCG@4 & 273 & 0.22 & 0.18\\
+Grade-2 recall & 250 & 0.26 & 0.23\\
+Selected grade-2 count & 273 & 0.25 & 0.22\\
+Selected annotated span & 273 & 0.29 & 0.23\\
+Packed annotated span & 273 & 0.29 & 0.23\\
+Packed full target & 273 & 0.09 & 0.07\\
+Generated tokens & 273 & $-$0.35 & $-$0.47\\
+Length capped & 273 & $-$0.05 & $-$0.07\\
+Top-four overlap & 273 & $-$0.06 & $-$0.07\\
+\bottomrule\end{tabular}\end{table}

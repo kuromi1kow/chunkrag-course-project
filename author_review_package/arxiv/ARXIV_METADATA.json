@@ -1,0 +1,16 @@
+{
+  "title": "Does literal-match reranker supervision improve support-answer generation? A controlled study with external transfer",
+  "authors": "Assylkhan Geniyat, Zukhriddin Fakhriddinov, Atharv Gulati",
+  "abstract": "Rerankers in retrieval-augmented generation (RAG) systems for technical support are often adapted with weak labels derived from question-answer data. We evaluate whether one answer-aware labeling rule -- ranking passages that literally contain the reference answer above other passages from the gold document -- improves the answers produced by a fixed generator. We adapt Qwen3-Reranker-0.6B with LoRA on TechQA and evaluate the complete pipeline end to end with a fixed Qwen3.5-9B generator over four chunking strategies, under protocols frozen before comparative outcomes existed. On a 208-question TechQA reserve set held out from model selection (Study 1), the literal-match reranker did not significantly outperform hybrid retrieval (+0.68 token-F1 points; 95% CI -0.33 to +1.72; p = 0.20). In a prespecified transfer study on 273 Doc2Dial dialogue turns with three training seeds (Study 2), it was slightly worse than a reranker adapted with standard document-level labels under the same update budget (-0.22 points; 95% CI -0.66 to +0.19; p = 0.31) and had lower evidence NDCG@4 (0.612 vs 0.689). Neither study met its prespecified success criterion, and for these training runs the transfer interval excludes the targeted +1-point gain. Large differences in retrieval metrics translated into small differences in answer F1. The results provide no evidence that this answer-containment recipe improves generated answers in the studied setting, and they indicate that evaluations of reranker supervision should measure the final answer directly. Code and aggregate results are publicly available.",
+  "abstract_characters": 1603,
+  "comments": "36 pages including appendices; 4 figures. Code and aggregate results: https://github.com/zukhriddingit/chunkrag-reranking-study",
+  "primary_category": "cs.CL",
+  "cross_list": [
+    "cs.IR"
+  ],
+  "license": "arXiv perpetual, non-exclusive distribution license",
+  "journal_ref": "",
+  "doi": "",
+  "source_file": "arxiv/arxiv_source.zip",
+  "status": "Prepared locally; not uploaded or submitted in this revision task; server compilation not verified."
+}

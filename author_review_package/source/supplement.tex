@@ -1,0 +1,17 @@
+\documentclass[11pt,a4paper]{article}
+\input{preamble.tex}
+\newcommand{\supp}[2]{Section~\ref{#2}}
+\renewcommand{\thesection}{S\arabic{section}}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\title{Supplement to: Does literal-match reranker supervision improve support-answer generation?}
+\author{Assylkhan Geniyat \and Zukhriddin Fakhriddinov \and Atharv Gulati}\date{Boston University, Boston, Massachusetts, USA\\Preprint---not peer reviewed. October 2026}
+\begin{document}\maketitle
+\noindent This supplement gives implementation details and complete results for the analyses in the main paper. F1 and exact match are reported in points ($\times100$, two decimals); NDCG and proportions on the 0--1 scale (three decimals). The released CSV files keep full precision. Method labels follow the main paper: H (hybrid retrieval), U (unadapted reranker), B (document-level supervision) and L (literal-match supervision, condition E in the released files).
+
+\setcounter{tocdepth}{1}\tableofcontents
+\clearpage
+\input{supplement_body.tex}
+
+\input{supplement_references.tex}
+\end{document}

@@ -1,0 +1,9 @@
+\begin{table}[htbp]\centering\small
+\caption{Study 2 generation records. Truncated refers to the context; capped to the 512-token output limit. Legacy 2 counts records with the invalid historical prompt-length value (Section~\ref{sec:s5}).}\label{tab:generation}
+\begin{tabular}{lrrrrr}\toprule
+Method & Records & Mean tokens & Truncated & Capped & Legacy 2\\\midrule
+H & 1092 & 88.5 & 1 & 0 & 745\\
+U & 1092 & 91.3 & 1 & 0 & 745\\
+B & 3276 & 89.8 & 2 & 1 & 2234\\
+L & 3276 & 90.0 & 1 & 1 & 2234\\
+\bottomrule\end{tabular}\end{table}

@@ -1,0 +1,22 @@
+\begin{tikzpicture}[
+  box/.style={draw=black!60, rounded corners=2pt, align=center, font=\small, inner sep=5pt,
+              execute at begin node={\hyphenpenalty=10000}},
+  study/.style={box, fill=black!4},
+  arr/.style={-{Stealth[length=2.2mm]}, black!70, thick}]
+\node[box, text width=3.5cm] (data) {\textbf{TechQA development}\\400 questions\\(200 train, 200 validation)};
+\node[box, text width=8.2cm, right=0.8cm of data] (adapt) {\textbf{LoRA adaptation of Qwen3-Reranker-0.6B}\\
+  B: document-level labels; L: literal-match labels\\
+  Study~1: L, one seed; Study~2: B and L, three seeds each};
+\node[study, text width=5.6cm, below=0.9cm of data.south west, anchor=north west] (s1)
+  {\textbf{Study 1 (in-domain)}\\TechQA reserve, 208 questions\\Compare L with H};
+\node[study, text width=5.6cm, right=0.8cm of s1] (s2)
+  {\textbf{Study 2 (transfer)}\\Doc2Dial, 273 dialogue turns\\Compare H, U, B and L (primary: L vs B)};
+\node[box, text width=12.6cm, below=0.8cm of s1.south west, anchor=north west] (pipe)
+  {Each method: hybrid retrieval (BM25 + dense, 20 candidates, four chunkers) $\rightarrow$ rerank $\rightarrow$ top four passages\\
+   $\rightarrow$ fixed Qwen3.5-9B generator $\rightarrow$ answer token F1 against the reference};
+\draw[arr] (data) -- (adapt);
+\draw[arr] (adapt.south) -- ++(0,-0.35) -| (s1.north);
+\draw[arr] (adapt.south) -- ++(0,-0.35) -| (s2.north);
+\draw[arr] (s1.south) -- (s1.south |- pipe.north);
+\draw[arr] (s2.south) -- (s2.south |- pipe.north);
+\end{tikzpicture}
