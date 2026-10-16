@@ -21,3 +21,14 @@ paper.log
 # Local reranking run retains benchmark passages; commit only sanitized summaries.
 outputs/ipmc_firm_rerank_bge/
 outputs/ipmc_firm_rerank_analysis.json
+
+# Root manuscript and supplement build intermediates.
+paper.aux
+paper.out
+paper.synctex.gz
+supplement.aux
+supplement.bbl
+supplement.blg
+supplement.log
+supplement.out
+supplement.synctex.gz

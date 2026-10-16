@@ -1,93 +1,49 @@
-# ChunkRAG research project
+# ChunkRAG: literal-match reranker supervision
 
-## October 2026 manuscript revision
+**Does literal-match reranker supervision improve support-answer generation? A controlled study with external transfer**
 
-The revised paper, **Does literal-match reranker supervision improve support-answer generation? A controlled study with external transfer**, by Assylkhan Geniyat, Zukhriddin Fakhriddinov and Atharv Gulati, is available in [author_review_package/](author_review_package/), dated 16 October 2026.
+Assylkhan Geniyat, Zukhriddin Fakhriddinov and Atharv Gulati. Revision dated 16 October 2026. Preprint; not peer reviewed.
 
-- [Main manuscript](author_review_package/manuscript.pdf)
-- [Full supplement](author_review_package/supplement.pdf)
-- [Combined preprint with appendices](author_review_package/arxiv/main.pdf)
-- [LaTeX source archive](author_review_package/arxiv/arxiv_source.zip)
-- [Editable sources and build instructions](author_review_package/README.md)
+## Paper and sources
 
-The directory includes the supplied final documents and source checksums. The following sections describe the earlier chunking and retrieval study, whose paper is retained as `paper.pdf` and `paper.tex`. `MANIFEST.sha256` belongs to that earlier bundle; the October revision has its own [final-file checksums](author_review_package/SHA256SUMS_FINAL.txt).
+| Material | File |
+| --- | --- |
+| Current main manuscript | [paper.pdf](paper.pdf) |
+| Main LaTeX entry point | [paper.tex](paper.tex) |
+| Full supplement | [supplement.pdf](supplement.pdf) |
+| Supplement LaTeX entry point | [supplement.tex](supplement.tex) |
+| Combined preprint with appendices | [arxiv/main.pdf](author_review_package/arxiv/main.pdf) |
+| Preprint LaTeX source archive | [arxiv_source.zip](author_review_package/arxiv/arxiv_source.zip) |
+| Editable bodies, preamble, tables and figures | [author_review_package/source/](author_review_package/source/) |
+| Anonymous document candidates and build details | [author_review_package/README.md](author_review_package/README.md) |
 
-## Earlier anonymous paper and reproducibility bundle
+The root manuscript and supplement PDFs are exact copies of the final supplied revision. The root LaTeX entry points load the final sources in `author_review_package/source/`. The bibliography is also available as [references.bib](references.bib).
 
-This directory contains the anonymous research paper, build inputs, reviewer-response
-matrix, summary-level run artifacts, audits, exact experiment configurations,
-and the code/tests needed to reproduce the reported pipeline. Run
-`tectonic paper.tex` in this directory to rebuild the paper.
+## Build and integrity checks
 
-## IP&MC 2026 FIRM extension
-
-The active venue target is the FIRM track at IP&MC 2026. The anonymous manuscript now
-uses Elsevier's CAS single-column format and is titled *Ranking Before Generation:
-Auditing Chunking, Retrieval Fusion, and Evidence Exposure in RAG*.
-
-Run the missing paired hybrid-versus-reranking experiment in Colab:
-
-[Open the FIRM reranking notebook in Colab](https://colab.research.google.com/github/kuromi1kow/chunkrag-course-project/blob/main/notebooks/colab_ipmc_firm_rerank.ipynb)
-
-The notebook evaluates BGE hybrid retrieval with and without a revision-pinned
-cross-encoder over 3 datasets, 3 seeds, and 4 chunkers. It writes 72 paired cells to
-`MyDrive/chunkrag_outputs/ipmc_firm_rerank_bge`. The completed T4 run used commit
-`d2bbd3d` and took 22 minutes. After copying that directory to
-`outputs/ipmc_firm_rerank_bge`, run:
+With Tectonic and the required LaTeX packages available, run from the repository root:
 
 ```bash
-make firm-rerank-analysis
 make paper
+make supplement
 ```
 
-The analyzer validates all paired prediction files, archives only summary-level
-artifacts, strips identity-bearing Git fields from the retained manifest, and rebuilds
-the manuscript table. In the completed run, reranking improves HotpotQA AllHit@4 by
-5.3--8.9 points across chunkers but reduces TechQA AllHit@4 by 3.5--5.0 points, with a
-1.5--6.0x retrieval-latency cost.
+To build all five document variants inside `author_review_package/`, including the combined preprint and anonymous candidates:
 
-The venue-specific readiness checklist is in
-`reports/ipmc_firm_submission_checklist.md`.
+```bash
+python3 author_review_package/build_documents.py
+```
 
-## Included and intentionally omitted
+To verify the checked-in files:
 
-- `paper.pdf`, `paper.tex`, `references.bib`, ACL styles, `generated/`, and
-  `figures/` are the self-contained paper build.
-- `artifacts/` contains final aggregate/summary results and reviewer-driven audits.
-  Run manifests omit Git commit and worktree fields to preserve anonymity while
-  retaining configuration hashes, source-tree hashes, package versions, and devices.
-- `configs/`, `src/`, `scripts/`, `tests/`, `pyproject.toml`, and the exact pinned
-  requirements support reproduction.
-- Raw `*_predictions.json` files are intentionally excluded because they reproduce
-  retrieved benchmark passages. Model weights, downloaded datasets, caches, smoke
-  runs, cluster deployment files, historical midway reports, and build auxiliaries
-  are also excluded. Audit JSON may retain question text and answer strings needed
-  to substantiate the reported diagnostic analysis.
+```bash
+shasum -a 256 -c MANIFEST.sha256
+```
 
-## Dataset provenance and licenses
+The supplied final documents also retain their original [checksums](author_review_package/SHA256SUMS_FINAL.txt), which can be checked from `author_review_package/`.
 
-No dataset is claimed as an original contribution of this project.
+## Research code and reproducibility
 
-- SQuAD 2.0 (`3ffb306f725f7d2ce8394bc1873b24868140c412`): Stanford Question Answering Dataset;
-  its dataset metadata lists CC BY-SA 4.0.
-  <https://huggingface.co/datasets/rajpurkar/squad_v2>
-- HotpotQA distractor (`1908d6afbbead072334abe2965f91bd2709910ab`): multi-hop Wikipedia QA;
-  its dataset metadata lists CC BY-SA 4.0.
-  <https://huggingface.co/datasets/hotpotqa/hotpot_qa>
-- NVIDIA TechQA-RAG-Eval (`0b5bbc84b7f07d6d09d063130e90b716d8d4a32a`): a RAG-oriented distribution
-  derived from IBM TechQA; its dataset card lists Apache-2.0.
-  <https://huggingface.co/datasets/nvidia/TechQA-RAG-Eval>
+The selected code and aggregate-results companion cited by the current paper is [chunkrag-reranking-study](https://github.com/zukhriddingit/chunkrag-reranking-study). The paper and supplement describe its release scope and remaining replay limitations.
 
-The bundle does not redistribute model weights. Model identifiers and immutable
-revisions are recorded in `configs/`; downstream users must follow each model card's
-license and access terms. The source repository did not declare a project-code license
-at bundle-build time, so inclusion for anonymous review does not itself grant broader
-reuse rights.
-
-## Integrity and anonymity
-
-`MANIFEST.sha256` records every other bundled file. The builder rejects incomplete
-runs, inconsistent source/configuration hashes, non-anonymous TeX, identity strings,
-absolute local paths, high-confidence secret patterns, raw predictions, model weights,
-cache/build metadata, and unsanitized run manifests. ZIP entries use fixed timestamps,
-permissions, ordering, and compression settings for deterministic output.
+This repository also retains the code, configurations, notebooks, aggregate results and reports from the earlier chunking and retrieval study. Their original documentation is preserved in [docs/README_earlier_study.md](docs/README_earlier_study.md); it describes that earlier study and its build and experiment workflows. The earlier root paper remains available in Git history.

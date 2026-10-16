@@ -10,7 +10,7 @@ FIRM_RERANK_OUTPUT ?= $(ROOT_DIR)/outputs/ipmc_firm_rerank_bge
 OPENAI_TUNNEL_URL ?= http://127.0.0.1:8000/v1
 OPENAI_TUNNEL_KEY ?= chunkrag-demo-key
 
-.PHONY: help setup setup-demo setup-openwebui dashboard openwebui openwebui-scc quickstart rigorous-local plot-rigorous chonkie reports reports-midway reports-final paper paper-figures firm-rerank firm-rerank-analysis test main-study-verify main-study-test main-study-plan main-study-analysis scc-vllm scc-rigorous scc-tunnel
+.PHONY: help setup setup-demo setup-openwebui dashboard openwebui openwebui-scc quickstart rigorous-local plot-rigorous chonkie reports reports-midway reports-final paper supplement paper-figures firm-rerank firm-rerank-analysis test main-study-verify main-study-test main-study-plan main-study-analysis scc-vllm scc-rigorous scc-tunnel
 
 help:
 	@echo "Available targets:"
@@ -27,7 +27,8 @@ help:
 	@echo "  make reports           - rebuild midway and final PDFs (regenerates figures + tables)"
 	@echo "  make reports-midway    - rebuild midway PDF only"
 	@echo "  make reports-final     - rebuild final PDF only"
-	@echo "  make paper             - rebuild the anonymous Elsevier CAS manuscript"
+	@echo "  make paper             - rebuild the current literal-match reranker manuscript"
+	@echo "  make supplement        - rebuild the current paper supplement"
 	@echo "  make paper-figures     - rebuild reports/figures/*.pdf used by the final report"
 	@echo "  make firm-rerank       - run paired BGE hybrid and cross-encoder reranking"
 	@echo "  make firm-rerank-analysis - validate reranking artifacts and build its table"
@@ -86,6 +87,9 @@ reports-final:
 
 paper:
 	tectonic paper.tex
+
+supplement:
+	tectonic supplement.tex
 
 paper-figures:
 	if [ -x .venv/bin/python ]; then .venv/bin/python scripts/build_paper_figures.py; \
