@@ -57,7 +57,7 @@ for name in ['manuscript','supplement']:
   t,n=re.subn(r'\\section\*\{Author contributions \(CRediT\)\}.*?(?=\\section\*\{Declaration of generative AI)','',t,flags=re.S); assert n==1
   astart=t.index(r'\paragraph{Data and code availability.}')
   aend=t.index(r'\paragraph{Funding and competing interests.}',astart)
-  t=t[:astart]+r'''\paragraph{Data and code availability.} Identifying companion links are supplied separately to the editor. The selected source and aggregate companion does not provide complete model-experiment replay: exact split/selection records, per-record outputs, six final adapters and some executed recovery code are absent, reflecting the chosen release scope. The pre-execution protocol was released after comparative outcomes and is not a public preregistration. Upstream dataset terms and replay dependencies are described in \supp{S7}{supp:repro}. Human records are excluded.
+  t=t[:astart]+r'''\paragraph{Data and code availability.} Identifying companion links are supplied separately to the editor. The selected source and aggregate companion does not provide complete model-experiment replay: exact split/selection records, per-record outputs, six final adapters and some executed recovery code are absent, reflecting the chosen release scope. The pre-execution protocol was released after comparative outcomes and is not a public preregistration. Upstream dataset terms and replay dependencies are described in \supp{S7}{supp:repro}.
 '''+t[aend:]
   fund=r'\paragraph{Funding and competing interests.} This study was self-funded. The authors declare no competing interests. This manuscript is a preprint and has not been accepted for journal publication.'
   assert t.count(fund)==1
