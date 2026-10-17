@@ -11,6 +11,6 @@
   "license": "arXiv perpetual, non-exclusive distribution license",
   "journal_ref": "",
   "doi": "",
-  "source_file": "arxiv/arxiv_source.zip",
+  "source_file": "build/paper/arxiv/arxiv_source.zip",
   "status": "Prepared locally; not uploaded or submitted in this revision task; server compilation not verified."
 }

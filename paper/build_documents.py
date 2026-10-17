@@ -1,21 +1,21 @@
 from pathlib import Path
 import subprocess,shutil,zipfile,re,json
-R=Path(__file__).resolve().parent; S=R/'source'
+R=Path(__file__).resolve().parent; S=R/'source'; B=R.parent/'build'/'paper'
 def compile_tex(src,out,name):
  out.mkdir(parents=True,exist_ok=True)
  font_args=['--only-cached','-Z','search-path='+str(R/'build'/'latex_support')] if (R/'build'/'latex_support').exists() else []
  r=subprocess.run(['tectonic']+font_args+['--keep-logs','--keep-intermediates','--outdir',str(out),str(src)],cwd=src.parent,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
  (out/'compiler_output.txt').write_text(r.stdout)
  if r.returncode: print(r.stdout[-6000:]); raise SystemExit(r.returncode)
- pdf=out/(src.stem+'.pdf'); shutil.copy(pdf,R/name)
+ pdf=out/(src.stem+'.pdf'); shutil.copy(pdf,B/name)
  log=(out/(src.stem+'.log')).read_text(errors='replace')
  issues=[x for x in log.splitlines() if any(y in x.lower() for y in ['undefined','overfull','missing character','multiply defined'])]
  return {'pdf':name,'compiler':'Tectonic (XeTeX)','issues':issues}
 reports=[]
 for name in ['manuscript','supplement']:
- reports.append(compile_tex(S/(name+'.tex'),R/'build'/name,name+'.pdf'))
+ reports.append(compile_tex(S/(name+'.tex'),B/name,name+'.pdf'))
 # Combined preprint source, no private audit artifacts.
-a=R/'arxiv'; pkg=a/'source';pkg.mkdir(parents=True,exist_ok=True)
+a=B/'arxiv'; pkg=a/'source';pkg.mkdir(parents=True,exist_ok=True)
 for f in S.rglob('*'):
  if f.is_file() and f.suffix in {'.tex','.pdf','.bib'}:
   dest=pkg/f.relative_to(S);dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy(f,dest)
@@ -44,7 +44,7 @@ with zipfile.ZipFile(a/'arxiv_source.zip','w',zipfile.ZIP_DEFLATED) as z:
  for f in sorted(pkg.rglob('*')):
   if f.is_file():z.write(f,f.relative_to(pkg))
 # Anonymous journal candidates, not submitted or represented as accepted replacement files.
-j=R/'journal_revision';js=j/'source';js.mkdir(parents=True,exist_ok=True)
+j=B/'journal_revision';js=j/'source';js.mkdir(parents=True,exist_ok=True)
 for f in S.rglob('*'):
  if f.is_file() and f.suffix in {'.tex','.pdf','.bib'}:
   d=js/f.relative_to(S);d.parent.mkdir(parents=True,exist_ok=True);shutil.copy(f,d)
@@ -72,5 +72,5 @@ for name in ['manuscript','supplement']:
  p.write_text(t)
  p=js/'preamble.tex';t=p.read_text().replace('pdfauthor={Assylkhan Geniyat, Zukhriddin Fakhriddinov, Atharv Gulati}','pdfauthor={}').replace('\\rhead{Preprint---not peer reviewed}','\\rhead{}');p.write_text(t)
  reports.append(compile_tex(js/(name+'.tex'),j/'build'/name,'journal_revision/'+name+'_anonymous.pdf'))
-(R/'build'/'compilation_report.json').write_text(json.dumps(reports,indent=2)+'\n')
+(B/'compilation_report.json').write_text(json.dumps(reports,indent=2)+'\n')
 for x in reports:print(x)

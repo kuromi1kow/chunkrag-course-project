@@ -1,3 +1,5 @@
+> Archived documentation for the earlier chunking and retrieval study. Paths and venue plans below describe the earlier repository layout. See the [current README](../README.md) for the active paper and build commands.
+
 # Anonymous paper and reproducibility bundle
 
 This directory contains the anonymous research paper, build inputs, reviewer-response

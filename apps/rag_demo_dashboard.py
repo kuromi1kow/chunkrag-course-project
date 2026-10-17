@@ -13,8 +13,8 @@ from chunkrag.generation import ExtractiveFallbackGenerator, OpenAICompatibleGen
 from chunkrag.live_rag import UploadPayload, build_demo_index, load_documents_from_uploads, run_live_rag
 
 
-DEFAULT_RESULTS_PATH = Path("outputs/rigorous_smoke/aggregate_results.json")
-DEFAULT_OUTPUT_DIR = Path("outputs/rigorous_smoke")
+DEFAULT_RESULTS_PATH = Path("examples/demo_results/aggregate_results.json")
+DEFAULT_OUTPUT_DIR = Path("examples/demo_results")
 DEFAULT_ENDPOINT_MODEL = "Qwen/Qwen2.5-7B-Instruct"
 DEFAULT_ENDPOINT_URL = "http://127.0.0.1:8000/v1"
 DEFAULT_ENDPOINT_KEY = "chunkrag-demo-key"
