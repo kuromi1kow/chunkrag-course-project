@@ -40,3 +40,7 @@ artifacts/chunkrag-main-v1/
 # Local reranking runs retain benchmark passages; commit sanitized summaries.
 /outputs/ipmc_firm_rerank_bge/
 /outputs/ipmc_firm_rerank_analysis.json
+
+# Local author correspondence and assistant settings.
+/author_materials/
+/.claude/

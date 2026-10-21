@@ -1,8 +1,8 @@
 # ChunkRAG: literal-match reranker supervision
 
-**Does literal-match reranker supervision improve support-answer generation? A controlled study with external transfer**
+**Does Literal-Match Reranker Supervision Improve Generated Answers in RAG? An In-Domain and Transfer Study**
 
-Assylkhan Geniyat, Zukhriddin Fakhriddinov and Atharv Gulati. Revision dated 16 October 2026. Preprint; not peer reviewed.
+Assylkhan Geniyat, Zukhriddin Fakhriddinov and Atharv Gulati. Revision dated 21 October 2026. Preprint; not peer reviewed.
 
 ## Paper
 

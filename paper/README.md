@@ -2,7 +2,7 @@
 
 The current manuscript and supplement are [../paper.pdf](../paper.pdf) and [../supplement.pdf](../supplement.pdf). The [combined preprint](arxiv/main.pdf) includes both the paper and appendices.
 
-`source/` contains the final LaTeX bodies, bibliography, number macros, tables and figures. The repository-root entry points `paper.tex` and `supplement.tex` load these sources. The PDFs and scientific source content are preserved from the supplied revision dated 16 October 2026.
+`source/` contains the final LaTeX bodies, bibliography, number macros, tables and figures. The repository-root entry points `paper.tex` and `supplement.tex` load these sources. The PDFs and scientific source content are preserved from the supplied revision dated 21 October 2026.
 
 From the repository root, with Tectonic and the required LaTeX packages available:
 
